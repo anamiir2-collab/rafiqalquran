@@ -1,0 +1,143 @@
+/* ============================================================
+   رفيق القرآن للأطفال — Parent Dashboard
+   ============================================================ */
+
+/* Parent gate */
+.gate-card {
+  background: var(--c-white);
+  border-radius: var(--r-xl);
+  border: 1px solid rgba(228,224,210,.6);
+  box-shadow: var(--shadow-md);
+  padding: 26px 18px;
+  text-align: center;
+  margin-top: 20px;
+}
+.gate-ico {
+  width: 64px; height: 64px;
+  margin: 0 auto 12px;
+  border-radius: 20px;
+  background: var(--c-primary-light);
+  color: var(--c-primary-dark);
+  display: flex; align-items: center; justify-content: center;
+}
+.gate-ico .ico { width: 30px; height: 30px; }
+.gate-q {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--c-primary-deep);
+  letter-spacing: 2px;
+  margin: 8px 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+.gate-input {
+  width: 130px;
+  min-height: 54px;
+  text-align: center;
+  font-size: 1.3rem; font-weight: 800;
+  border-radius: var(--r-md);
+  border: 2px solid var(--c-line);
+}
+.gate-input:focus { border-color: var(--c-primary); outline: none; }
+.gate-hint { font-size: .78rem; color: var(--c-text-faint); margin-top: 12px; }
+
+/* Stats overview */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.stat-card {
+  background: var(--c-white);
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(228,224,210,.6);
+  padding: 13px 14px;
+  box-shadow: var(--shadow-sm);
+}
+.stat-card .sc-ico {
+  width: 34px; height: 34px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+}
+.stat-card .sc-ico .ico { width: 17px; height: 17px; }
+.stat-value { font-size: 1.3rem; font-weight: 800; color: var(--c-primary-deep); }
+.stat-label { font-size: .72rem; font-weight: 700; color: var(--c-text-soft); }
+
+/* Weekly chart */
+.chart-card { padding: 16px 14px; }
+.week-chart {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 6px;
+  height: 110px;
+  padding-top: 6px;
+}
+.wc-col {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.wc-bar {
+  width: 70%;
+  max-width: 26px;
+  min-height: 4px;
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, #43C6B4, var(--c-turquoise));
+  transition: height .5s ease;
+}
+.wc-col.today .wc-bar { background: var(--grad-gold); }
+.wc-val { font-size: .58rem; font-weight: 700; color: var(--c-text-faint); }
+.wc-day { font-size: .64rem; font-weight: 700; color: var(--c-text-soft); }
+
+/* Report table */
+.report-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 4px;
+  border-bottom: 1px dashed var(--c-line);
+  font-size: .88rem;
+}
+.report-row:last-child { border-bottom: none; }
+.rr-name { flex: 1; font-weight: 800; color: var(--c-primary-deep); min-width: 0; }
+.rr-meta { font-size: .72rem; color: var(--c-text-soft); font-weight: 400; }
+.rr-bar { width: 74px; flex: 0 0 auto; height: 7px; }
+.rr-val { font-size: .74rem; font-weight: 800; color: var(--c-gold-deep); width: 40px; text-align: left; flex: 0 0 auto; }
+
+/* Mastery meter */
+.mastery-meter { display: flex; align-items: center; gap: 14px; }
+.mastery-meter .mm-info { flex: 1; }
+.mastery-meter .mm-title { font-weight: 800; color: var(--c-primary-deep); font-size: .95rem; }
+.mastery-meter .mm-sub { font-size: .74rem; color: var(--c-text-soft); }
+
+/* Data management */
+.data-actions { display: flex; flex-direction: column; gap: 10px; }
+.file-input-hidden { display: none !important; }
+
+/* Certificate */
+.cert-preview {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--c-line);
+  box-shadow: var(--shadow-sm);
+  margin-top: 12px;
+}
+.cert-preview canvas, .cert-preview img { width: 100%; height: auto; }
+.cert-select { width: 100%; }
+
+/* Achievement timeline */
+.timeline { position: relative; padding-right: 18px; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  right: 5px; top: 6px; bottom: 6px;
+  width: 2px;
+  background: var(--c-line);
+  border-radius: 99px;
+}
+.tl-item { position: relative; padding: 0 14px 14px 0; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  right: -18px; top: 5px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--c-gold);
+  border: 2.5px solid #FFF6E2;
+}
+.tl-title { font-weight: 800; font-size: .88rem; color: var(--c-primary-deep); }
+.tl-date { font-size: .68rem; color: var(--c-text-faint); }

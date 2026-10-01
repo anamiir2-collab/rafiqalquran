@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0C7A5C">
+  <meta name="description" content="رفيق القرآن للأطفال — تطبيق تفاعلي لحفظ جزء عمّ وتعلم القيم القرآنية، يعمل بدون إنترنت">
+  <title>رفيق القرآن للأطفال</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="رفيق القرآن">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./css/fonts.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/child.css">
+  <link rel="stylesheet" href="./css/parent.css">
+  <link rel="stylesheet" href="./css/responsive.css">
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+
+    <main id="appMain" class="app-main" aria-live="polite"></main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" id="bottomNav" aria-label="التنقل الرئيسي">
+      <button class="nav-item active" data-href="#/home" data-nav="home" aria-label="الرئيسية">
+        <span class="nav-ico" data-ico="home"></span>
+        <span class="nav-label">الرئيسية</span>
+      </button>
+      <button class="nav-item" data-href="#/quran" data-nav="quran" aria-label="مدينة القرآن">
+        <span class="nav-ico" data-ico="book"></span>
+        <span class="nav-label">القرآن</span>
+      </button>
+      <button class="nav-item" data-href="#/review" data-nav="review" aria-label="وادي المراجعة">
+        <span class="nav-ico" data-ico="refresh"></span>
+        <span class="nav-label">المراجعة</span>
+      </button>
+      <button class="nav-item" data-href="#/challenges" data-nav="challenges" aria-label="تحديات الإتقان">
+        <span class="nav-ico" data-ico="trophy"></span>
+        <span class="nav-label">التحديات</span>
+      </button>
+      <button class="nav-item" data-href="#/more" data-nav="more" aria-label="المزيد">
+        <span class="nav-ico" data-ico="grid"></span>
+        <span class="nav-label">المزيد</span>
+      </button>
+    </nav>
+
+    <!-- Offline banner -->
+    <div class="offline-banner hidden" id="offlineBanner" role="status">
+      <span class="ob-ico" data-ico="wifiOff"></span>
+      <span>أنت تعمل الآن بدون اتصال بالإنترنت، وسيتم حفظ تقدمك على الجهاز.</span>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-host" id="toastHost" aria-live="assertive"></div>
+
+    <!-- Modal -->
+    <div class="modal-backdrop hidden" id="modalBackdrop">
+      <div class="modal-card" id="modalCard" role="dialog" aria-modal="true"></div>
+    </div>
+
+    <!-- Confetti -->
+    <canvas id="confettiCanvas" class="confetti-canvas hidden" aria-hidden="true"></canvas>
+  </div>
+
+  <!-- Scripts (order matters) -->
+  <script src="./js/storage.js" defer></script>
+  <script src="./js/navigation.js" defer></script>
+  <script src="./js/quran.js" defer></script>
+  <script src="./js/audio.js" defer></script>
+  <script src="./js/rewards.js" defer></script>
+  <script src="./js/challenges.js" defer></script>
+  <script src="./js/revision.js" defer></script>
+  <script src="./js/memorization.js" defer></script>
+  <script src="./js/stories.js" defer></script>
+  <script src="./js/morals.js" defer></script>
+  <script src="./js/parent.js" defer></script>
+  <script src="./js/pwa.js" defer></script>
+  <script src="./js/app.js" defer></script>
+</body>
+</html>

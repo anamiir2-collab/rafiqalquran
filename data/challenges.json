@@ -1,0 +1,37 @@
+{
+  "meta": { "app": "رفيق القرآن للأطفال", "version": 1 },
+  "rules": {
+    "pointsPerCorrect": 10,
+    "questionsPerSession": 8,
+    "starsPerfect": 3,
+    "starsGood": 2,
+    "passRate": 0.75
+  },
+  "games": [
+    { "type": "wordOrder", "title": "ترتيب الكلمات", "desc": "رتّب كلمات الآية بالترتيب الصحيح", "icon": "grip", "color": "green" },
+    { "type": "missingWord", "title": "الكلمة المفقودة", "desc": "اختر الكلمة الناقصة من الآية", "icon": "puzzle", "color": "turquoise" },
+    { "type": "completeAyah", "title": "أكمل الآية", "desc": "أكمل آخر كلمات الآية", "icon": "pen", "color": "gold" },
+    { "type": "nextAyah", "title": "ما الآية التالية؟", "desc": "اختر الآية التي تلي المعروضة", "icon": "next", "color": "blue" },
+    { "type": "orderAyahs", "title": "رتّب الآيات", "desc": "رتّب ثلاث آيات متتالية", "icon": "list", "color": "purple" },
+    { "type": "memory", "title": "تحدي الذاكرة", "desc": "اقلب البطاقات وطابق الكلمات المتشابهة", "icon": "brain", "color": "coral" },
+    { "type": "mcq", "title": "اختر الإجابة الصحيحة", "desc": "أسئلة عامة عن السور والآيات", "icon": "check", "color": "green" }
+  ],
+  "badges": [
+    { "id": "first_surah", "title": "حافظ جديد", "desc": "أكمل أول سورة" },
+    { "id": "ayahs_5", "title": "خمس آيات", "desc": "احفظ 5 آيات" },
+    { "id": "ayahs_20", "title": "عشرون آية", "desc": "احفظ 20 آية" },
+    { "id": "ayahs_50", "title": "خمسون آية", "desc": "احفظ 50 آية" },
+    { "id": "surahs_3", "title": "ثلاث سور", "desc": "أتقن 3 سور" },
+    { "id": "surahs_10", "title": "عشر سور", "desc": "أتقن 10 سور" },
+    { "id": "juz_amma", "title": "بطل جزء عمّ", "desc": "أتقن كل السور" },
+    { "id": "streak_3", "title": "ثلاثة أيام", "desc": "3 أيام متتالية" },
+    { "id": "streak_7", "title": "أسبوع كامل", "desc": "7 أيام متتالية" },
+    { "id": "recite_10", "title": "بطل الترديد", "desc": "سجّل ترديدك 10 مرات" },
+    { "id": "reviews_20", "title": "مراجع مجتهد", "desc": "أنجح 20 مراجعة" },
+    { "id": "quiz_50", "title": "عبقري الاختبارات", "desc": "50 إجابة صحيحة" },
+    { "id": "perfect_quiz", "title": "إتقان تام", "desc": "اختبار كامل بلا خطأ" },
+    { "id": "stories_5", "title": "قارئ القصص", "desc": "اقرأ 5 قصص" },
+    { "id": "morals_7", "title": "نجمة الأخلاق", "desc": "أكمل 7 مواقف" },
+    { "id": "stars_50", "title": "جامع النجوم", "desc": "اجمع 50 نجمة" }
+  ]
+}

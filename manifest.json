@@ -1,0 +1,52 @@
+{
+  "name": "رفيق القرآن للأطفال",
+  "short_name": "رفيق القرآن",
+  "description": "تطبيق تفاعلي لحفظ جزء عمّ وتعلم القيم القرآنية للأطفال — يعمل بدون إنترنت",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#FBF6EC",
+  "theme_color": "#0C7A5C",
+  "categories": ["education", "kids", "books"],
+  "icons": [
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "رحلة الحفظ",
+      "short_name": "الحفظ",
+      "description": "أكمل رحلة حفظك اليومية",
+      "url": "./index.html#/journey/112",
+      "icons": [{ "src": "./assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "وادي المراجعة",
+      "short_name": "المراجعة",
+      "description": "مراجعة اليوم",
+      "url": "./index.html#/review",
+      "icons": [{ "src": "./assets/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

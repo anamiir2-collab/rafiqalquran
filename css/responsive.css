@@ -1,0 +1,89 @@
+/* ============================================================
+   رفيق القرآن للأطفال — Responsive (Mobile First → Desktop)
+   Base: 360px. Enhanced: 480 / 768 / 1024
+   ============================================================ */
+
+/* --- ≥ 400px: slightly larger type --- */
+@media (min-width: 400px) {
+  .ayah-text { font-size: 1.8rem; }
+  .hero-greet { font-size: 1.55rem; }
+}
+
+/* --- ≥ 480px: larger phones --- */
+@media (min-width: 480px) {
+  .app-main { padding-inline: 18px; }
+  .quick-grid { gap: 14px; }
+  .stat-grid { gap: 13px; }
+  .grid-3 { gap: 12px; }
+  .badge-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* --- ≥ 768px: tablets — keep phone-like shell, decorative bg --- */
+@media (min-width: 768px) {
+  body {
+    background-color: #DDEAE3;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(232, 169, 62, .10) 0, transparent 34%),
+      radial-gradient(circle at 88% 82%, rgba(47, 181, 163, .12) 0, transparent 34%),
+      var(--pattern-star);
+    background-size: auto, auto, 90px 90px;
+  }
+  .app-shell {
+    max-width: 520px;
+    margin-block: 18px;
+    border-radius: 34px;
+    overflow: hidden;
+    min-height: calc(100dvh - 36px);
+    border: 1px solid rgba(255, 255, 255, .6);
+  }
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    border-radius: 0;
+  }
+  .toast-host { width: min(88%, 460px); }
+  .modal-backdrop { align-items: center; padding: 20px; }
+  .modal-card {
+    border-radius: var(--r-xl);
+    max-width: 460px;
+    width: 100%;
+  }
+  .badge-grid { grid-template-columns: repeat(5, 1fr); }
+  .mem-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* --- ≥ 1024px: desktop --- */
+@media (min-width: 1024px) {
+  .app-shell { max-width: 560px; }
+  .app-main { padding-inline: 22px; }
+}
+
+/* --- Short landscape phones --- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .app-main {
+    padding-bottom: calc(var(--nav-h) + var(--sab) + 20px);
+  }
+  .hero { padding: 14px 16px; }
+  .surah-header-card { padding: 14px; }
+  .shc-name { font-size: 1.5rem; }
+}
+
+/* --- Very small phones (< 350px) --- */
+@media (max-width: 359px) {
+  .ayah-text { font-size: 1.4rem; }
+  .quiz-ayah { font-size: 1.2rem; }
+  .hero-greet { font-size: 1.25rem; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .badge-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-item .nav-label { font-size: .6rem; }
+}
+
+/* --- Print: certificate --- */
+@media print {
+  body * { visibility: hidden; }
+  .cert-preview, .cert-preview * { visibility: visible; }
+  .cert-preview { position: absolute; inset: 0; border: none; box-shadow: none; }
+}

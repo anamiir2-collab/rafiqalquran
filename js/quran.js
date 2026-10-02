@@ -39,6 +39,47 @@ App.actions = App.actions || {};
     all() { return this.data ? this.data.surahs : []; },
     bismillah() { return this.data ? this.data.meta.bismillah : "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"; },
 
+    /* هل السورة تبدأ بالبسملة؟ (كل السور عدا الفاتحة والتوبة) */
+    startsWithBismillah(n) {
+      // الفاتحة (1): البسملة آية كاملة فيها
+      // التوبة (9): لا بسملة
+      // الباقي: البسملة مدمجة في أول آية من API
+      return n !== 1 && n !== 9;
+    },
+
+    /* تفصل البسملة عن أول آية إذا كانت مدمجة في نصها */
+    ayahsForDisplay(n) {
+      const s = this.surah(n);
+      if (!s) return [];
+      const bism = this.bismillah();
+      // تطبيع: يحذف الحركات والشدّة لمقارنة بصرية
+      const normalize = (str) => str.replace(/[\u064B-\u0652\u0670\u0640]/g, "").replace(/\s+/g, " ").trim();
+      const bismNorm = normalize(bism);
+      return s.ayahs.map(a => {
+        let text = a.text;
+        if (a.number === 1 && this.startsWithBismillah(n)) {
+          const norm = normalize(text);
+          if (norm.startsWith(bismNorm)) {
+            // ابحث عن موضع نهاية البسملة في النص الأصلي
+            // نطابق حرفًا بحرف مراعين الحركات
+            let bi = 0, ai = 0;
+            while (bi < bism.length && ai < text.length) {
+              // تخطّى الحركات في كلا النصين
+              while (ai < text.length && /[\u064B-\u0652\u0670]/.test(text[ai])) ai++;
+              while (bi < bism.length && /[\u064B-\u0652\u0670]/.test(bism[bi])) bi++;
+              if (bi >= bism.length) break;
+              if (ai >= text.length || text[ai] !== bism[bi]) { ai = -1; break; }
+              ai++; bi++;
+            }
+            if (ai > 0) {
+              text = text.slice(ai).trim();
+            }
+          }
+        }
+        return { number: a.number, text };
+      });
+    },
+
     /** السورة التالية المقترحة للحفظ: تحترم اتجاه الحفظ (backward = من الناس → يس) */
     suggestNext() {
       const st = App.Storage.state;
@@ -210,7 +251,10 @@ App.actions = App.actions || {};
       const pr = Q.progressOf(n);
       const fsClass = App.Storage.getSettings().quranFontSize === "sm" ? "md" : (App.Storage.getSettings().quranFontSize === "lg" ? "lg" : "");
 
-      const ayahsHtml = s.ayahs.map(a => `
+      // استخدم النص المفصول عن البسملة
+      const ayahs = Q.ayahsForDisplay(n);
+      const showBismillah = Q.startsWithBismillah(n);
+      const ayahsHtml = ayahs.map(a => `
         <button class="ayah-row" data-action="ayah-play" data-surah="${s.number}" data-ayah="${a.number}">
           <div class="ayah-text ${fsClass}">${a.text}<span class="ayah-badge">${App.arDigits(a.number)}</span></div>
         </button>`).join("");
@@ -232,7 +276,7 @@ App.actions = App.actions || {};
           </div>
         </div>
 
-        <div class="bismillah">${Q.bismillah()}</div>
+        ${showBismillah ? `<div class="bismillah">${Q.bismillah()}</div>` : ""}
 
         <div class="card">
           <div class="ayah-actions">
@@ -263,8 +307,12 @@ App.actions = App.actions || {};
       if (!s) return { nav: "quran", html: App.emptyHtml("السورة غير موجودة") };
       const isRecite = kind === "recite";
 
+      // استخدم النص المفصول عن البسملة
+      const ayahs = Q.ayahsForDisplay(n);
+      const showBismillah = Q.startsWithBismillah(n);
+
       // شكل المصحف: نص متصل مع علامة الآية الزخرفية
-      const mushafText = s.ayahs.map(a =>
+      const mushafText = ayahs.map(a =>
         `<span class="ayah-segment" data-surah="${s.number}" data-ayah="${a.number}">${a.text}<span class="ayah-marker" data-surah="${s.number}" data-ayah="${a.number}" role="button" aria-label="الآية ${App.arDigits(a.number)}">${App.arDigits(a.number)}</span></span> `
       ).join("");
 
@@ -279,6 +327,7 @@ App.actions = App.actions || {};
 
         <div class="mushaf-page">
           <div class="mushaf-surah-name">سُورَةُ ${s.name}</div>
+          ${showBismillah ? `<div class="mushaf-bismillah">${Q.bismillah()}</div>` : ""}
           <div class="mushaf-text ${App.Storage.getSettings().quranFontSize === "lg" ? "lg" : "md"}">${mushafText}</div>
         </div>
 

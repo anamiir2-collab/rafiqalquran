@@ -106,6 +106,83 @@ App.actions = App.actions || {};
   App.sample = (arr, n) => App.shuffle(arr).slice(0, n);
   App.haptic = (ms) => { try { if (navigator.vibrate) navigator.vibrate(ms || 20); } catch (e) {} };
 
+  /* ================= نظام المؤثرات الصوتية (UI SFX) =================
+     مؤثرات قصيرة فقط لواجهة المستخدم (ضغط/انتقال/نجاح/إنجاز)
+     منفصلة تمامًا عن صوت القرآن - لا تُشغّل أثناء التلاوة أو الترديد
+     تستخدم Web Audio API لتوليد الأصوات بدون ملفات خارجية */
+  App.SFX = {
+    _ctx: null,
+    _enabled: true,
+    init() {
+      const st = App.Storage.getSettings();
+      this._enabled = st.uiSounds !== false;
+    },
+    setEnabled(on) {
+      this._enabled = !!on;
+      App.Storage.setSetting("uiSounds", !!on);
+    },
+    isEnabled() {
+      const st = App.Storage.getSettings();
+      return st.uiSounds !== false;
+    },
+    _ctxGet() {
+      if (!this._ctx) {
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return null;
+          this._ctx = new AC();
+        } catch (e) { return null; }
+      }
+      // استأنف إذا كان معلّقًا (سياسة المتصفح: تحتاج لتفاعل مستخدم)
+      if (this._ctx.state === "suspended") {
+        try { this._ctx.resume(); } catch (e) {}
+      }
+      return this._ctx;
+    },
+    /* شغّل نغمة قصيرة
+       opts: { freq, duration, type, gain, slideTo } */
+    _tone(opts) {
+      if (!this._enabled) return;
+      const ctx = this._ctxGet();
+      if (!ctx) return;
+      try {
+        const dur = opts.duration || 0.12;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = opts.type || "sine";
+        osc.frequency.setValueAtTime(opts.freq || 660, now);
+        if (opts.slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(opts.slideTo, now + dur);
+        }
+        const peak = opts.gain || 0.07;
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(peak, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + dur);
+      } catch (e) {}
+    },
+    play(name) {
+      switch (name) {
+        case "tap":      this._tone({ freq: 440, duration: 0.06, type: "sine", gain: 0.04 }); break;
+        case "select":   this._tone({ freq: 660, duration: 0.08, type: "sine", gain: 0.05 }); break;
+        case "navigate": this._tone({ freq: 520, duration: 0.07, type: "sine", gain: 0.04 }); break;
+        case "correct":  this._tone({ freq: 660, duration: 0.10, type: "sine", gain: 0.06, slideTo: 880 }); break;
+        case "success":  this._tone({ freq: 523, duration: 0.18, type: "sine", gain: 0.07, slideTo: 784 }); break;
+        case "achievement":
+          this._tone({ freq: 523, duration: 0.12, type: "sine", gain: 0.07 });
+          setTimeout(() => this._tone({ freq: 659, duration: 0.12, type: "sine", gain: 0.07 }), 100);
+          setTimeout(() => this._tone({ freq: 784, duration: 0.20, type: "sine", gain: 0.08 }), 220);
+          break;
+        case "fail":     this._tone({ freq: 300, duration: 0.18, type: "triangle", gain: 0.05, slideTo: 220 }); break;
+      }
+    }
+  };
+  // alias
+  App.uiSound = (name) => App.SFX.play(name);
+
   App.fillIcons = (root) => {
     (root || document).querySelectorAll("[data-ico]").forEach(el => {
       const name = el.dataset.ico;
@@ -426,7 +503,7 @@ App.actions = App.actions || {};
         </button>
       </div>` : ""}
 
-      <div class="section-head"><h2>عالمك</h2></div>
+      <div class="section-head"><h2>عالمي</h2></div>
       <div class="quick-grid">
         <button class="quick-card" data-href="#/quran">
           <span class="quick-ico qi-green"><span class="ico" data-ico="book"></span></span>
@@ -469,14 +546,14 @@ App.actions = App.actions || {};
     };
   }
 
-  /* ---------- المزيد ---------- */
+  /* ---------- عالمي ---------- */
   function pageMore() {
     const st = App.Storage.state;
     return {
       nav: "more",
       html: `
       <header class="screen-head">
-        <div class="sh-title"><h1>المزيد</h1><p>كل أقسام التطبيق</p></div>
+        <div class="sh-title"><h1>عالمي</h1><p>كل أقسام التطبيق</p></div>
       </header>
 
       <div class="card" style="display:flex;align-items:center;gap:13px" data-href="#/more/settings">
@@ -587,6 +664,10 @@ App.actions = App.actions || {};
           <span class="sw-label">أصوات المكافآت والاهتزاز</span>
           <button class="switch ${st.soundEffects ? "on" : ""}" data-action="set-setting" data-k="soundEffects" data-v="${!st.soundEffects}" aria-label="تبديل"></button>
         </div>
+        <div class="switch-row">
+          <span class="sw-label">مؤثرات الواجهة (ضغط/انتقال)</span>
+          <button class="switch ${st.uiSounds !== false ? "on" : ""}" data-action="toggle-ui-sounds" aria-label="تبديل مؤثرات الواجهة"></button>
+        </div>
         <div class="field mt-12">
           <label>اتجاه الحفظ</label>
           <div class="seg-group">
@@ -659,6 +740,13 @@ App.actions = App.actions || {};
     if (v === "true") v = true; else if (v === "false") v = false;
     else if (!isNaN(Number(v)) && k !== "reciter" && k !== "memorizationDirection") v = Number(v);
     App.Storage.setSetting(k, v);
+    App.Router.render();
+  };
+  App.actions["toggle-ui-sounds"] = (el) => {
+    const cur = App.SFX.isEnabled();
+    App.SFX.setEnabled(!cur);
+    // شغّل صوت تجريبي بعد التفعيل
+    if (!cur) App.SFX.play("select");
     App.Router.render();
   };
   App.actions["about-app"] = () => {
@@ -760,6 +848,7 @@ App.actions = App.actions || {};
   function init() {
     App.Storage.load();
     App.applyTheme();
+    if (App.SFX) App.SFX.init();
 
     // fill bottom nav icons
     App.fillIcons(document);

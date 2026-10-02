@@ -120,6 +120,7 @@ App.actions = App.actions || {};
       const goEl = e.target.closest("[data-href]");
       if (goEl) {
         e.preventDefault();
+        if (App.SFX) App.SFX.play("navigate");
         App.Router.go(goEl.dataset.href);
         return;
       }
@@ -128,6 +129,10 @@ App.actions = App.actions || {};
         const name = actEl.dataset.action;
         const fn = App.actions[name];
         if (typeof fn === "function") {
+          // شغّل صوت ضغط خفيف (إلا للأفعال التي تبدأ تشغيل قرآن — لا نريد تداخل صوت)
+          if (App.SFX && !["p-toggle", "ayah-play", "ayah-replay", "mc-toggle", "story-listen"].includes(name)) {
+            App.SFX.play("tap");
+          }
           fn(actEl, e);
         } else {
           console.warn("missing action:", name);

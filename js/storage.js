@@ -27,11 +27,12 @@ App.version = "1.0.0";
         onboarded: false
       },
       settings: {
-        reciter: "Alafasy_128kbps",
+        reciter: "Minshawi_Murattal_128kbps",
         speed: 1,
         repeatCount: 3,
         quranFontSize: "md",
         soundEffects: true,
+        uiSounds: true,        // مؤثرات الواجهة فقط (ضغط/انتقال) — منفصلة عن القرآن
         showTranslationless: true,
         autoPlay: true,
         theme: "auto",        // "light" | "dark" | "auto"

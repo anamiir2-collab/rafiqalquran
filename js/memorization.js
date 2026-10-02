@@ -74,16 +74,16 @@ App.actions = App.actions || {};
       const steps = [
         { id: "listen", label: "استماع", icon: "headphones" },
         { id: "recite", label: "ترديد", icon: "mic" },
-        { id: "quiz", label: "اختبار الإتقان", icon: "brain" },
-        { id: "mastery", label: "الإتقان", icon: "medal" },
-        { id: "reward", label: "المكافأة", icon: "trophy" }
+        { id: "quiz", label: "اختبار", icon: "brain" },
+        { id: "mastery", label: "إتقان", icon: "medal" },
+        { id: "reward", label: "مكافأة", icon: "trophy" }
       ];
 
       return {
         nav: "quran",
         html: `
         <header class="screen-head">
-          <button class="icon-btn btn-back" data-href="#/surah/${s.number}"><span class="ico" data-ico="chevronRight"></span></button>
+          <button class="icon-btn btn-back" data-href="#/surah/${s.number}" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
           <div class="sh-title"><h1>رحلة الحفظ</h1><p>سورة ${s.name}</p></div>
           <button class="icon-btn" data-action="journey-exit" aria-label="إنهاء"><span class="ico" data-ico="x"></span></button>
         </header>
@@ -96,14 +96,11 @@ App.actions = App.actions || {};
           </div>
         </div>
 
-        <div class="journey-steps">
-          ${steps.map(st => `
-          <div class="jstep" data-step="${st.id}">
-            <span class="jstep-dot"><span class="ico" data-ico="${st.icon}"></span></span>
-            <div class="jstep-body">
-              <div class="jstep-title">${st.label}</div>
-              <div class="jstep-desc" data-jdesc="${st.id}"></div>
-            </div>
+        <div class="journey-steps-icons" role="tablist" aria-label="مراحل رحلة الحفظ">
+          ${steps.map((st, i) => `
+          <div class="jsi-step" data-step="${st.id}" role="tab" aria-label="${st.label}" title="${st.label}">
+            <span class="jsi-connector ${i === 0 ? "first" : ""}"></span>
+            <span class="jsi-dot"><span class="ico" data-ico="${st.icon}"></span></span>
           </div>`).join("")}
         </div>
 
@@ -136,23 +133,13 @@ App.actions = App.actions || {};
       if (!sess) { App.Router.go("#/quran"); return; }
       const s = App.Quran.surah(sess.surah);
 
-      // تحديث خطوات المسار
+      // تحديث خطوات المسار (icons-only)
       const order = ["listen", "recite", "quiz", "mastery", "reward"];
       const idx = order.indexOf(sess.step);
-      host.querySelectorAll(".jstep").forEach((el, i) => {
+      host.querySelectorAll(".jsi-step").forEach((el, i) => {
         el.classList.toggle("done", i < idx);
         el.classList.toggle("active", i === idx);
-      });
-      const descs = {
-        listen: "",
-        recite: "",
-        quiz: "",
-        mastery: sess.quizResult && sess.quizResult.passed ? "✓" : "",
-        reward: ""
-      };
-      order.forEach(k => {
-        const d = host.querySelector(`[data-jdesc="${k}"]`);
-        if (d) d.textContent = descs[k];
+        el.setAttribute("aria-current", i === idx ? "step" : "false");
       });
       const sub = host.querySelector("[data-jh-sub]");
       if (sub) sub.textContent = `الآيات ${App.arDigits(sess.range[0])} - ${App.arDigits(sess.range[1])}`;
@@ -324,6 +311,7 @@ App.actions = App.actions || {};
             sess.step = "mastery";
             M.saveSession();
             M.renderStep();
+            M.showStageComplete("quiz");
           } else {
             host.innerHTML = `
             <div class="card result-card">
@@ -387,6 +375,9 @@ App.actions = App.actions || {};
       M.saveSession();
       App.Storage.save();
 
+      // اعرض رسالة الإتقان
+      M.showStageComplete("mastery");
+
       // rewards: 3★ perfect, 2★ ≥80%, 1★ pass
       const stars = r.correct === r.total ? 3 : (r.correct / r.total >= 0.8 ? 2 : 1);
       const points = r.correct * 10 + (complete ? 40 : 0);
@@ -448,7 +439,8 @@ App.actions = App.actions || {};
     const total = sess.range[1] - sess.range[0] + 1;
     if (sess.listened.length >= total) {
       sess.step = "recite";
-      App.toast("أحسنت! حان وقت الترديد بصوتك", "success");
+      M.saveSession();
+      M.showStageComplete("listen");
     }
     M.saveSession();
     M.renderStep();
@@ -464,7 +456,8 @@ App.actions = App.actions || {};
     const total = sess.range[1] - sess.range[0] + 1;
     if (sess.recited.length >= total) {
       sess.step = "quiz";
-      App.toast("رائع! الآن اختبر إتقانك", "success");
+      M.saveSession();
+      M.showStageComplete("recite");
     }
     M.saveSession();
     M.renderStep();
@@ -506,6 +499,63 @@ App.actions = App.actions || {};
     const sNo = Number(el.dataset.s);
     M.startSession(sNo);
     App.Router.go("#/journey/" + sNo);
+  };
+
+  /* ================= رسائل الإكمال العشوائية لكل مرحلة ================= */
+  const STAGE_MESSAGES = {
+    listen: [
+      { title: "أحسنت! 🌟", body: "سمعت الآيات بتركيز رائع\nيلا نبدأ الترديد" },
+      { title: "ما شاء الله 🌟", body: "استماع جميل!\nالآن ردد الآيات بصوتك" },
+      { title: "رائع! 🌟", body: "أنصت بقلبك\nيلا نكمل بالترديد" },
+      { title: "أنت بطل! 🌟", body: "استماع ممتاز\nالآن جاء دور الترديد" }
+    ],
+    recite: [
+      { title: "ما شاء الله! 🎙️", body: "صوتك جميل وتقدمك واضح\nمستعد للاختبار؟" },
+      { title: "أحسنت! 🎙️", body: "رددت بإتقان!\nاختبر ما حفظت الآن" },
+      { title: "رائع! 🎙️", body: "صوتك يدل على حفظك\nيلا نختبر الإتقان" },
+      { title: "تبارك الله! 🎙️", body: "ترديد جميل\nالآن اختبر نفسك" }
+    ],
+    quiz: [
+      { title: "رائع! ✓", body: "أثبت إنك حفظت الآيات\nكمل وخلّي إنجازك يكبر" },
+      { title: "أحسنت! ✓", body: "إجابات صحيحة!\nالآن اطلب مكافأتك" },
+      { title: "ما شاء الله! ✓", body: "اجتزت الاختبار بنجاح\nخطوة أخيرة للمكافأة" },
+      { title: "بطل! ✓", body: "حفظك واضح\nاستلم إتقانك الآن" }
+    ],
+    mastery: [
+      { title: "ما شاء الله عليك! ⭐", body: "حفظتها بإتقان\nأنت بتتقدم كل يوم" },
+      { title: "إتقان رائع! ⭐", body: "بارك الله فيك\nالآن احصد مكافأتك" },
+      { title: "أحسنت! ⭐", body: "وصلت للإتقان!\nالمكافأة بانتظارك" },
+      { title: "بطل القرآن! ⭐", body: "أتقنت بحمد الله\nاستلم مكافأتك" }
+    ],
+    reward: [
+      { title: "أحسنت يا بطل! 🏆", body: "إنجاز جديد اتضاف لرحلتك" },
+      { title: "ما شاء الله! 🏆", body: "مكافأة تستحقها\nواصل رحلتك مع القرآن" },
+      { title: "رائع! 🏆", body: "اجتهدت فنلت\nاستمر في طريق النور" },
+      { title: "بطل! 🏆", body: "إنجاز جميل\nالقرآن صار رفيقك" }
+    ]
+  };
+
+  /* اعرض رسالة الإكمال بطريقة آمنة (لا تكرر لنفس المرحلة في نفس الجلسة) */
+  M.showStageComplete = function(stageKey) {
+    const sess = M.session();
+    if (!sess) return;
+    sess._shownStageMessages = sess._shownStageMessages || [];
+    if (sess._shownStageMessages.includes(stageKey)) return;
+    sess._shownStageMessages.push(stageKey);
+    M.saveSession();
+
+    const messages = STAGE_MESSAGES[stageKey] || [];
+    if (!messages.length) return;
+    const msg = App.pick(messages);
+
+    // شغّل مؤثر صوتي لطيف إن كان مفعّلًا
+    if (App.SFX) App.SFX.play("success");
+
+    App.modal({
+      title: msg.title,
+      body: `<div class="stage-msg"><p class="stage-msg-body">${App.esc(msg.body).replace(/\n/g, "<br>")}</p></div>`,
+      actions: [{ label: "نكمل", action: "close-modal", primary: true }]
+    });
   };
 
   App.Memorization = M;

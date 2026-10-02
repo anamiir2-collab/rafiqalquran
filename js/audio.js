@@ -11,7 +11,8 @@ App.actions = App.actions || {};
 
   const RECITERS = {
     Alafasy_128kbps: "مشاري العفاسي",
-    Husary_128kbps: "محمود خليل الحصري"
+    Husary_128kbps: "محمود خليل الحصري",
+    Minshawi_Murattal_128kbps: "محمد صديق المنشاوي"
   };
 
   function ayahUrl(reciter, surah, ayah) {
@@ -77,6 +78,67 @@ App.actions = App.actions || {};
       this._repeatLeft = 0;
     },
 
+    /* ---------- Mushaf Player (مشغل المصحف المخفي) ----------
+       في شاشة المصحف لا نعرض toolbar كبير، فقط شريط تحكم بسيط يطفو في الأسفل.
+       المستخدم يضغط على علامة الآية لتشغيلها. */
+    renderMushafPlayer(rootEl, opts, scrollRoot) {
+      const p = this;
+      if (this._uiUnsubs) this._uiUnsubs.forEach(u => u());
+      this._uiUnsubs = [];
+      p.load(opts.list, { loop: !!opts.loop, onComplete: opts.onComplete, scopeAutoplay: opts.scopeAutoplay !== false });
+
+      // أنشئ شريط تحكم بسيط عائم في أسفل الشاشة
+      let bar = rootEl.querySelector(".mushaf-control-bar");
+      if (!bar) {
+        bar = document.createElement("div");
+        bar.className = "mushaf-control-bar hidden";
+        bar.innerHTML = `
+          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل/إيقاف"><span class="ico" data-ico="play"></span></button>
+          <div class="mc-info">
+            <div class="mc-title">سورة ...</div>
+            <div class="mc-seek"><div class="mc-seek-fill"></div></div>
+          </div>
+          <button class="mc-btn" data-action="mc-prev" aria-label="السابق"><span class="ico" data-ico="prev"></span></button>
+          <button class="mc-btn" data-action="mc-next" aria-label="التالي"><span class="ico" data-ico="next"></span></button>
+          <button class="mc-btn" data-action="mc-close" aria-label="إغلاق"><span class="ico" data-ico="x"></span></button>`;
+        rootEl.appendChild(bar);
+        if (App.fillIcons) App.fillIcons(bar);
+        // Local click handler
+        bar.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-action]");
+          if (!b) return;
+          e.stopPropagation();
+          const act = b.dataset.action;
+          if (act === "mc-toggle") p.toggle();
+          else if (act === "mc-prev") p.prev();
+          else if (act === "mc-next") p.next();
+          else if (act === "mc-close") { p.stopAll(); bar.classList.add("hidden"); }
+        });
+      }
+      bar.classList.remove("hidden");
+
+      // اشتراك الـ state
+      const unsub = p.onState((st) => {
+        const playIco = bar.querySelector(".mc-play .ico");
+        if (playIco && App.icons) playIco.innerHTML = App.icons[st.loading ? "loader" : (st.playing ? "pause" : "play")];
+        const title = bar.querySelector(".mc-title");
+        if (title && st.item) {
+          const s = App.Quran.surah(st.item.surah);
+          title.textContent = (s ? "سورة " + s.name + " — " : "") + "الآية " + App.arDigits(st.item.ayah);
+        }
+        const seek = bar.querySelector(".mc-seek-fill");
+        if (seek && st.duration) seek.style.width = (st.currentTime / st.duration * 100) + "%";
+      });
+      this._uiUnsubs.push(unsub);
+      App.Router.onLeave(unsub);
+
+      // في وضع التلاوة مع autoStart: شغّل أول آية تلقائيًا (بعد تفاعل المستخدم الأول)
+      if (opts.autoStart) {
+        // نضعّم autoplay flag ليُتاح الانتقال التلقائي بين الآيات
+        this._pendingAutoStart = true;
+      }
+    },
+
     play(idx) {
       if (!this.list.length) return;
       if (typeof idx === "number") this.idx = Math.max(0, Math.min(idx, this.list.length - 1));
@@ -127,7 +189,7 @@ App.actions = App.actions || {};
         return;
       }
       const loop = this.opts.loop;
-      // الوضع Loop — تنقّل دائقي بين الآيات
+      // الوضع Loop (وضع التكرار) — تنقّل دائقي بين الآيات
       if (loop && this.idx < this.list.length - 1) {
         this.idx++;
         setTimeout(() => this.play(this.idx), 650);
@@ -138,8 +200,9 @@ App.actions = App.actions || {};
         setTimeout(() => this.play(this.idx), 900);
         return;
       }
-      // التشغيل التلقائي Scoped — انتقل للآية التالية داخل النطاق فقط
-      if (this._isAutoPlayEnabled() && this.idx < this.list.length - 1) {
+      // scopeAutoplay = التشغيل التلقائي داخل النطاق (التلاوة فقط)
+      // إذا لم يُفعّل: توقف عند نهاية الآية (الطفل يضغط التالي بنفسه)
+      if (this.opts.scopeAutoplay && this.idx < this.list.length - 1) {
         this.idx++;
         setTimeout(() => this.play(this.idx), 650);
         return;
@@ -152,7 +215,7 @@ App.actions = App.actions || {};
       this._emit();
     },
 
-    /* ---------- التشغيل التلقائي Scoped ---------- */
+    /* ---------- التشغيل التلقائي Scoped (يُستخدم في شاشة المصحف فقط) ---------- */
     _isAutoPlayEnabled() {
       try {
         const s = App.Storage.getSettings();
@@ -190,9 +253,18 @@ App.actions = App.actions || {};
       // إزالة اشتراكات المشغلات القديمة (منع التسريب)
       if (this._uiUnsubs) this._uiUnsubs.forEach(u => u());
       this._uiUnsubs = [];
-      p.load(opts.list, { loop: !!opts.loop, onComplete: opts.onComplete });
+      // scopeAutoplay: في التلاوة فقط نسمح بالانتقال التلقائي بين الآيات
+      // hideAutoplayBtn: في الحفظ نخفي زر "تلقائي" تمامًا
+      p.load(opts.list, {
+        loop: !!opts.loop,
+        onComplete: opts.onComplete,
+        scopeAutoplay: opts.scopeAutoplay === true  // false افتراضيًا (الحفظ/الترديد لا autoplay)
+      });
       const st = App.Storage.getSettings();
-      const autoOn = st.autoPlay !== false;
+      const hideAuto = opts.hideAutoplayBtn === true;
+      const autoOn = !hideAuto && st.autoPlay !== false;
+      const autoBtnHtml = hideAuto ? "" :
+        `<button class="pc-btn auto-btn ${autoOn ? "on" : ""}" data-action="p-autoplay" aria-label="تشغيل تلقائي" aria-pressed="${autoOn}"><span class="ico" data-ico="${autoOn ? "playAuto" : "stopAuto"}"></span><span>تلقائي</span></button>`;
       host.innerHTML = `
         <div class="player" data-player-ui>
           <div class="player-main">
@@ -209,7 +281,7 @@ App.actions = App.actions || {};
             <button class="pc-btn" data-action="p-prev" aria-label="السابق"><span class="ico" data-ico="prev"></span><span>السابق</span></button>
             <button class="pc-btn" data-action="p-restart" aria-label="إعادة"><span class="ico" data-ico="replay"></span><span>إعادة</span></button>
             <button class="pc-btn" data-action="p-next" aria-label="التالي"><span class="ico" data-ico="next"></span><span>التالي</span></button>
-            <button class="pc-btn auto-btn ${autoOn ? "on" : ""}" data-action="p-autoplay" aria-label="تشغيل تلقائي" aria-pressed="${autoOn}"><span class="ico" data-ico="${autoOn ? "playAuto" : "stopAuto"}"></span><span>تلقائي</span></button>
+            ${autoBtnHtml}
           </div>
           <div class="player-speed-row">
             <span class="tiny text-faint">السرعة:</span>

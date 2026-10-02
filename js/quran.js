@@ -39,21 +39,26 @@ App.actions = App.actions || {};
     all() { return this.data ? this.data.surahs : []; },
     bismillah() { return this.data ? this.data.meta.bismillah : "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"; },
 
-    /** السورة التالية المقترحة للحفظ: أول سورة غير مكتملة (مفضلة القصير) */
+    /** السورة التالية المقترحة للحفظ: تحترم اتجاه الحفظ (backward = من الناس → يس) */
     suggestNext() {
       const st = App.Storage.state;
       const surahs = this.all();
-      // first: incomplete started surah
-      for (const s of surahs) {
+      const direction = (st.settings && st.settings.memorizationDirection) || "backward";
+      // مرّتب حسب الاتجاه المختار
+      const sorted = surahs.slice().sort((a, b) =>
+        direction === "backward" ? b.number - a.number : a.number - b.number
+      );
+      // أولًا: سورة بدأها الطفل ولم يكملها
+      for (const s of sorted) {
         const p = st.progress[s.number];
         if (p && p.status === "learning" && (p.memorized || []).length < s.ayahsCount) return s;
       }
-      // then: shortest not mastered
-      const notMastered = surahs.filter(s => {
+      // ثانيًا: أقصر سورة لم تُتقن بعد
+      const notMastered = sorted.filter(s => {
         const p = st.progress[s.number];
         return !p || p.status !== "mastered";
       }).sort((a, b) => a.ayahsCount - b.ayahsCount);
-      return notMastered[0] || surahs[0];
+      return notMastered[0] || sorted[0];
     },
 
     progressOf(n) {
@@ -97,7 +102,7 @@ App.actions = App.actions || {};
         <header class="screen-head">
           <div class="sh-title">
             <h1>مدينة القرآن</h1>
-            <p>جزء عمّ كامل — ${App.arDigits(37)} سورة</p>
+            <p>من سورة يس إلى سورة الناس — ${App.arDigits(this.all().length)} سورة</p>
           </div>
           <button class="icon-btn" data-href="#/range" aria-label="نطاق الحفظ"><span class="ico" data-ico="target"></span></button>
           <button class="icon-btn" data-href="#/more/settings" aria-label="الإعدادات"><span class="ico" data-ico="settings"></span></button>
@@ -145,13 +150,13 @@ App.actions = App.actions || {};
         </div>
       </div>
       <div class="section-head"><h2>سور قصيرة مثالية للبداية</h2></div>
-      ${Q.surahListHtml(Q.all().filter(s => s.ayahsCount <= 6).slice(0, 6), true)}
+      ${Q.surahListHtml(Q.all().slice().sort((a,b) => a.ayahsCount - b.ayahsCount).slice(0, 6), true)}
       `;
     },
 
     tabSurahs() {
       const surahs = Q.all().slice().sort((a, b) => a.number - b.number);
-      return `<div class="section-head" style="margin-top:0"><h2>سور جزء عمّ</h2><span class="chip chip-gold">${App.arDigits(37)} سورة</span></div>${Q.surahListHtml(surahs, false)}`;
+      return `<div class="section-head" style="margin-top:0"><h2>السور</h2><span class="chip chip-gold">${App.arDigits(this.all().length)} سورة</span></div>${Q.surahListHtml(surahs, false)}`;
     },
 
     tabPick(kind, title, sub) {
@@ -258,28 +263,92 @@ App.actions = App.actions || {};
       if (!s) return { nav: "quran", html: App.emptyHtml("السورة غير موجودة") };
       const isRecite = kind === "recite";
 
+      // شكل المصحف: نص متصل مع علامة الآية الزخرفية
+      const mushafText = s.ayahs.map(a =>
+        `<span class="ayah-segment" data-surah="${s.number}" data-ayah="${a.number}">${a.text}<span class="ayah-marker" data-surah="${s.number}" data-ayah="${a.number}" role="button" aria-label="الآية ${App.arDigits(a.number)}">${App.arDigits(a.number)}</span></span> `
+      ).join("");
+
       return {
         nav: "quran",
         html: `
         <header class="screen-head">
           <button class="icon-btn btn-back" data-href="#/quran" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
           <div class="sh-title"><h1>${isRecite ? "تلاوة" : "تكرار"} — سورة ${s.name}</h1><p>${App.arDigits(s.ayahsCount)} آية</p></div>
+          <button class="icon-btn" data-action="recite-jump" aria-label="انتقال سريع"><span class="ico" data-ico="list"></span></button>
         </header>
-        <div class="card">
-          <div id="modePlayer"></div>
+
+        <div class="mushaf-page">
+          <div class="mushaf-surah-name">سُورَةُ ${s.name}</div>
+          <div class="mushaf-text ${App.Storage.getSettings().quranFontSize === "lg" ? "lg" : "md"}">${mushafText}</div>
         </div>
-        <div class="card">
-          <div class="bismillah" style="margin-bottom:6px">${Q.bismillah()}</div>
-          <div class="ayah-text md">${s.ayahs.map(a => `${a.text}<span class="ayah-badge">${App.arDigits(a.number)}</span>`).join(" ")}</div>
+
+        <div class="mushaf-actions hidden" id="ayahToolbar" role="toolbar">
+          <button class="ma-btn" data-action="ayah-replay" aria-label="تشغيل الآية"><span class="ico" data-ico="play"></span> تشغيل</button>
+          <button class="ma-btn" data-action="ayah-memorize" aria-label="ابدأ الحفظ"><span class="ico" data-ico="rocket"></span> حفظ</button>
+          <button class="ma-btn" data-action="ayah-recite" aria-label="ابدأ الترديد"><span class="ico" data-ico="mic"></span> ترديد</button>
         </div>
         `,
         mount(el) {
-          const host = el.querySelector("#modePlayer");
-          App.Player.renderPlayer(host, {
-            list: s.ayahs.map(a => ({ surah: s.number, ayah: a.number })),
-            loop: !isRecite,
-            title: "سورة " + s.name
+          // في وضع التلاوة: شغّل السورة كاملة + Highlight + Scroll تلقائي
+          const list = s.ayahs.map(a => ({ surah: s.number, ayah: a.number }));
+          const playerOpts = {
+            list,
+            loop: !isRecite, // وضع التكرار يدور تلقائيًا
+            title: "سورة " + s.name,
+            // في وضع التلاوة: شغّل تلقائيًا (autoplay مسموح هنا فقط)
+            autoStart: isRecite,
+            // في وضع التلاوة: فعّل الـ autoplay لأي انتقال تلقائي
+            scopeAutoplay: true
+          };
+          // أنشئ مشغل عائم بدون toolbar ظاهر (المصحف نفسه هو الـ toolbar)
+          // سنستخدم مشغل مدمج مخفي + شريط تحكم بسيط
+          App.Player.renderMushafPlayer(el, playerOpts, el);
+
+          // عند تغيّر الآية الحالية: Highlight + Scroll
+          App.Player.onState((state) => {
+            if (!state.item) return;
+            // امسح الـ highlight السابق
+            el.querySelectorAll(".ayah-segment").forEach(seg => seg.classList.remove("current"));
+            el.querySelectorAll(".ayah-marker").forEach(m => m.classList.remove("current"));
+            // أبرز الآية الحالية
+            const cur = el.querySelector(`.ayah-segment[data-surah="${state.item.surah}"][data-ayah="${state.item.ayah}"]`);
+            const curMarker = el.querySelector(`.ayah-marker[data-surah="${state.item.surah}"][data-ayah="${state.item.ayah}"]`);
+            if (cur) {
+              cur.classList.add("current");
+              if (curMarker) curMarker.classList.add("current");
+              // Scroll تلقائي للآية الحالية
+              try {
+                cur.scrollIntoView({ behavior: "smooth", block: "center" });
+              } catch (e) {}
+            }
           });
+
+          // الضغط على علامة الآية يفتح أدوات بسيطة
+          el.addEventListener("click", (e) => {
+            const marker = e.target.closest(".ayah-marker");
+            if (!marker) return;
+            e.preventDefault();
+            const surah = Number(marker.dataset.surah);
+            const ayah = Number(marker.dataset.ayah);
+            // أبرز الآية المختارة
+            el.querySelectorAll(".ayah-marker.selected").forEach(m => m.classList.remove("selected"));
+            marker.classList.add("selected");
+            // اعرض شريط الأدوات
+            const tb = el.querySelector("#ayahToolbar");
+            if (tb) {
+              tb.classList.remove("hidden");
+              tb.dataset.surah = surah;
+              tb.dataset.ayah = ayah;
+            }
+            // شغّل الآية مباشرة في وضع التلاوة
+            if (isRecite) {
+              const idx = list.findIndex(it => it.surah === surah && it.ayah === ayah);
+              if (idx >= 0) App.Player.play(idx);
+            }
+          });
+
+          // عند مغادرة الصفحة: أوقف التشغيل
+          App.Router.onLeave(() => App.Player.stopAll());
         }
       };
     }
@@ -303,6 +372,48 @@ App.actions = App.actions || {};
   };
   App.actions["surah-loop"] = (el) => {
     App.Router.go("#/repeat/" + el.dataset.surah);
+  };
+
+  /* ---------- أدوات المصحف (تشغيل/حفظ/ترديد آية محددة) ---------- */
+  App.actions["ayah-replay"] = (el) => {
+    const tb = el.closest("#ayahToolbar");
+    if (!tb) return;
+    const surah = Number(tb.dataset.surah);
+    const ayah = Number(tb.dataset.ayah);
+    App.Player.renderAndPlayFloating(surah, ayah, Q.surah(surah) ? Q.surah(surah).name : "");
+  };
+  App.actions["ayah-memorize"] = (el) => {
+    const tb = el.closest("#ayahToolbar");
+    if (!tb) return;
+    const surah = Number(tb.dataset.surah);
+    const ayah = Number(tb.dataset.ayah);
+    // اضبط النطاق ليبدأ من هذه الآية
+    const s = Q.surah(surah);
+    if (!s) return;
+    const end = Math.min(s.ayahsCount, ayah + 4);
+    App.Range.set(surah, ayah, end);
+    App.Router.go("#/journey/" + surah);
+  };
+  App.actions["ayah-recite"] = (el) => {
+    const tb = el.closest("#ayahToolbar");
+    if (!tb) return;
+    const surah = Number(tb.dataset.surah);
+    const ayah = Number(tb.dataset.ayah);
+    // ابدأ رحلة الحفظ عند هذه الآية (خطوة الترديد مباشرة)
+    const s = Q.surah(surah);
+    if (!s) return;
+    const end = Math.min(s.ayahsCount, ayah + 2);
+    App.Range.set(surah, ayah, end);
+    // ابدأ الترديد مباشرة (خطوة recite)
+    if (App.Storage.state.session) {
+      App.Storage.state.session.step = "recite";
+      App.Storage.save();
+    }
+    App.Router.go("#/journey/" + surah);
+  };
+  App.actions["recite-jump"] = () => {
+    // عرض قائمة سريعة للقفز إلى آية (نستخدم toast كحل بسيط)
+    App.toast("اضغط على رقم أي آية للقفز إليها", "info");
   };
 
   App.Quran = Q;

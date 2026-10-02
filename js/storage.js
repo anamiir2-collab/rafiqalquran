@@ -34,7 +34,8 @@ App.version = "1.0.0";
         soundEffects: true,
         showTranslationless: true,
         autoPlay: true,
-        theme: "auto"        // "light" | "dark" | "auto"
+        theme: "auto",        // "light" | "dark" | "auto"
+        memorizationDirection: "backward"  // "backward" (من الناس → يس) | "forward" (من يس → الناس)
       },
       progress: {},          // { "<surahNo>": SurahProg }
       session: null,         // رحلة الحفظ الجارية

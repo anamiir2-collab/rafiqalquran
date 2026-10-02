@@ -587,6 +587,13 @@ App.actions = App.actions || {};
           <span class="sw-label">أصوات المكافآت والاهتزاز</span>
           <button class="switch ${st.soundEffects ? "on" : ""}" data-action="set-setting" data-k="soundEffects" data-v="${!st.soundEffects}" aria-label="تبديل"></button>
         </div>
+        <div class="field mt-12">
+          <label>اتجاه الحفظ</label>
+          <div class="seg-group">
+            <button class="seg-item ${(st.memorizationDirection || "backward") === "backward" ? "on" : ""}" data-action="set-setting" data-k="memorizationDirection" data-v="backward">من الناس ← يس</button>
+            <button class="seg-item ${st.memorizationDirection === "forward" ? "on" : ""}" data-action="set-setting" data-k="memorizationDirection" data-v="forward">من يس ← الناس</button>
+          </div>
+        </div>
       </div>
 
       <div class="card">
@@ -650,7 +657,7 @@ App.actions = App.actions || {};
     const k = el.dataset.k;
     let v = el.dataset.v;
     if (v === "true") v = true; else if (v === "false") v = false;
-    else if (!isNaN(Number(v)) && k !== "reciter") v = Number(v);
+    else if (!isNaN(Number(v)) && k !== "reciter" && k !== "memorizationDirection") v = Number(v);
     App.Storage.setSetting(k, v);
     App.Router.render();
   };

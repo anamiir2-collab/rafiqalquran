@@ -86,15 +86,22 @@ App.actions = App.actions || {};
       const st = S.byId(params.id);
       if (!st) return { nav: "more", html: App.emptyHtml("القصة غير موجودة") };
 
+      // السابق والتالي (يدور حول القائمة بشكل دائري)
+      const idx = this.data.findIndex(s => s.id === st.id);
+      const prevIdx = idx > 0 ? idx - 1 : this.data.length - 1;
+      const nextIdx = idx < this.data.length - 1 ? idx + 1 : 0;
+      const prevStory = this.data[prevIdx];
+      const nextStory = this.data[nextIdx];
+
       return {
         nav: "more",
         html: `
         <header class="screen-head">
-          <button class="icon-btn btn-back" data-href="#/stories"><span class="ico" data-ico="chevronRight"></span></button>
+          <button class="icon-btn btn-back" data-href="#/stories" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
           <div class="sh-title"><h1>${st.title}</h1><p>${st.category} — ${st.ayahRef || ""}</p></div>
         </header>
 
-        <div class="story-reader-img">${S.thumbSvg(st)}</div>
+        <div class="story-reader-img">${st.image ? `<img src="${st.image}" alt="${App.esc(st.title)}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'story-img-placeholder',innerHTML:'${S.thumbSvg(st)}'}))">` : S.thumbSvg(st)}</div>
 
         <div class="card">
           <div class="modal-actions" style="margin-top:0;margin-bottom:12px">
@@ -111,6 +118,23 @@ App.actions = App.actions || {};
 
         <div class="section-head"><h2>أسئلة القصة</h2><span class="tiny text-faint">أجب لتكسب ${App.arDigits(st.stars)} نجوم</span></div>
         <div data-story-quiz></div>
+
+        <div class="story-nav-rtl mt-16">
+          <button class="btn btn-soft story-nav-prev" data-href="#/story/${prevStory.id}" aria-label="القصة السابقة">
+            <span class="ico" data-ico="chevronRight"></span>
+            <span class="sn-text">
+              <span class="sn-label">السابق</span>
+              <span class="sn-title">${prevStory.title}</span>
+            </span>
+          </button>
+          <button class="btn btn-soft story-nav-next" data-href="#/story/${nextStory.id}" aria-label="القصة التالية">
+            <span class="sn-text">
+              <span class="sn-label">التالي</span>
+              <span class="sn-title">${nextStory.title}</span>
+            </span>
+            <span class="ico" data-ico="chevronLeft"></span>
+          </button>
+        </div>
         `,
         mount(el) {
           const quizHost = el.querySelector("[data-story-quiz]");

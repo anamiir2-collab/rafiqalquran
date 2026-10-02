@@ -144,11 +144,11 @@ App.actions = App.actions || {};
         el.classList.toggle("active", i === idx);
       });
       const descs = {
-        listen: sess.listened.length > 0 ? "استمعت لبعض الآيات، واصل" : "استمع بتمعّن ثم ردد",
-        recite: sess.recited.length > 0 ? "رديت بعض الآيات، واصل" : "ردد الآيات بصوتك",
-        quiz: sess.quizResult ? "أنهيت الاختبار" : "اختبر ما حفظت",
-        mastery: sess.quizResult && sess.quizResult.passed ? "أتقنت هذه الآيات بحمد الله" : "أكمل الاختبار أولًا",
-        reward: sess.rewarded ? "استلمت مكافأتك" : "في انتظارك"
+        listen: "",
+        recite: "",
+        quiz: "",
+        mastery: sess.quizResult && sess.quizResult.passed ? "✓" : "",
+        reward: ""
       };
       order.forEach(k => {
         const d = host.querySelector(`[data-jdesc="${k}"]`);
@@ -190,9 +190,12 @@ App.actions = App.actions || {};
       App.Player.renderPlayer(document.getElementById("listenPlayer"), {
         list: ayahs.map(x => ({ surah: s.number, ayah: x.number })),
         title: `سورة ${s.name} — للآية ${App.arDigits(a.number)}`,
-        onComplete: () => App.toast("انتهت القائمة — كرر الاستماع لتثبيت الآيات", "info")
+        // في الحفظ: لا autoplay! الطفل يضغط Play بنفسه
+        scopeAutoplay: false,
+        hideAutoplayBtn: true,
+        onComplete: () => App.toast("استمعت للآيات، اضغط التالي للمتابعة", "info")
       });
-      App.Player.play(idx);
+      // لا نشغّل تلقائيًا — الطفل يضغط Play
     },
 
     /* ---------- 2) الترديد والتسجيل ---------- */

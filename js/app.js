@@ -59,7 +59,21 @@ App.actions = App.actions || {};
     loader: I('<line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>'),
     heart: I('<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>'),
     share: I('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>'),
-    calendar: I('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>')
+    calendar: I('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),
+    /* أيقونات جديدة للوضع الليلي والنطاق */
+    sun: I('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>'),
+    moon: I('<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'),
+    target: I('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/>'),
+    range: I('<path d="M3 12h18"/><path d="M3 6h18M3 18h18" stroke-dasharray="3 3"/><circle cx="3" cy="12" r="2.5" fill="currentColor"/><circle cx="21" cy="12" r="2.5" fill="currentColor"/>'),
+    playAuto: I('<polygon points="6 3 20 12 6 21 6 3" fill="currentColor"/><path d="M2 8v8"/><path d="M22 4l-3 3M22 4l-3-3" transform="translate(-2 8)"/>'),
+    playScope: I('<polygon points="7 4 17 12 7 20 7 4" fill="currentColor"/><path d="M3 7v10" stroke-dasharray="2 2"/><path d="M21 7v10" stroke-dasharray="2 2"/>'),
+    stopAuto: I('<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/><path d="M2 8v8"/>'),
+    /* أيقونات يوميات الانتظام */
+    journal: I('<path d="M4 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 6h8M8 10h8M8 14h5"/><path d="M16 18l2 2 4-4" stroke="#1B7F5A"/>'),
+    flameBig: I('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'),
+    pen: I('<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>'),
+    chevronUp: I('<polyline points="18 15 12 9 6 15"/>'),
+    chevronDown: I('<polyline points="6 9 12 15 18 9"/>')
   };
 
   /* الأحرف/الشخصيات */
@@ -215,23 +229,99 @@ App.actions = App.actions || {};
   /* ================= أيقونات CSS إضافية ================= */
   const style = document.createElement("style");
   style.textContent = `
-    .floating-player{position:fixed;bottom:calc(var(--nav-h) + var(--sab) + 12px);left:50%;transform:translateX(-50%);width:min(94%,460px);background:rgba(255,255,255,.98);backdrop-filter:blur(12px);border:1px solid var(--c-line);border-radius:18px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;padding:9px 12px;z-index:70;animation:screenIn .3s ease both}
-    .floating-player .play-btn{width:42px;height:42px}
-    .floating-player .play-btn .ico{width:18px;height:18px}
+    .floating-player{position:fixed;bottom:calc(var(--nav-h) + var(--sab) + 12px);left:50%;transform:translateX(-50%);width:min(94%,460px);background:rgba(255,255,255,.98);backdrop-filter:blur(12px);border:1px solid var(--c-line);border-radius:18px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;padding:10px 12px;z-index:70;animation:screenIn var(--motion-base) var(--ease) both}
+    [data-theme="dark"] .floating-player{background:rgba(30,41,59,.97);border-color:var(--c-line)}
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]) .floating-player{background:rgba(30,41,59,.97);border-color:var(--c-line)}
+    }
+    .floating-player .play-btn{width:48px;height:48px}
+    .floating-player .play-btn .ico{width:20px;height:20px}
     .fp-info{flex:1;min-width:0}
-    .fp-title{font-size:.8rem;font-weight:800;color:var(--c-primary-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
-    .fp-btn,.fp-close{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--c-primary-dark);background:var(--c-primary-soft)}
-    .fp-btn .ico,.fp-close .ico{width:16px;height:16px}
+    .fp-title{font-size:.82rem;font-weight:800;color:var(--c-primary-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
+    .fp-btn,.fp-close{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--c-primary-dark);background:var(--c-primary-soft);transition:transform var(--motion-fast) var(--ease)}
+    .fp-btn:active,.fp-close:active{transform:scale(.92)}
+    .fp-btn:focus-visible,.fp-close:focus-visible{outline:3px solid var(--c-gold);outline-offset:2px}
+    .fp-btn .ico,.fp-close .ico{width:18px;height:18px}
     .fp-close{background:var(--c-danger-light);color:var(--c-danger)}
     .blank-slot{display:inline-flex;min-width:56px;height:1.15em;border-bottom:3px dotted var(--c-gold-deep);color:var(--c-gold-deep);align-items:center;justify-content:center}
-    .order-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1.5px solid var(--c-line);border-radius:14px;margin-bottom:8px;background:var(--c-white);cursor:pointer}
+    .order-item{display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--c-line);border-radius:14px;margin-bottom:8px;background:var(--c-white);cursor:pointer;transition:all var(--motion-base)}
     .order-item .order-handle{display:flex;gap:4px;flex:0 0 auto}
-    .order-item .order-text{font-family:var(--font-quran);font-size:1.1rem;flex:1}
-    .up-btn,.down-btn{font-size:.7rem}
+    .order-item .order-text{font-family:var(--font-quran);font-size:1.15rem;flex:1}
+    .up-btn,.down-btn{font-size:.78rem;min-width:36px;min-height:36px;padding:6px 8px;border-radius:8px;background:var(--c-primary-soft);color:var(--c-primary-dark);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+    .up-btn:focus-visible,.down-btn:focus-visible{outline:3px solid var(--c-gold);outline-offset:2px}
     @keyframes spin{to{transform:rotate(360deg)}}
     .star-ico.lit svg,.mastery-stars .lit svg{fill:currentColor}
     .cele-stars .ico.lit svg{fill:currentColor}
     .spin{animation:spin 1.2s linear infinite}
+    /* شريط النطاق */
+    .range-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--c-primary-soft);border:1px solid var(--c-primary-light);border-radius:var(--r-md);margin-top:10px}
+    .range-bar .rb-ico{width:34px;height:34px;border-radius:10px;background:var(--grad-primary);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+    .range-bar .rb-ico .ico{width:18px;height:18px}
+    .range-bar .rb-info{flex:1;min-width:0}
+    .range-bar .rb-title{font-size:.78rem;font-weight:800;color:var(--c-primary-deep);line-height:1.2}
+    .range-bar .rb-sub{font-size:.7rem;color:var(--c-text-soft);margin-top:2px}
+    .range-bar .rb-btn{min-height:44px;padding:6px 14px;border-radius:10px;background:var(--c-white);border:1px solid var(--c-primary);color:var(--c-primary-dark);font-size:.76rem;font-weight:700;display:inline-flex;align-items:center;gap:5px;transition:all var(--motion-base)}
+    .range-bar .rb-btn:active{transform:scale(.95)}
+    .range-bar .rb-btn:focus-visible{outline:3px solid var(--c-gold);outline-offset:2px}
+    /* ===== يوميات الانتظام ===== */
+    .streak-hero{position:relative;background:linear-gradient(160deg,#1F3A30 0%,#163025 40%,#0F2519 100%);border-radius:var(--r-xl);padding:24px 18px;color:#fff;overflow:hidden;box-shadow:var(--shadow-md);text-align:center}
+    .streak-hero::before{content:"";position:absolute;inset:0;background-image:var(--pattern-star);background-size:72px 72px;opacity:.5;pointer-events:none}
+    .streak-hero > *{position:relative;z-index:1}
+    .streak-flame{width:64px;height:64px;margin:0 auto 8px;color:var(--c-gold);display:flex;align-items:center;justify-content:center;animation:flamePulse 2.4s var(--ease) infinite}
+    .streak-flame .ico{width:48px;height:48px}
+    @keyframes flamePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+    .streak-count{font-size:2.6rem;font-weight:800;color:#fff;line-height:1.1;margin-bottom:4px}
+    .streak-label{font-size:.95rem;color:rgba(255,255,255,.85);font-weight:700}
+    .streak-encourage{font-size:.82rem;color:var(--c-gold-light);margin-top:10px;line-height:1.5}
+    .streak-progress{margin-top:14px;display:flex;gap:5px;justify-content:center}
+    .streak-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18)}
+    .streak-dot.lit{background:var(--c-gold);box-shadow:0 0 8px rgba(230,181,80,.6)}
+    .streak-dot.today{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.7);animation:flamePulse 1.6s ease infinite}
+    /* التقويم */
+    .calendar-card{padding:14px}
+    .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .cal-month{font-size:1rem;font-weight:800;color:var(--c-primary-deep)}
+    .cal-nav{display:flex;gap:6px}
+    .cal-nav-btn{width:38px;height:38px;border-radius:10px;background:var(--c-primary-soft);color:var(--c-primary-dark);display:inline-flex;align-items:center;justify-content:center;transition:transform var(--motion-fast) var(--ease)}
+    .cal-nav-btn:active{transform:scale(.9)}
+    .cal-nav-btn:focus-visible{outline:3px solid var(--c-gold);outline-offset:2px}
+    .cal-nav-btn:disabled{opacity:.35;pointer-events:none}
+    .cal-nav-btn .ico{width:18px;height:18px}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .cal-day-name{text-align:center;font-size:.66rem;font-weight:700;color:var(--c-text-faint);padding:4px 0}
+    .cal-cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.76rem;font-weight:700;color:var(--c-text-soft);background:var(--c-primary-soft);position:relative;transition:all var(--motion-base);min-height:38px}
+    .cal-cell.empty{background:transparent}
+    .cal-cell.future{opacity:.4}
+    .cal-cell.active{background:var(--grad-primary);color:#fff;box-shadow:0 3px 8px rgba(27,127,90,.3)}
+    .cal-cell.today{outline:2.5px solid var(--c-gold);outline-offset:-1px}
+    .cal-cell.active.today{outline:2.5px solid var(--c-gold)}
+    .cal-cell.has-note::after{content:"";position:absolute;top:4px;left:4px;width:6px;height:6px;border-radius:50%;background:var(--c-gold)}
+    .cal-cell.active.has-note::after{background:#fff}
+    /* إحصائيات */
+    .stat-mini{background:var(--c-white);border:1px solid var(--c-line);border-radius:var(--r-md);padding:12px;text-align:center;transition:transform var(--motion-base)}
+    .stat-mini:active{transform:scale(.97)}
+    .stat-mini .sm-ico{width:30px;height:30px;border-radius:9px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
+    .stat-mini .sm-ico .ico{width:16px;height:16px}
+    .stat-mini .sm-val{font-size:1.4rem;font-weight:800;color:var(--c-primary-deep);line-height:1}
+    .stat-mini .sm-label{font-size:.7rem;font-weight:700;color:var(--c-text-soft);margin-top:3px}
+    /* ملاحظة يومية */
+    .note-card .note-area{width:100%;min-height:90px;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid var(--c-line);background:var(--c-white);color:var(--c-text);font-family:var(--font-ui);font-size:.92rem;line-height:1.6;resize:vertical;transition:border-color var(--motion-base)}
+    .note-card .note-area:focus{outline:none;border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(27,127,90,.15)}
+    .note-card .note-area::placeholder{color:var(--c-text-faint)}
+    /* ===== الأوراد المحفوظة (Saved Ranges) ===== */
+    .saved-range{display:flex;align-items:center;gap:10px;padding:12px 10px;background:var(--c-white);border:1.5px solid var(--c-line);border-radius:var(--r-md);margin-bottom:8px;transition:all var(--motion-base)}
+    .saved-range:last-child{margin-bottom:0}
+    .saved-range.active{border-color:var(--c-primary);background:var(--c-primary-soft);box-shadow:0 2px 8px rgba(27,127,90,.12)}
+    .saved-range .sr-info{flex:1;min-width:0}
+    .saved-range .sr-label{font-weight:800;font-size:.9rem;color:var(--c-primary-deep);display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.3}
+    .saved-range .sr-meta{font-size:.74rem;color:var(--c-text-soft);margin-top:3px;line-height:1.4}
+    .saved-range .sr-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+    .saved-range .sr-activate{min-height:38px;padding:6px 14px;font-size:.78rem}
+    .saved-range .icon-btn{width:38px;height:38px;border-radius:10px;background:var(--c-primary-soft);box-shadow:none;border:none}
+    .saved-range .icon-btn:active{transform:scale(.92)}
+    .saved-range .icon-btn:focus-visible{outline:3px solid var(--c-gold);outline-offset:2px}
+    .empty-ranges{padding:24px 14px;text-align:center}
+    .empty-ranges .ico{margin:0 auto 10px;opacity:.5}
   `;
   document.head.appendChild(style);
 
@@ -279,26 +369,35 @@ App.actions = App.actions || {};
       nav: "home",
       html: `
       <header class="screen-head">
-        <span style="width:44px;height:44px;border-radius:15px;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-sm)">
-          <span class="ico" data-ico="book" style="width:22px;height:22px"></span>
+        <span style="width:48px;height:48px;border-radius:14px;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-sm)">
+          <span class="ico" data-ico="book" style="width:24px;height:24px"></span>
         </span>
         <div class="sh-title"><h1>رفيق القرآن</h1><p>رفيقك في رحلة الحفظ</p></div>
+        <button class="icon-btn" data-action="toggle-theme" aria-label="تبديل الوضع الليلي"><span class="ico" data-ico="${(st.settings && st.settings.theme === 'dark') || (!st.settings || st.settings.theme === 'auto' || !st.settings.theme) ? 'moon' : 'sun'}"></span></button>
         <button class="icon-btn" data-href="#/more/settings" aria-label="الإعدادات"><span class="ico" data-ico="settings"></span></button>
       </header>
 
       <div class="hero">
-        <div class="hero-greet">أهلًا بك يا ${pr.name ? App.esc(pr.name) : "بطل"} ${streak > 1 ? `<span class="chip chip-gold" style="margin-inline-start:6px"><span class="ico" data-ico="flame"></span> ${App.arDigits(streak)} أيام</span>` : ""}</div>
-        <div class="hero-sub">وفي رحلتك مع القرآن معك دائمًا</div>
-        <div class="hero-stats">
-          <span class="hero-stat"><span class="ico" data-ico="star"></span> ${App.arDigits(st.rewards.stars)} نجمة</span>
-          <span class="hero-stat"><span class="ico" data-ico="medal"></span> ${App.arDigits(st.rewards.badges.length)} وسام</span>
-          <span class="hero-stat"><span class="ico" data-ico="crown"></span> المستوى ${App.arDigits(li.level)}</span>
-        </div>
-        <div class="hero-level">
-          <div class="hl-row"><span>${li.title}</span><span>${li.next ? App.arDigits(st.rewards.points) + " / " + App.arDigits(li.next.min) : "أعلى مستوى"}</span></div>
-          <div class="progress-track"><div class="progress-fill" style="width:${li.progress}%"></div></div>
-        </div>
+        <div class="hero-greet">أهلًا بك يا ${pr.name ? App.esc(pr.name) : "بطل"}${streak > 1 ? ` <span class="chip chip-gold" style="margin-inline-start:6px"><span class="ico" data-ico="flame"></span> ${App.arDigits(streak)} يوم</span>` : ""}</div>
+        <div class="hero-sub">رفيقك في رحلة الحفظ وتعلم القرآن</div>
       </div>
+
+      ${App.Range.isValid() ? App.Range.barHtml() : App.Range.emptyHtml()}
+
+      <button class="card streak-card-cta btn-block mt-12" data-href="#/streak" style="text-align:right;background:linear-gradient(135deg,#1F3A30 0%,#163025 100%);color:#fff;border:none">
+        <div class="row-between" style="align-items:center">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:42px;height:42px;border-radius:11px;background:rgba(230,181,80,.18);color:var(--c-gold);display:flex;align-items:center;justify-content:center">
+              <span class="ico" data-ico="flameBig" style="width:24px;height:24px"></span>
+            </span>
+            <span>
+              <div style="font-weight:800;font-size:.98rem;color:#fff">يوميات الانتظام</div>
+              <div style="font-size:.74rem;color:rgba(255,255,255,.78)">${streak > 0 ? `${App.arDigits(streak)} ${streak === 1 ? "يوم متواصل" : "أيام متواصلة"}` : "ابدأ رحلتك اليوم"}</div>
+            </span>
+          </div>
+          <span class="ico" data-ico="chevronLeft" style="color:rgba(255,255,255,.6)"></span>
+        </div>
+      </button>
 
       ${target ? `
       <div class="card journey-card mt-16">
@@ -390,6 +489,11 @@ App.actions = App.actions || {};
       </div>
 
       <div class="more-list mt-16">
+        <button class="more-item" data-href="#/streak">
+          <span class="mi-ico" style="background:linear-gradient(135deg,#1F3A30,#163025);color:var(--c-gold)"><span class="ico" data-ico="flameBig"></span></span>
+          <span class="mi-txt"><span class="mi-title">يوميات الانتظام</span><span class="mi-sub">تقويم رحلتك وملاحظاتك اليومية</span></span>
+          <span class="ico mi-arrow" data-ico="chevronLeft"></span>
+        </button>
         <button class="more-item" data-href="#/achievements">
           <span class="mi-ico" style="background:var(--grad-gold)"><span class="ico" data-ico="medal"></span></span>
           <span class="mi-txt"><span class="mi-title">إنجازاتي</span><span class="mi-sub">النجوم والنقاط والأوسمة</span></span>
@@ -615,8 +719,40 @@ App.actions = App.actions || {};
   }
 
   /* ================= التسجيل والبدء ================= */
+  /* ---------- تطبيق الوضع الليلي ---------- */
+  App.applyTheme = function () {
+    const settings = App.Storage.getSettings();
+    const theme = settings.theme || "auto";
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.setAttribute("data-theme", "dark");
+    } else if (theme === "light") {
+      root.setAttribute("data-theme", "light");
+    } else {
+      // auto — احترم تفضيل النظام
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.setAttribute("data-theme", prefersDark ? "dark" : "light");
+    }
+    // حدّث theme-color
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute("content", theme === "dark" ? "#0F172A" : (theme === "light" ? "#1B7F5A" : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "#0F172A" : "#1B7F5A")));
+    }
+  };
+  // استمع لتغييرات تفضيل النظام
+  if (window.matchMedia) {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => {
+      const settings = App.Storage.getSettings();
+      if ((settings.theme || "auto") === "auto") App.applyTheme();
+    };
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else if (mq.addListener) mq.addListener(handler);
+  }
+
   function init() {
     App.Storage.load();
+    App.applyTheme();
 
     // fill bottom nav icons
     App.fillIcons(document);
@@ -624,6 +760,8 @@ App.actions = App.actions || {};
 
     // routes
     App.Router.add("home", pageHome);
+    App.Router.add("streak", () => pageStreak());
+    App.Router.add("range", () => App.pageRange());
     App.Router.add("quran", () => App.Quran.pageQuran({}));
     App.Router.add("quran/:tab", (p) => App.Quran.pageQuran(p));
     App.Router.add("surah/:id", (p) => App.Quran.pageSurah(p));
@@ -648,13 +786,542 @@ App.actions = App.actions || {};
     startTimeTracking();
 
     // تحميل بيانات القرآن مسبقًا
-    App.Quran.load().catch(() => {});
+    App.Quran.load().then(() => {
+      // لو صفحة النطاق مفتوحة، اضبط القيم
+      const sel = document.getElementById("rangeSurah");
+      if (sel && !sel.value) {
+        const r = App.Range.get();
+        if (r) {
+          sel.value = r.surah;
+          window.dispatchEvent(new Event("range-ready"));
+        }
+      }
+    }).catch(() => {});
 
     // الترحيب الأول
     if (!App.Storage.getProfile().onboarded) {
       setTimeout(showOnboarding, 400);
     }
   }
+
+  /* ---------- شاشة نطاق الحفظ ---------- */
+  App.pageRange = function () {
+    if (!App.Quran.data) {
+      return {
+        nav: "more",
+        html: App.loadingHtml(),
+        mount() { App.Quran.load().then(() => App.Router.render()).catch(() => App.toast("تعذّر تحميل بيانات القرآن", "error")); }
+      };
+    }
+    const current = App.Range.get();
+    const allSurahs = App.Quran.all().slice().sort((a, b) => a.number - b.number);
+    const surahOptions = allSurahs.map(s =>
+      '<option value="' + s.number + '"' + (current && current.surah === s.number ? ' selected' : '') + '>سورة ' + s.name + ' — ' + App.arDigits(s.ayahsCount) + ' آية</option>'
+    ).join("");
+    const initialSurah = current ? current.surah : (allSurahs[0] ? allSurahs[0].number : 78);
+    const initialFrom = current ? current.from : 1;
+    const surahObj = App.Quran.surah(initialSurah);
+    const initialAyahCount = surahObj ? surahObj.ayahsCount : 6;
+    const initialTo = current ? current.to : Math.min(5, initialAyahCount);
+
+    return {
+      nav: "more",
+      html: `
+      <header class="screen-head">
+        <button class="icon-btn btn-back" data-href="#/home" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
+        <div class="sh-title">
+          <h1>نطاق الحفظ</h1>
+          <p>اختر الآيات التي تريد أن تتعلمها اليوم</p>
+        </div>
+      </header>
+
+      <div class="card">
+        <div class="card-title"><span class="ico" data-ico="book"></span> اختيار السورة</div>
+        <div class="field" style="margin:0">
+          <label for="rangeSurah">السورة</label>
+          <select id="rangeSurah" aria-label="اختر السورة">
+            ${surahOptions}
+          </select>
+          <p class="tiny text-soft mt-8" id="surahInfo" style="margin-top:6px"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="ico" data-ico="target"></span> نطاق الآيات</div>
+        <div class="grid-2" style="gap:12px">
+          <div class="field" style="margin:0">
+            <label for="rangeFrom">من آية</label>
+            <input type="number" id="rangeFrom" min="1" max="${initialAyahCount}" value="${initialFrom}" inputmode="numeric">
+          </div>
+          <div class="field" style="margin:0">
+            <label for="rangeTo">إلى آية</label>
+            <input type="number" id="rangeTo" min="1" max="${initialAyahCount}" value="${initialTo}" inputmode="numeric">
+          </div>
+        </div>
+        <div id="rangeError" class="tiny mt-8" style="color:var(--c-danger);display:none" role="alert"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="ico" data-ico="sparkle"></span> اختيارات سريعة</div>
+        <div class="quick-presets" id="quickPresets" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+
+      <div class="row mt-12" style="gap:10px">
+        <button class="btn btn-soft grow" data-action="range-save-as" aria-label="حفظ الورد الحالي">
+          <span class="ico" data-ico="bookmark"></span> حفظ كورد
+        </button>
+        <button class="btn btn-primary grow" data-action="range-start">
+          <span class="ico" data-ico="rocket"></span> ابدأ الحفظ
+        </button>
+      </div>
+
+      <div class="section-head"><h2>أورادي المحفوظة</h2></div>
+      <div id="savedRanges" class="saved-ranges-list">
+        ${App.Range.savedListHtml()}
+      </div>
+      `,
+      mount(el) {
+        const surahSel = el.querySelector("#rangeSurah");
+        const fromInput = el.querySelector("#rangeFrom");
+        const toInput = el.querySelector("#rangeTo");
+        const infoP = el.querySelector("#surahInfo");
+        const errDiv = el.querySelector("#rangeError");
+        const presetsHost = el.querySelector("#quickPresets");
+
+        function updateSurahInfo() {
+          const n = Number(surahSel.value);
+          const s = App.Quran.surah(n);
+          if (!s) return;
+          infoP.textContent = "السورة " + s.name + " — " + s.revelationType + " — " + App.arDigits(s.ayahsCount) + " آية";
+          fromInput.max = s.ayahsCount;
+          toInput.max = s.ayahsCount;
+          if (Number(fromInput.value) > s.ayahsCount) fromInput.value = s.ayahsCount;
+          if (Number(toInput.value) > s.ayahsCount) toInput.value = s.ayahsCount;
+          renderPresets(n);
+        }
+
+        function renderPresets(n) {
+          const presets = App.Range.quickPresets(n);
+          presetsHost.innerHTML = presets.map(p =>
+            '<button class="seg-item" data-preset-from="' + p.from + '" data-preset-to="' + p.to + '">' + p.label + '</button>'
+          ).join("");
+        }
+
+        function showError(msg) {
+          if (msg) {
+            errDiv.textContent = msg;
+            errDiv.style.display = "block";
+          } else {
+            errDiv.style.display = "none";
+          }
+        }
+
+        surahSel.addEventListener("change", updateSurahInfo);
+        fromInput.addEventListener("input", () => showError(""));
+        toInput.addEventListener("input", () => showError(""));
+
+        presetsHost.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-preset-from]");
+          if (!b) return;
+          fromInput.value = b.dataset.presetFrom;
+          toInput.value = b.dataset.presetTo;
+          showError("");
+          App.haptic(15);
+        });
+
+        updateSurahInfo();
+      }
+    };
+  };
+
+  /* ---------- إجراء بدء النطاق ---------- */
+  App.actions["range-start"] = () => {
+    const surahSel = document.getElementById("rangeSurah");
+    const fromInput = document.getElementById("rangeFrom");
+    const toInput = document.getElementById("rangeTo");
+    const errDiv = document.getElementById("rangeError");
+    if (!surahSel || !fromInput || !toInput) return;
+
+    const surah = surahSel.value;
+    const from = fromInput.value;
+    const to = toInput.value;
+
+    const result = App.Range.set(surah, from, to);
+    if (!result.ok) {
+      if (errDiv) {
+        errDiv.textContent = result.errors[0];
+        errDiv.style.display = "block";
+      }
+      App.toast(result.errors[0], "error");
+      return;
+    }
+
+    App.haptic(20);
+    App.toast("تم ضبط نطاق الحفظ بنجاح", "success");
+    App.Router.go("#/journey/" + surah);
+  };
+
+  /* ---------- حفظ النطاق الحالي كورد ---------- */
+  App.actions["range-save-as"] = () => {
+    const surahSel = document.getElementById("rangeSurah");
+    const fromInput = document.getElementById("rangeFrom");
+    const toInput = document.getElementById("rangeTo");
+    if (!surahSel || !fromInput || !toInput) return;
+
+    const surah = surahSel.value;
+    const from = fromInput.value;
+    const to = toInput.value;
+
+    // تحقق من الصحة أولًا
+    const errors = App.Range.validate(surah, from, to);
+    if (errors.length) {
+      App.toast(errors[0], "error");
+      return;
+    }
+
+    // اسم افتراضي مقترح
+    const s = App.Quran.surah(Number(surah));
+    const suggested = "سورة " + s.name + " — من " + App.arDigits(from) + " إلى " + App.arDigits(to);
+
+    App.modal({
+      title: "حفظ الورد",
+      body: `
+        <p class="small text-soft mb-12">اختر اسمًا لوردك حتى تجده بسهولة لاحقًا</p>
+        <div class="field" style="margin:0">
+          <label for="rangeLabel">اسم الورد</label>
+          <input type="text" id="rangeLabel" maxlength="40" value="${App.esc(suggested)}" placeholder="مثال: ورد الصباح">
+        </div>`,
+      actions: [
+        { label: "إلغاء", action: "close-modal" },
+        { label: "حفظ", action: "range-save-confirm", primary: true }
+      ]
+    });
+    setTimeout(() => {
+      const inp = document.getElementById("rangeLabel");
+      if (inp) { inp.focus(); inp.select(); }
+    }, 50);
+  };
+
+  App.actions["range-save-confirm"] = () => {
+    const surahSel = document.getElementById("rangeSurah");
+    const fromInput = document.getElementById("rangeFrom");
+    const toInput = document.getElementById("rangeTo");
+    const labelInput = document.getElementById("rangeLabel");
+    if (!surahSel || !fromInput || !toInput) { App.closeModal(); return; }
+
+    const surah = surahSel.value;
+    const from = fromInput.value;
+    const to = toInput.value;
+    const label = labelInput ? labelInput.value : "";
+
+    const result = App.Range.saveCurrentAs(label, surah, from, to);
+    App.closeModal();
+    if (!result.ok) {
+      App.toast(result.errors[0], "error");
+      return;
+    }
+    App.haptic(20);
+    if (result.duplicate) {
+      App.toast("هذا الورد موجود بالفعل، تم تحديثه", "info");
+    } else {
+      App.toast("تم حفظ الورد بنجاح", "success");
+    }
+    App.Router.render();
+  };
+
+  /* ---------- تفعيل ورد محفوظ ---------- */
+  App.actions["range-activate"] = (el) => {
+    const id = el.dataset.id;
+    const result = App.Range.activateSaved(id);
+    if (!result.ok) {
+      App.toast(result.errors[0] || "تعذّر التفعيل", "error");
+      return;
+    }
+    App.haptic(20);
+    App.toast("تم تفعيل الورد", "success");
+    // انتقل إلى رحلة الحفظ
+    const r = App.Range.get();
+    if (r) App.Router.go("#/journey/" + r.surah);
+  };
+
+  /* ---------- حذف ورد محفوظ ---------- */
+  App.actions["range-delete"] = (el) => {
+    const id = el.dataset.id;
+    const label = el.dataset.label || "هذا الورد";
+    App.confirm("حذف «" + label + "»؟ لا يمكن التراجع.", () => {
+      const ok = App.Range.deleteSaved(id);
+      if (ok) {
+        App.haptic(20);
+        App.toast("تم حذف الورد", "info");
+        App.Router.render();
+      } else {
+        App.toast("تعذّر الحذف", "error");
+      }
+    });
+  };
+
+  /* ---------- إعادة تسمية ورد ---------- */
+  App.actions["range-rename"] = (el) => {
+    const id = el.dataset.id;
+    const oldLabel = el.dataset.label || "";
+    App.modal({
+      title: "إعادة تسمية الورد",
+      body: `
+        <p class="small text-soft mb-12">اكتب الاسم الجديد للورد</p>
+        <div class="field" style="margin:0">
+          <label for="rangeNewLabel">الاسم الجديد</label>
+          <input type="text" id="rangeNewLabel" maxlength="40" value="${App.esc(oldLabel)}" placeholder="اسم الورد">
+        </div>`,
+      actions: [
+        { label: "إلغاء", action: "close-modal" },
+        { label: "حفظ", action: "range-rename-confirm", primary: true, arg: id }
+      ]
+    });
+    setTimeout(() => {
+      const inp = document.getElementById("rangeNewLabel");
+      if (inp) { inp.focus(); inp.select(); }
+    }, 50);
+  };
+
+  App.actions["range-rename-confirm"] = (el) => {
+    const id = el.dataset.modalArg;
+    const inp = document.getElementById("rangeNewLabel");
+    if (!inp) { App.closeModal(); return; }
+    const result = App.Range.renameSaved(id, inp.value);
+    if (!result.ok) {
+      App.toast(result.errors[0], "error");
+      return;
+    }
+    App.closeModal();
+    App.haptic(20);
+    App.toast("تم تحديث الاسم", "success");
+    App.Router.render();
+  };
+
+  /* ---------- إجراء تبديل الوضع الليلي ---------- */
+  App.actions["toggle-theme"] = () => {
+    const st = App.Storage.getSettings();
+    const cur = st.theme || "auto";
+    let next;
+    if (cur === "auto") next = "dark";
+    else if (cur === "dark") next = "light";
+    else next = "auto";
+    App.Storage.setSetting("theme", next);
+    App.applyTheme();
+    App.Router.render();
+    const label = next === "dark" ? "الوضع الليلي" : (next === "light" ? "الوضع النهاري" : "الوضع التلقائي");
+    App.toast(label, "info");
+  };
+
+  /* ================= يوميات الانتظام (Streak Diary) ================= */
+  /* حالة شاشة اليوميات: الشهر المعروض حاليًا */
+  App._streakViewDate = null;
+
+  function streakEncourage(n) {
+    if (n === 0) return "ابدأ رحلتك اليوم! كل بداية تحتاج خطوة";
+    if (n === 1) return "بداية موفقة! واصل غدًا";
+    if (n <= 3) return "بداية جميلة، استمر يا بطل";
+    if (n <= 6) return "ما شاء الله! أنت على الطريق الصحيح";
+    if (n <= 9) return "رائع! الانتظام سر النجاح";
+    if (n <= 13) return "أسبوعان من الانتظام! يا لك من بطل";
+    if (n <= 20) return "ما شاء الله، أنت مثال للانتظام";
+    if (n <= 29) return "اقتربت من الشهر! استمر";
+    if (n <= 60) return "انتظام استثنائي! بارك الله فيك";
+    return "أنت قدوة لكل من يحب القرآن";
+  }
+
+  /* أسماء الأشهر بالعربية */
+  const AR_MONTHS = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  /* أسماء أيام الأسبوع (مختصرة) - يبدأ الأسبوع بالسبت */
+  const AR_DAYS = ["سبت","أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة"];
+
+  function dateKey(y, m, d) {
+    return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+  }
+
+  function pageStreak() {
+    const st = App.Storage.state;
+    const streak = App.Storage.streak();
+    const longest = App.Storage.longestStreak();
+    const totalDays = App.Storage.totalActiveDays();
+    const totalSec = st.stats.learningSeconds || 0;
+    const totalMin = Math.round(totalSec / 60);
+    const todayNote = App.Storage.getDailyNote();
+    const todayKey = App.Storage._todayKey();
+
+    // شهر العرض الحالي
+    const today = new Date();
+    let viewDate = App._streakViewDate;
+    if (!viewDate) {
+      viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      App._streakViewDate = viewDate;
+    }
+    const vy = viewDate.getFullYear();
+    const vm = viewDate.getMonth();
+    const daysInMonth = new Date(vy, vm + 1, 0).getDate();
+    // اليوم الأول من الشهر: أيام الأسبوع نبدأ بها (السبت = 6 في JS، نريد السبت = 0)
+    const firstDow = new Date(vy, vm, 1).getDay(); // 0=الأحد ... 6=السبت
+    const offset = (firstDow + 1) % 7; // السبت = 0
+
+    const activeSet = new Set(st.stats.activeDays || []);
+    const notesSet = new Set(Object.keys(st.dailyNotes || {}));
+
+    // بناء خلايا التقويم
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push({ empty: true });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const k = dateKey(vy, vm, d);
+      const isFuture = (new Date(vy, vm, d) > today) && k !== todayKey;
+      cells.push({
+        day: d,
+        key: k,
+        active: activeSet.has(k),
+        hasNote: notesSet.has(k),
+        isToday: k === todayKey,
+        isFuture
+      });
+    }
+
+    // آخر 7 أيام للعرض في الـ dots
+    const last7 = [];
+    for (let i = 6; i >= 0; i--) {
+      const dd = new Date(today.getTime() - i * 86400000);
+      const k = dateKey(dd.getFullYear(), dd.getMonth(), dd.getDate());
+      last7.push({ key: k, active: activeSet.has(k), isToday: k === todayKey });
+    }
+
+    // إحصائيات الوقت
+    const hoursLabel = totalMin >= 60
+      ? (App.arDigits(Math.floor(totalMin / 60)) + " س " + App.arDigits(totalMin % 60) + " د")
+      : (App.arDigits(totalMin) + " دقيقة");
+
+    return {
+      nav: "more",
+      html: `
+      <header class="screen-head">
+        <button class="icon-btn btn-back" data-href="#/home" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
+        <div class="sh-title">
+          <h1>يوميات الانتظام</h1>
+          <p>رحلتك مع القرآن يومًا بيوم</p>
+        </div>
+      </header>
+
+      <div class="streak-hero mt-8">
+        <div class="streak-flame"><span class="ico" data-ico="flameBig"></span></div>
+        <div class="streak-count">${App.arDigits(streak)}</div>
+        <div class="streak-label">${streak === 1 ? "يوم متواصل" : "أيام متواصلة"}</div>
+        <div class="streak-encourage">${streakEncourage(streak)}</div>
+        <div class="streak-progress">
+          ${last7.map(d => `<div class="streak-dot ${d.active ? "lit" : ""} ${d.isToday ? "today" : ""}"></div>`).join("")}
+        </div>
+      </div>
+
+      <div class="grid-3 mt-12" style="gap:10px">
+        <div class="stat-mini">
+          <div class="sm-ico" style="background:var(--c-gold-light);color:var(--c-gold-deep)"><span class="ico" data-ico="trophy"></span></div>
+          <div class="sm-val">${App.arDigits(longest)}</div>
+          <div class="sm-label">أطول سلسلة</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sm-ico" style="background:var(--c-primary-light);color:var(--c-primary-dark)"><span class="ico" data-ico="calendar"></span></div>
+          <div class="sm-val">${App.arDigits(totalDays)}</div>
+          <div class="sm-label">يوم نشط</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sm-ico" style="background:var(--c-turquoise-light);color:#1E7E71"><span class="ico" data-ico="clock"></span></div>
+          <div class="sm-val" style="font-size:1.05rem;line-height:1.2">${hoursLabel}</div>
+          <div class="sm-label">زمن التعلم</div>
+        </div>
+      </div>
+
+      <div class="card calendar-card mt-12">
+        <div class="cal-head">
+          <button class="cal-nav-btn" data-action="streak-prev-month" aria-label="الشهر السابق"><span class="ico" data-ico="chevronRight"></span></button>
+          <div class="cal-month">${AR_MONTHS[vm]} ${App.arDigits(vy)}</div>
+          <button class="cal-nav-btn" data-action="streak-next-month" aria-label="الشهر التالي"><span class="ico" data-ico="chevronLeft"></span></button>
+        </div>
+        <div class="cal-grid">
+          ${AR_DAYS.map(d => `<div class="cal-day-name">${d}</div>`).join("")}
+          ${cells.map(c => {
+            if (c.empty) return `<div class="cal-cell empty"></div>`;
+            const cls = ["cal-cell"];
+            if (c.active) cls.push("active");
+            if (c.isToday) cls.push("today");
+            if (c.hasNote) cls.push("has-note");
+            if (c.isFuture) cls.push("future");
+            return `<button class="${cls.join(" ")}" data-cal-day="${c.key}" aria-label="${c.active ? "نشط" : ""} ${c.hasNote ? "وفيه ملاحظة" : ""} يوم ${App.arDigits(c.day)}">${App.arDigits(c.day)}</button>`;
+          }).join("")}
+        </div>
+      </div>
+
+      <div class="card note-card mt-12">
+        <div class="card-title"><span class="ico" data-ico="pen"></span> ملاحظة اليوم</div>
+        <p class="small text-soft mb-8">كيف كان وردك مع القرآن اليوم؟ اكتب شعورك أو ما تعلمته</p>
+        <textarea class="note-area" id="noteArea" placeholder="مثال: اليوم حفظت آيات من سورة النبأ وكان سهلًا..." maxlength="280">${App.esc(todayNote)}</textarea>
+        <button class="btn btn-primary btn-block mt-12" data-action="streak-save-note">
+          <span class="ico" data-ico="check"></span> احفظ الملاحظة
+        </button>
+      </div>
+
+      <p class="center tiny text-faint mt-16">اللهم اجعل القرآن ربيع قلوبنا</p>
+      `,
+      mount(el) {
+        // فتح ملاحظة يوم محدد عند الضغط على خلية
+        el.addEventListener("click", (e) => {
+          const cell = e.target.closest("[data-cal-day]");
+          if (!cell) return;
+          const k = cell.dataset.calDay;
+          const note = App.Storage.getDailyNote(k);
+          const d = new Date(k + "T00:00:00");
+          const label = AR_DAYS[(d.getDay() + 1) % 7] + " " + App.arDigits(d.getDate()) + " " + AR_MONTHS[d.getMonth()];
+          const isToday = k === todayKey;
+          if (note) {
+            App.modal({
+              title: label,
+              body: `<p class="small text-soft">ملاحظتك في ${isToday ? "اليوم" : "ذلك اليوم"}:</p><p style="font-size:1rem;line-height:1.7;margin-top:8px;padding:10px 12px;background:var(--c-primary-soft);border-radius:10px">${App.esc(note)}</p>`,
+              actions: [{ label: "تم", action: "close-modal", primary: true }]
+            });
+          } else if (isToday) {
+            // ركّز على منطقة الملاحظة
+            const area = el.querySelector("#noteArea");
+            if (area) { area.focus(); area.scrollIntoView({ behavior: "smooth", block: "center" }); }
+          } else {
+            App.toast("لا توجد ملاحظة في هذا اليوم", "info");
+          }
+        });
+      }
+    };
+  }
+
+  /* ---------- إجراءات يوميات الانتظام ---------- */
+  App.actions["streak-save-note"] = () => {
+    const area = document.getElementById("noteArea");
+    if (!area) return;
+    const text = area.value.trim();
+    App.Storage.setDailyNote(App.Storage._todayKey(), text);
+    App.Storage.touchToday(); // سجل اليوم كنشط
+    App.toast(text ? "تم حفظ ملاحظتك" : "تم مسح ملاحظة اليوم", "success");
+    App.haptic(20);
+    App.Router.render();
+  };
+  App.actions["streak-prev-month"] = () => {
+    if (!App._streakViewDate) App._streakViewDate = new Date();
+    App._streakViewDate = new Date(App._streakViewDate.getFullYear(), App._streakViewDate.getMonth() - 1, 1);
+    App.Router.render();
+  };
+  App.actions["streak-next-month"] = () => {
+    if (!App._streakViewDate) App._streakViewDate = new Date();
+    const today = new Date();
+    const next = new Date(App._streakViewDate.getFullYear(), App._streakViewDate.getMonth() + 1, 1);
+    // منع الانتقال لأشهر مستقبلية
+    if (next.getFullYear() > today.getFullYear() ||
+        (next.getFullYear() === today.getFullYear() && next.getMonth() > today.getMonth())) {
+      App.toast("لا يمكن عرض أشهر مستقبلية", "info");
+      return;
+    }
+    App._streakViewDate = next;
+    App.Router.render();
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

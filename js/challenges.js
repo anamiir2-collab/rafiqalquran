@@ -13,7 +13,22 @@ App.actions = App.actions || {};
 
   function tokenize(text) { return text.split(/\s+/).filter(Boolean); }
 
+  /* إرجاع نطاق الحفظ الحالي أو null */
+  function currentRange() {
+    return (App.Range && App.Range.isValid()) ? App.Range.get() : null;
+  }
+
+  /* تصفية آيات السورة بناء على النطاق */
+  function filterAyahsByRange(s, range) {
+    if (!range) return s.ayahs;
+    return s.ayahs.filter(a => a.number >= range.from && a.number <= range.to);
+  }
+
   function pickSurahs(minAyahs) {
+    // لو هناك نطاق محفوظ، استخدم سورة النطاق فقط
+    const range = currentRange();
+    if (range) return [range.surah];
+    // وبكل بس، اعرض كل السور التي فيها تقدم
     const st = App.Storage.state;
     const practiced = Object.keys(st.progress)
       .map(Number)
@@ -28,8 +43,10 @@ App.actions = App.actions || {};
 
   function wordPool(surahNo, exclude) {
     const s = App.Quran.surah(surahNo);
+    const range = currentRange();
+    const ayahs = filterAyahsByRange(s, range && range.surah === surahNo ? range : null);
     const pool = [];
-    s.ayahs.forEach(a => tokenize(a.text).forEach(w => {
+    ayahs.forEach(a => tokenize(a.text).forEach(w => {
       if (w.length >= 3 && !pool.includes(w)) pool.push(w);
     }));
     return pool.filter(w => w !== exclude);
@@ -64,9 +81,11 @@ App.actions = App.actions || {};
   /* ================= مولدات الأسئلة ================= */
   const Gens = {
 
-    wordOrder(surahNo) {
+    wordOrder(surahNo, rangeOverride) {
       const s = App.Quran.surah(surahNo);
-      const candidates = s.ayahs.filter(a => {
+      const range = rangeOverride || (currentRange() && currentRange().surah === surahNo ? currentRange() : null);
+      const allAyahs = filterAyahsByRange(s, range);
+      const candidates = allAyahs.filter(a => {
         const t = tokenize(a.text);
         return t.length >= 3 && t.length <= 9;
       });
@@ -86,9 +105,11 @@ App.actions = App.actions || {};
       };
     },
 
-    missingWord(surahNo, lastWord) {
+    missingWord(surahNo, lastWord, rangeOverride) {
       const s = App.Quran.surah(surahNo);
-      const candidates = s.ayahs.filter(a => tokenize(a.text).length >= 4);
+      const range = rangeOverride || (currentRange() && currentRange().surah === surahNo ? currentRange() : null);
+      const allAyahs = filterAyahsByRange(s, range);
+      const candidates = allAyahs.filter(a => tokenize(a.text).length >= 4);
       if (!candidates.length) throw new Error("no candidates for missingWord");
       const a = App.pick(candidates);
       const tokens = tokenize(a.text);
@@ -96,7 +117,7 @@ App.actions = App.actions || {};
       const correct = tokens[idx];
       const pool = wordPool(surahNo, correct);
       const distractors = sample(pool, 3);
-      while (distractors.length < 3) distractors.push("﴿ آية ﴾" + distractors.length);
+      while (distractors.length < 3) distractors.push("آية" + distractors.length);
       const options = App.shuffle([correct, ...distractors]);
       const displayTokens = tokens.slice();
       displayTokens[idx] = '<span class="blank-slot">؟</span>';
@@ -111,14 +132,17 @@ App.actions = App.actions || {};
       };
     },
 
-    completeAyah(surahNo) { return Gens.missingWord(surahNo, true); },
+    completeAyah(surahNo, rangeOverride) { return Gens.missingWord(surahNo, true, rangeOverride); },
 
-    nextAyah(surahNo) {
+    nextAyah(surahNo, rangeOverride) {
       const s = App.Quran.surah(surahNo);
-      const idx = Math.floor(Math.random() * (s.ayahs.length - 1));
-      const cur = s.ayahs[idx];
-      const nxt = s.ayahs[idx + 1];
-      const others = s.ayahs.filter(a => a.number !== nxt.number && a.number !== cur.number).map(a => truncWords(a.text, 8));
+      const range = rangeOverride || (currentRange() && currentRange().surah === surahNo ? currentRange() : null);
+      const allAyahs = filterAyahsByRange(s, range);
+      if (allAyahs.length < 2) return Gens.missingWord(surahNo, false, rangeOverride);
+      const idx = Math.floor(Math.random() * (allAyahs.length - 1));
+      const cur = allAyahs[idx];
+      const nxt = allAyahs[idx + 1];
+      const others = allAyahs.filter(a => a.number !== nxt.number && a.number !== cur.number).map(a => truncWords(a.text, 8));
       let distractors = sample(others, 3);
       if (distractors.length < 3) {
         const otherS = pickSurahs(3).filter(n => n !== surahNo);
@@ -140,14 +164,16 @@ App.actions = App.actions || {};
       };
     },
 
-    orderAyahs(surahNo) {
+    orderAyahs(surahNo, rangeOverride) {
       const s = App.Quran.surah(surahNo);
+      const range = rangeOverride || (currentRange() && currentRange().surah === surahNo ? currentRange() : null);
+      const allAyahs = filterAyahsByRange(s, range);
       const candidates = [];
-      for (let i = 0; i + 2 < s.ayahs.length; i++) {
-        const trio = [s.ayahs[i], s.ayahs[i + 1], s.ayahs[i + 2]];
+      for (let i = 0; i + 2 < allAyahs.length; i++) {
+        const trio = [allAyahs[i], allAyahs[i + 1], allAyahs[i + 2]];
         if (trio.every(a => tokenize(a.text).length <= 8)) candidates.push(trio);
       }
-      if (!candidates.length) return Gens.nextAyah(surahNo);
+      if (!candidates.length) return Gens.nextAyah(surahNo, rangeOverride);
       const trio = App.pick(candidates);
       const shuffled = shuffleDiff(trio.map(a => a.number));
       return {
@@ -162,53 +188,30 @@ App.actions = App.actions || {};
       };
     },
 
-    mcq() {
-      const kinds = ["count", "after", "revelation"];
-      const kind = App.pick(kinds);
-      if (kind === "count") {
-        const s = App.pick(App.Quran.all());
-        const correct = s.ayahsCount;
-        const opts = [correct];
-        const pool = [correct + 1, correct + 2, Math.max(3, correct - 1), correct + 5, correct + 3, Math.max(2, correct - 2)];
-        for (const p of App.shuffle(pool)) {
-          if (opts.length >= 4) break;
-          if (p >= 3 && !opts.includes(p)) opts.push(p);
-        }
-        const shuffled = App.shuffle(opts);
-        return {
-          type: "mcq", surah: s.number, prompt: "كم عدد آيات سورة " + s.name + "؟",
-          options: shuffled.map(o => App.arDigits(o)),
-          answer: shuffled.indexOf(correct)
-        };
-      }
-      if (kind === "after") {
-        const surahs = App.Quran.all();
-        const i = 1 + Math.floor(Math.random() * (surahs.length - 1));
-        const s = surahs[i];
-        const correct = "سورة " + s.name;
-        const distractors = sample(surahs.filter(x => x.number !== s.number).map(x => "سورة " + x.name), 3);
-        const options = App.shuffle([correct, ...distractors]);
-        return {
-          type: "mcq", surah: s.number, prompt: "ما السورة التي تلي سورة " + surahs[i - 1].name + "؟",
-          options, answer: options.indexOf(correct)
-        };
-      }
-      const surahs = App.Quran.all();
-      const target = App.pick(surahs);
-      const same = surahs.filter(x => x.revelationType === target.revelationType && x.number !== target.number);
-      const diff = surahs.filter(x => x.revelationType !== target.revelationType);
-      const options = App.shuffle([target, ...sample(diff, 3)]);
+    mcq(surahNo, rangeOverride) {
+      // استخدام mcq من نطاق السورة الحالي فقط
+      const s = App.Quran.surah(surahNo || (currentRange() ? currentRange().surah : 112));
+      const range = rangeOverride || (currentRange() && currentRange().surah === s.number ? currentRange() : null);
+      const ayahs = filterAyahsByRange(s, range);
+      if (!ayahs.length) throw new Error("no ayahs in range for mcq");
+      const a = App.pick(ayahs);
+      const correct = truncWords(a.text, 8);
+      const others = ayahs.filter(x => x.number !== a.number).map(x => truncWords(x.text, 8));
+      let distractors = sample(others, 3);
+      while (distractors.length < 3) distractors.push("آية" + distractors.length);
+      const options = App.shuffle([correct, ...distractors]);
       return {
-        type: "mcq", surah: target.number,
-        prompt: `أي سورة من السور التالية ${target.revelationType}؟`,
-        options: options.map(o => "سورة " + o.name),
-        answer: options.indexOf(target)
+        type: "mcq",
+        surah: s.number, ayah: a.number,
+        prompt: "أيّ هذه الآيات من سورة " + s.name + "؟",
+        options,
+        answer: options.indexOf(correct)
       };
     }
   };
 
   /* ================= بناء اختبار ================= */
-  function buildQuiz(surahIds, count, types) {
+  function buildQuiz(surahIds, count, types, rangeOpts) {
     const qs = [];
     const usedTypes = types || ["wordOrder", "missingWord", "completeAyah", "nextAyah", "orderAyahs", "mcq"];
     let guard = 0;
@@ -217,7 +220,7 @@ App.actions = App.actions || {};
       const sNo = App.pick(surahIds);
       const type = usedTypes[qs.length % usedTypes.length];
       let q = null;
-      try { q = Gens[type](sNo); } catch (e) { continue; }
+      try { q = Gens[type](sNo, rangeOpts || null); } catch (e) { continue; }
       if (!q) continue;
       // تجنب تكرار نفس السؤال
       const sig = q.type + ":" + q.surah + ":" + (q.ayah || "");
@@ -360,7 +363,7 @@ App.actions = App.actions || {};
         // أضف أزرار التحريك
         list.querySelectorAll(".order-item").forEach(item => {
           const h = item.querySelector(".order-handle");
-          h.innerHTML = `<button class="up-btn pc-btn" style="min-width:34px;padding:3px">▲</button><button class="down-btn pc-btn" style="min-width:34px;padding:3px">▼</button>`;
+          h.innerHTML = `<button class="up-btn" aria-label="حرّك للأعلى">▲</button><button class="down-btn" aria-label="حرّك للأسفل">▼</button>`;
         });
         host.querySelector("[data-check-btn]").addEventListener("click", () => {
           const order = Array.from(list.querySelectorAll(".order-item")).map(x => Number(x.dataset.n));
@@ -408,11 +411,17 @@ App.actions = App.actions || {};
   /* ================= تحدي الذاكرة ================= */
   function mountMemory(host, opts) {
     const s = App.Quran.surah(opts.surah);
-    const candidates = s.ayahs.filter(a => {
+    const range = opts.rangeOverride || (currentRange() && currentRange().surah === s.number ? currentRange() : null);
+    const allAyahs = filterAyahsByRange(s, range);
+    const candidates = allAyahs.filter(a => {
       const t = tokenize(a.text);
       return t.length >= 4 && t.length <= 7;
     });
-    const ayah = candidates.length ? App.pick(candidates) : s.ayahs[0];
+    const ayah = candidates.length ? App.pick(candidates) : allAyahs[0];
+    if (!ayah) {
+      host.innerHTML = App.emptyHtml("لا توجد آيات كافية في النطاق لهذه اللعبة");
+      return;
+    }
     const words = tokenize(ayah.text).slice(0, 6);
     const pairs = App.shuffle([...words, ...words]);
 
@@ -482,19 +491,22 @@ App.actions = App.actions || {};
   const Challenges = {
     pageHub() {
       if (!App.Quran.data) { ensureData(); return { nav: "challenges", html: App.loadingHtml() }; }
+      const rangeInfo = currentRange();
       return {
         nav: "challenges",
         html: `
         <header class="screen-head">
           <div class="sh-title"><h1>تحديات الإتقان</h1><p>ألعاب ممتعة تثبّت ما حفظت</p></div>
-          <button class="icon-btn" data-href="#/achievements"><span class="ico" data-ico="medal"></span></button>
+          <button class="icon-btn" data-href="#/achievements" aria-label="إنجازات"><span class="ico" data-ico="medal"></span></button>
         </header>
-        <div class="card journey-card">
+        ${rangeInfo ? App.Range.barHtml() : App.Range.emptyHtml()}
+        ${rangeInfo ? `
+        <div class="card journey-card mt-8">
           <div class="jc-head">
-            <span class="jc-ico" style="background:var(--grad-gold);color:#6B4A08"><span class="ico" data-ico="trophy"></span></span>
+            <span class="jc-ico" style="background:var(--grad-gold);color:#2A1F08"><span class="ico" data-ico="trophy"></span></span>
             <span class="grow" style="text-align:right">
               <span class="jc-title">اختبار شامل</span>
-              <span class="jc-sub">8 أسئلة من كل الألعاب</span>
+              <span class="jc-sub">أسئلة من نطاقك الحالي</span>
             </span>
           </div>
           <button class="btn btn-gold btn-block mt-12" data-action="games-start" data-type="mixed">
@@ -509,25 +521,36 @@ App.actions = App.actions || {};
             <span class="quick-ico ${g.color}"><span class="ico" data-ico="${g.icon}"></span></span>
             <span><span class="quick-title">${g.title}</span><br><span class="quick-sub">${g.sub}</span></span>
           </button>`).join("")}
-        </div>`,
+        </div>` : ""}`,
         mount() {}
       };
     },
 
     pageGame(params) {
       if (!App.Quran.data) { ensureData(); return { nav: "challenges", html: App.loadingHtml() }; }
+      if (!currentRange()) {
+        return { nav: "challenges", html: App.Range.emptyHtml() };
+      }
       return { nav: "challenges", html: `<div id="gameHost"></div>`, mount: (el) => Challenges.startGame(params.type, el.querySelector("#gameHost")) };
     },
 
     startGame(type, host) {
-      const surahIds = pickSurahs(3);
+      // استخدم نطاق الحفظ الحالي كمسؤول الوحيد للاختيار
+      if (!currentRange()) {
+        host.innerHTML = App.Range.emptyHtml();
+        return;
+      }
+      const range = currentRange();
+      const surahIds = [range.surah];
+      const rangeOpts = { from: range.from, to: range.to };
       if (type === "mixed" || !GAMES.some(g => g.type === type)) type = "mixed";
       if (type === "mixed") {
-        const qs = buildQuiz(surahIds, 8);
+        const qs = buildQuiz(surahIds, 8, null, rangeOpts);
         this._runQuizFlow(host, qs, type, 0.75);
       } else if (type === "memory") {
         mountMemory(host, {
-          surah: App.pick(surahIds),
+          surah: range.surah,
+          rangeOverride: rangeOpts,
           onFinish: (r) => {
             App.Storage.bumpStat("quizCorrect", r.correct);
             App.Rewards.grant({ stars: r.stars, points: r.correct * 5, reason: "أنهيت تحدي الذاكرة!" });
@@ -542,7 +565,7 @@ App.actions = App.actions || {};
         while (qs.length < count && guard < 60) {
           guard++;
           try {
-            const q = Gens[type](App.pick(surahIds));
+            const q = Gens[type](range.surah, rangeOpts);
             if (qs.some(x => x.ayah === q.ayah && x.surah === q.surah && x.type === q.type)) continue;
             q.surahName = App.Quran.surah(q.surah).name;
             qs.push(q);

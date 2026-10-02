@@ -120,19 +120,16 @@ App.actions = App.actions || {};
     },
 
     _onEnded() {
-      const loop = this.opts.loop;
-      const repeat = this.opts.repeat || 0;
+      // كرر الآية إذا كان هناك عدد تكرار متبقٍ
       if (this._repeatLeft > 0) {
         this._repeatLeft--;
         this.play(this.idx);
         return;
       }
-      if (repeat > 1 && !this._passedRepeat) {
-        // handled via ui-repeat action below
-      }
+      const loop = this.opts.loop;
+      // الوضع Loop — تنقّل دائقي بين الآيات
       if (loop && this.idx < this.list.length - 1) {
         this.idx++;
-        // small pause between ayahs for repetition comfort
         setTimeout(() => this.play(this.idx), 650);
         return;
       }
@@ -141,10 +138,29 @@ App.actions = App.actions || {};
         setTimeout(() => this.play(this.idx), 900);
         return;
       }
+      // التشغيل التلقائي Scoped — انتقل للآية التالية داخل النطاق فقط
+      if (this._isAutoPlayEnabled() && this.idx < this.list.length - 1) {
+        this.idx++;
+        setTimeout(() => this.play(this.idx), 650);
+        return;
+      }
+      // عند نهاية النطاق أو إيقاف التشغيل التلقائي
       if (this.opts.onComplete) {
         try { this.opts.onComplete(); } catch (e) { console.warn(e); }
         return;
       }
+      this._emit();
+    },
+
+    /* ---------- التشغيل التلقائي Scoped ---------- */
+    _isAutoPlayEnabled() {
+      try {
+        const s = App.Storage.getSettings();
+        return s.autoPlay !== false;
+      } catch (e) { return true; }
+    },
+    setAutoPlay(on) {
+      App.Storage.setSetting("autoPlay", !!on);
       this._emit();
     },
 
@@ -176,6 +192,7 @@ App.actions = App.actions || {};
       this._uiUnsubs = [];
       p.load(opts.list, { loop: !!opts.loop, onComplete: opts.onComplete });
       const st = App.Storage.getSettings();
+      const autoOn = st.autoPlay !== false;
       host.innerHTML = `
         <div class="player" data-player-ui>
           <div class="player-main">
@@ -189,14 +206,14 @@ App.actions = App.actions || {};
             </div>
           </div>
           <div class="player-controls">
-            <button class="pc-btn" data-action="p-prev"><span class="ico" data-ico="prev"></span>السابق</button>
-            <button class="pc-btn" data-action="p-restart"><span class="ico" data-ico="replay"></span>إعادة</button>
-            <button class="pc-btn" data-action="p-next"><span class="ico" data-ico="next"></span>التالي</button>
-            <button class="pc-btn" data-action="p-repeat" data-count="${st.repeatCount || 3}"><span class="ico" data-ico="loop"></span>تكرار ×${App.arDigits(st.repeatCount || 3)}</button>
+            <button class="pc-btn" data-action="p-prev" aria-label="السابق"><span class="ico" data-ico="prev"></span><span>السابق</span></button>
+            <button class="pc-btn" data-action="p-restart" aria-label="إعادة"><span class="ico" data-ico="replay"></span><span>إعادة</span></button>
+            <button class="pc-btn" data-action="p-next" aria-label="التالي"><span class="ico" data-ico="next"></span><span>التالي</span></button>
+            <button class="pc-btn auto-btn ${autoOn ? "on" : ""}" data-action="p-autoplay" aria-label="تشغيل تلقائي" aria-pressed="${autoOn}"><span class="ico" data-ico="${autoOn ? "playAuto" : "stopAuto"}"></span><span>تلقائي</span></button>
           </div>
           <div class="player-speed-row">
             <span class="tiny text-faint">السرعة:</span>
-            ${[0.75, 1, 1.25, 1.5].map(v => `<button class="speed-pill ${v === (st.speed || 1) ? "on" : ""}" data-action="p-speed" data-v="${v}">${App.arDigits(v)}×</button>`).join("")}
+            ${[0.75, 1, 1.25, 1.5].map(v => `<button class="speed-pill ${v === (st.speed || 1) ? "on" : ""}" data-action="p-speed" data-v="${v}" aria-label="سرعة ${v}">${App.arDigits(v)}×</button>`).join("")}
           </div>
         </div>`;
       if (App.fillIcons) App.fillIcons(host);
@@ -215,6 +232,16 @@ App.actions = App.actions || {};
         "p-speed": (el) => {
           p.setSpeed(Number(el.dataset.v));
           host.querySelectorAll(".speed-pill").forEach(b => b.classList.toggle("on", Number(b.dataset.v) === Number(el.dataset.v)));
+        },
+        "p-autoplay": (el) => {
+          const cur = p._isAutoPlayEnabled();
+          const next = !cur;
+          p.setAutoPlay(next);
+          el.classList.toggle("on", next);
+          el.setAttribute("aria-pressed", String(next));
+          const ico = el.querySelector(".ico");
+          if (ico && App.icons) ico.innerHTML = App.icons[next ? "playAuto" : "stopAuto"];
+          App.toast(next ? "تم تفعيل التشغيل التلقائي" : "تم إيقاف التشغيل التلقائي", "info");
         },
         "p-repeat": (el) => {
           const c = Number(el.dataset.count) || 3;
@@ -239,18 +266,34 @@ App.actions = App.actions || {};
       if (seek && st.duration) seek.style.width = (st.currentTime / st.duration * 100) + "%";
       const sub = host.querySelector("[data-p-sub]");
       if (sub) {
-        sub.textContent = st.item
-          ? `الآية ${App.arDigits(st.item.ayah)} — ${App.arDigits(st.idx + 1)} من ${App.arDigits(st.total)}`
-          : "جاهز للتشغيل";
+        // لا نعرض عداد "N من M" للطفل — فقط اسم السورة ورقم الآية الحالية
+        if (st.item) {
+          const sName = App.Quran && App.Quran.surah(st.item.surah);
+          sub.textContent = (sName ? "سورة " + sName.name + " — " : "") + "الآية " + App.arDigits(st.item.ayah);
+        } else {
+          sub.textContent = "جاهز للتشغيل";
+        }
       }
     },
 
     /* ---------- Floating mini player ---------- */
     renderAndPlayFloating(surah, ayah, surahName) {
-      // playlist: rest of surah starting at ayah
       const s = App.Quran.surah(surah);
       if (!s) return;
-      const list = s.ayahs.filter(a => a.number >= ayah).map(a => ({ surah: s.number, ayah: a.number }));
+      // احترام نطاق الحفظ: لو النطاق شامل لهذه الآية، القائمة من الآية إلى نهاية النطاق فقط
+      let list;
+      const range = (App.Range && App.Range.isValid()) ? App.Range.get() : null;
+      if (range && range.surah === surah && ayah >= range.from && ayah <= range.to) {
+        list = s.ayahs
+          .filter(a => a.number >= ayah && a.number <= range.to)
+          .map(a => ({ surah: s.number, ayah: a.number }));
+      } else if (range && range.surah === surah && (ayah < range.from || ayah > range.to)) {
+        // الآية خارج النطاق — شغّل هذه الآية فقط (لا يوجد تالي)
+        list = [{ surah: s.number, ayah }];
+      } else {
+        // لا يوجد نطاق — السلوك القديم: من الآية إلى نهاية السورة
+        list = s.ayahs.filter(a => a.number >= ayah).map(a => ({ surah: s.number, ayah: a.number }));
+      }
       this._showFloating();
       this.load(list, {});
       const host = this._floatingHost;

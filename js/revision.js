@@ -60,75 +60,47 @@ App.actions = App.actions || {};
         return { nav: "review", html: App.loadingHtml() };
       }
 
-      const due = R.dueSurahs();
-      const mistakes = App.Storage.getMistakes();
-      const consolidation = R.needsConsolidation();
-      const mastery = R.overallMastery();
-      const st = App.Storage.state;
+      // المراجعة تعتمد على نطاق الحفظ الحالي — إذا لم يوجد نطاق، اطلب من الطفل تحديده
+      if (!App.Range.isValid()) {
+        return {
+          nav: "review",
+          html: `
+          <header class="screen-head">
+            <div class="sh-title"><h1>وادي المراجعة</h1><p>المراجعة تُثبّت القرآن في القلب</p></div>
+          </header>
+          ${App.Range.emptyHtml()}
+          `,
+          mount() {}
+        };
+      }
 
-      const masteredList = Object.keys(st.progress)
-        .map(Number)
-        .filter(n => st.progress[n].status === "mastered")
-        .sort((a, b) => a - b);
+      const range = App.Range.get();
+      const surah = App.Quran.surah(range.surah);
+      const mistakes = App.Storage.getMistakes().filter(m => m.s === range.surah && m.a >= range.from && m.a <= range.to);
 
-      const dueHtml = due.length ? `
+      const startCard = `
         <div class="card journey-card">
           <div class="jc-head">
             <span class="jc-ico" style="background:linear-gradient(135deg,#43C6B4,#23958A)"><span class="ico" data-ico="refresh"></span></span>
             <span class="grow" style="text-align:right">
               <span class="jc-title">مراجعة اليوم</span>
-              <span class="jc-sub">${App.arDigits(due.length)} ${due.length === 1 ? "سورة جاهزة للمراجعة" : "سور جاهزة للمراجعة"}</span>
+              <span class="jc-sub">سورة ${surah.name} — من الآية ${App.arDigits(range.from)} إلى الآية ${App.arDigits(range.to)}</span>
             </span>
-          </div>
-          <div class="wrap mt-12" style="display:flex;flex-wrap:wrap;gap:6px">
-            ${due.slice(0, 6).map(n => `<span class="chip chip-turquoise">${App.Quran.surah(n).name}</span>`).join("")}
-            ${due.length > 6 ? `<span class="chip">+${App.arDigits(due.length - 6)}</span>` : ""}
           </div>
           <button class="btn btn-primary btn-block mt-12" data-action="review-start">
             <span class="ico" data-ico="rocket"></span> ابدأ مراجعة اليوم
           </button>
-        </div>` : `
-        <div class="card center" style="padding:24px 16px">
-          <span class="ico" style="width:48px;height:48px;margin:0 auto 10px;color:var(--c-success)" data-ico="check"></span>
-          <div class="bold">رائع! لا توجد مراجعات مستحقة اليوم</div>
-          <p class="small text-soft mt-8">عد غدًا لتثبيت الحفظ، أو جرّب "مراجعة إضافية" الآن</p>
-          <button class="btn btn-soft mt-12" data-action="review-start" data-extra="1">
-            <span class="ico" data-ico="sparkle"></span> مراجعة إضافية اختيارية
-          </button>
         </div>`;
 
       const mistakesHtml = mistakes.length ? mistakes.slice(0, 8).map(m => {
-        const s = App.Quran.surah(m.s);
         return `
         <div class="report-row">
-          <div class="rr-name">${s ? "سورة " + s.name : ""} — آية ${App.arDigits(m.a)}
-            <div class="rr-meta">أخطأت فيها ${App.arDigits(m.count)} ${m.count === 1 ? "مرة" : "مرات"}</div>
+          <div class="rr-name">سورة ${surah.name} — آية ${App.arDigits(m.a)}
+            <div class="rr-meta">اخترت التدرب عليها</div>
           </div>
           <button class="btn btn-sm btn-soft" data-action="practice-mistake" data-s="${m.s}" data-a="${m.a}">تدرب الآن</button>
         </div>`;
       }).join("") : `<div class="empty-state" style="padding:18px"><p>لا توجد أخطاء مسجلة — بارك الله فيك!</p></div>`;
-
-      const consolHtml = consolidation.length ? consolidation.slice(0, 6).map(n => {
-        const s = App.Quran.surah(n);
-        const p = App.Storage.prog(n);
-        return `
-        <div class="report-row">
-          <div class="rr-name">سورة ${s.name}<div class="rr-meta">مستوى التثبيت ${App.arDigits(p.mastery)}٪</div></div>
-          <div class="progress-track rr-bar"><div class="progress-fill turquoise" style="width:${p.mastery}%"></div></div>
-          <button class="btn btn-sm btn-ghost" data-href="#/journey/${n}">ثبّت</button>
-        </div>`;
-      }).join("") : `<div class="empty-state" style="padding:18px"><p>كل السور المحفوظة مثبتة جيدًا</p></div>`;
-
-      const oldHtml = masteredList.length ? masteredList.slice(0, 10).map(n => {
-        const s = App.Quran.surah(n);
-        const p = App.Storage.prog(n);
-        const last = p.lastReview ? new Date(p.lastReview).toLocaleDateString("ar-EG") : "—";
-        return `
-        <div class="report-row">
-          <div class="rr-name">سورة ${s.name}<div class="rr-meta">آخر مراجعة: ${last} — ${App.arDigits(p.reviewCount || 0)} مرات</div></div>
-          <span class="chip chip-success">إتقان ${App.arDigits(p.mastery)}٪</span>
-        </div>`;
-      }).join("") : `<div class="empty-state" style="padding:18px"><p>أكمل أول سورة لتظهر هنا في قائمة المراجعة الدورية</p></div>`;
 
       return {
         nav: "review",
@@ -137,24 +109,10 @@ App.actions = App.actions || {};
           <div class="sh-title"><h1>وادي المراجعة</h1><p>المراجعة تُثبّت القرآن في القلب</p></div>
         </header>
 
-        <div class="card mastery-card">
-          <div class="ring mastery-ring">${App.ringSvg(110, 10, mastery, "green")}
-            <span class="ring-center" style="font-size:1.4rem">${App.arDigits(mastery)}٪</span>
-          </div>
-          <div class="bold">مستوى الإتقان العام</div>
-          <p class="small text-soft mt-8">${App.arDigits(App.Storage.countMasteredSurahs())} سورة مكتملة — ${App.arDigits(App.Storage.countMemorizedAyahs())} آية محفوظة</p>
-        </div>
+        <div class="mt-8">${startCard}</div>
 
-        <div class="mt-16">${dueHtml}</div>
-
-        <div class="section-head"><h2>الآيات التي أخطأت فيها</h2></div>
+        <div class="section-head"><h2>الآيات التي تحتاج تدريبًا</h2></div>
         <div class="card">${mistakesHtml}</div>
-
-        <div class="section-head"><h2>سور تحتاج تثبيت</h2></div>
-        <div class="card">${consolHtml}</div>
-
-        <div class="section-head"><h2>الآيات القديمة (المراجعة الدورية)</h2></div>
-        <div class="card">${oldHtml}</div>
         `,
         mount() {}
       };
@@ -162,52 +120,35 @@ App.actions = App.actions || {};
 
     /* ---------- جلسة المراجعة ---------- */
     startSession(extra) {
-      let due = R.dueSurahs();
-      if (extra || !due.length) {
-        const all = Object.keys(App.Storage.state.progress).map(Number).filter(n => (App.Storage.prog(n).memorized || []).length > 0);
-        due = all.length ? App.sample(all, Math.min(4, all.length)) : DEFAULT_R;
-      }
-      if (!due.length) {
-        App.toast("احفظ أول سورة أولًا ثم عُد للمراجعة", "info");
-        App.Router.go("#/quran");
+      // المراجعة تعتمد على نطاق الحفظ الحالي فقط
+      if (!App.Range.isValid()) {
+        App.toast("حدد نطاق الحفظ أولًا لبدء المراجعة", "info");
+        App.Router.go("#/range");
         return;
       }
+      const range = App.Range.get();
+      // بناء قائمة من السورة الواحدة (نطاق الحفظ الحالي)
+      const due = [range.surah];
       App.Router.go("#/review/session?extra=" + (extra ? "1" : "0"));
       // render session into host
       setTimeout(() => {
         const host = document.getElementById("reviewHost");
         if (!host) return;
-        const questions = App.Games.buildQuiz(due, Math.min(10, due.length * 2));
-        const surahScores = {};
+        // تمرير النطاق إلى buildQuiz عبر options لإجبار الأسئلة على استخدام النطاق فقط
+        const questions = App.Games.buildQuiz(due, Math.min(10, due.length * 2), null, { rangeFrom: range.from, rangeTo: range.to });
         App.Games.mountQuiz(host, {
           questions,
           title: "مراجعة اليوم",
           passRate: 0.7,
           onFinish: (r) => {
-            // update schedules per surah
-            const perSurah = {};
-            r.wrongList.forEach(q => {
-              perSurah[q.surah] = perSurah[q.surah] || { ok: 0, bad: 0 };
-              perSurah[q.surah].bad++;
-            });
-            questions.forEach(q => {
-              if (!r.wrongList.includes(q)) {
-                perSurah[q.surah] = perSurah[q.surah] || { ok: 0, bad: 0 };
-                perSurah[q.surah].ok++;
-              }
-            });
-            let successCount = 0;
-            Object.keys(perSurah).forEach(n => {
-              const sc = perSurah[n];
-              const ok = sc.ok > sc.bad;
-              R.updateSchedule(Number(n), ok);
-              if (ok) successCount++;
-            });
-            App.Storage.bumpStat("reviewsDone", successCount);
+            // حدّث جدولة السورة
+            const ok = r.passed;
+            R.updateSchedule(Number(range.surah), ok);
+            App.Storage.bumpStat("reviewsDone", ok ? 1 : 0);
             App.Rewards.grant({
               stars: r.stars,
-              points: successCount * 8,
-              reason: `أتممت مراجعة ${App.arDigits(successCount)} ${successCount === 1 ? "سورة" : "سور"}`
+              points: (r.passed ? 8 : 3),
+              reason: "أتممت مراجعة نطاقك"
             }, r.passed ? false : true);
             host.innerHTML = App.Games.resultView(r, { type: "review" });
             if (App.fillIcons) App.fillIcons(host);

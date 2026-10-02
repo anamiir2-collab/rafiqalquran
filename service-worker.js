@@ -5,7 +5,7 @@
    ============================================================ */
 "use strict";
 
-const VERSION = "v1.0.0";
+const VERSION = "v1.1.0";
 const CORE_CACHE = `rafiq-core-${VERSION}`;
 const AUDIO_CACHE = `rafiq-audio-${VERSION}`;
 const MAX_AUDIO_ENTRIES = 300;
@@ -23,6 +23,7 @@ const CORE_ASSETS = [
   "./js/storage.js",
   "./js/navigation.js",
   "./js/quran.js",
+  "./js/range.js",
   "./js/audio.js",
   "./js/rewards.js",
   "./js/challenges.js",

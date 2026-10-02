@@ -5,7 +5,9 @@
 
 /* --- ≥ 400px: slightly larger type --- */
 @media (min-width: 400px) {
-  .ayah-text { font-size: 1.8rem; }
+  .ayah-text { font-size: 2rem; }
+  .ayah-text.md { font-size: 1.85rem; }
+  .ayah-text.lg { font-size: 2.4rem; }
   .hero-greet { font-size: 1.55rem; }
 }
 
@@ -23,7 +25,7 @@
   body {
     background-color: #DDEAE3;
     background-image:
-      radial-gradient(circle at 12% 18%, rgba(232, 169, 62, .10) 0, transparent 34%),
+      radial-gradient(circle at 12% 18%, rgba(230, 181, 80, .10) 0, transparent 34%),
       radial-gradient(circle at 88% 82%, rgba(47, 181, 163, .12) 0, transparent 34%),
       var(--pattern-star);
     background-size: auto, auto, 90px 90px;
@@ -73,12 +75,35 @@
 
 /* --- Very small phones (< 350px) --- */
 @media (max-width: 359px) {
-  .ayah-text { font-size: 1.4rem; }
-  .quiz-ayah { font-size: 1.2rem; }
+  .ayah-text { font-size: 1.55rem; }
+  .ayah-text.md { font-size: 1.45rem; }
+  .quiz-ayah { font-size: 1.3rem; }
   .hero-greet { font-size: 1.25rem; }
   .grid-2 { grid-template-columns: 1fr; }
   .badge-grid { grid-template-columns: repeat(2, 1fr); }
   .nav-item .nav-label { font-size: .6rem; }
+}
+
+/* --- Dark mode on tablet+ --- */
+@media (min-width: 768px) {
+  [data-theme="dark"] body {
+    background-color: #060C18;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(230, 181, 80, .08) 0, transparent 34%),
+      radial-gradient(circle at 88% 82%, rgba(67, 198, 180, .10) 0, transparent 34%),
+      var(--pattern-star);
+  }
+  [data-theme="dark"] .app-shell { border: 1px solid rgba(46, 159, 117, .25); }
+}
+@media (min-width: 768px) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body {
+    background-color: #060C18;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(230, 181, 80, .08) 0, transparent 34%),
+      radial-gradient(circle at 88% 82%, rgba(67, 198, 180, .10) 0, transparent 34%),
+      var(--pattern-star);
+  }
+  :root:not([data-theme="light"]) .app-shell { border: 1px solid rgba(46, 159, 117, .25); }
 }
 
 /* --- Print: certificate --- */

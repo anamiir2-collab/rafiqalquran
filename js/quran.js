@@ -99,8 +99,11 @@ App.actions = App.actions || {};
             <h1>مدينة القرآن</h1>
             <p>جزء عمّ كامل — ${App.arDigits(37)} سورة</p>
           </div>
+          <button class="icon-btn" data-href="#/range" aria-label="نطاق الحفظ"><span class="ico" data-ico="target"></span></button>
           <button class="icon-btn" data-href="#/more/settings" aria-label="الإعدادات"><span class="ico" data-ico="settings"></span></button>
         </header>
+
+        ${App.Range.isValid() ? App.Range.barHtml() : ""}
 
         ${lastS ? `
         <button class="card journey-card btn-block" data-href="#/journey/${lastS.number}" style="margin-top:2px">
@@ -140,11 +143,6 @@ App.actions = App.actions || {};
             <span class="ico" data-ico="rocket"></span> ابدأ الحفظ
           </button>
         </div>
-        ${pr.memorized > 0 ? `
-        <div class="mt-12">
-          <div class="row-between tiny text-soft mb-8"><span>تقدمك</span><span>${App.arDigits(pr.memorized)} / ${App.arDigits(suggest.ayahsCount)}</span></div>
-          <div class="progress-track"><div class="progress-fill" style="width:${pr.pct}%"></div></div>
-        </div>` : ""}
       </div>
       <div class="section-head"><h2>سور قصيرة مثالية للبداية</h2></div>
       ${Q.surahListHtml(Q.all().filter(s => s.ayahsCount <= 6).slice(0, 6), true)}
@@ -232,12 +230,6 @@ App.actions = App.actions || {};
         <div class="bismillah">${Q.bismillah()}</div>
 
         <div class="card">
-          ${pr.memorized > 0 ? `
-          <div class="row-between mb-8">
-            <span class="small bold text-soft">تقدمك في الحفظ</span>
-            <span class="chip chip-gold">${App.arDigits(pr.pct)}٪</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" style="width:${pr.pct}%"></div></div>` : ""}
           <div class="ayah-actions">
             <button class="btn btn-gold grow" data-href="#/journey/${s.number}">
               <span class="ico" data-ico="rocket"></span> ${pr.status === "mastered" ? "أعد رحلة الإتقان" : (pr.memorized > 0 ? "أكمل الحفظ" : "ابدأ رحلة الحفظ")}

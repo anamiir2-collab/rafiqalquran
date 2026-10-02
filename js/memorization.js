@@ -144,9 +144,9 @@ App.actions = App.actions || {};
         el.classList.toggle("active", i === idx);
       });
       const descs = {
-        listen: `${App.arDigits(sess.listened.length)} من ${App.arDigits(sess.range[1] - sess.range[0] + 1)} آية استمعت إليها`,
-        recite: `${App.arDigits(sess.recited.length)} من ${App.arDigits(sess.range[1] - sess.range[0] + 1)} آية رددتها`,
-        quiz: sess.quizResult ? `نتيجتك ${App.arDigits(sess.quizResult.correct)}/${App.arDigits(sess.quizResult.total)}` : "اختبر ما حفظت",
+        listen: sess.listened.length > 0 ? "استمعت لبعض الآيات، واصل" : "استمع بتمعّن ثم ردد",
+        recite: sess.recited.length > 0 ? "رديت بعض الآيات، واصل" : "ردد الآيات بصوتك",
+        quiz: sess.quizResult ? "أنهيت الاختبار" : "اختبر ما حفظت",
         mastery: sess.quizResult && sess.quizResult.passed ? "أتقنت هذه الآيات بحمد الله" : "أكمل الاختبار أولًا",
         reward: sess.rewarded ? "استلمت مكافأتك" : "في انتظارك"
       };
@@ -177,7 +177,7 @@ App.actions = App.actions || {};
       host.innerHTML = `
       <div class="ayah-card">
         <div class="ayah-card-top">
-          <span class="ayah-counter">الآية ${App.arDigits(a.number)} من ${App.arDigits(s.ayahsCount)}</span>
+          <span class="ayah-counter">سورة ${s.name} — الآية ${App.arDigits(a.number)}</span>
           <span class="rec-mirror">اسمع جيدًا ثم ردد</span>
         </div>
         <div class="ayah-text ${fs === "lg" ? "lg" : ""}">${a.text}<span class="ayah-badge">${App.arDigits(a.number)}</span></div>
@@ -185,8 +185,7 @@ App.actions = App.actions || {};
         <button class="btn btn-primary btn-block mt-12" data-action="journey-listened" data-ayah="${a.number}">
           <span class="ico" data-ico="check"></span> ${sess.listened.includes(a.number) ? "الآية التالية" : "استمعت — احفظها في قلبي"}
         </button>
-      </div>
-      <p class="center small text-soft mt-12">${App.arDigits(sess.listened.length)} / ${App.arDigits(ayahs.length)} آيات استمعت إليها في هذه الرحلة</p>`;
+      </div>`;
 
       App.Player.renderPlayer(document.getElementById("listenPlayer"), {
         list: ayahs.map(x => ({ surah: s.number, ayah: x.number })),
@@ -206,7 +205,7 @@ App.actions = App.actions || {};
       host.innerHTML = `
       <div class="ayah-card">
         <div class="ayah-card-top">
-          <span class="ayah-counter">الآية ${App.arDigits(a.number)} من ${App.arDigits(s.ayahsCount)}</span>
+          <span class="ayah-counter">سورة ${s.name} — الآية ${App.arDigits(a.number)}</span>
           <span class="rec-mirror">ردد بصوت عالٍ</span>
         </div>
         <div class="ayah-text ${fs === "lg" ? "lg" : ""}">${a.text}<span class="ayah-badge">${App.arDigits(a.number)}</span></div>
@@ -238,8 +237,7 @@ App.actions = App.actions || {};
             <button class="btn btn-soft mt-8" data-action="journey-recited" data-ayah="${a.number}"><span class="ico" data-ico="check"></span> رددتها بدون تسجيل</button>
           </div>
         </div>
-      </div>
-      <p class="center small text-soft mt-12">${App.arDigits(sess.recited.length)} / ${App.arDigits(ayahs.length)} آيات رددتها</p>`;
+      </div>`;
 
       M._recPanel = host.querySelector("[data-rec-panel]");
     },
@@ -307,7 +305,8 @@ App.actions = App.actions || {};
 
     /* ---------- 3) الاختبار ---------- */
     renderQuiz(host, sess, s) {
-      const questions = App.Games.buildQuiz([s.number], 5, ["wordOrder", "missingWord", "completeAyah", "nextAyah"]);
+      const rangeOpts = sess.range ? { from: sess.range[0], to: sess.range[1] } : null;
+      const questions = App.Games.buildQuiz([s.number], 5, ["wordOrder", "missingWord", "completeAyah", "nextAyah"], rangeOpts);
       App.Games.mountQuiz(host, {
         questions,
         title: "اختبار الإتقان",
@@ -327,7 +326,7 @@ App.actions = App.actions || {};
             <div class="card result-card">
               <div class="result-emoji-ring fail"><span class="ico" data-ico="refresh"></span></div>
               <div class="result-title">لا بأس، البطل يحتاج محاولة أخرى</div>
-              <div class="result-sub">${App.arDigits(r.correct)} من ${App.arDigits(r.total)} — تحتاج ${App.arDigits(Math.ceil(r.total * 0.8))} إجابات صحيحة</div>
+              <div class="result-sub">تحتاج ${App.arDigits(Math.ceil(r.total * 0.8))} إجابات صحيحة للنجاح</div>
               <p class="small text-soft mt-8">ارجع واستمع للآيات مرة أخرى ثم أعِد الاختبار</p>
               <div class="modal-actions">
                 <button class="btn btn-ghost" data-action="journey-back-listen"><span class="ico" data-ico="headphones"></span> استماع مرة أخرى</button>
@@ -421,18 +420,15 @@ App.actions = App.actions || {};
       const p = st.progress[doneSurah];
       const s = App.Quran.surah(doneSurah);
       if (!p || p.memorized.length < s.ayahsCount) {
-        const nextA = (p.memorized || []).length ? Math.max(...p.memorized) + 1 : 1;
-        if (nextA <= s.ayahsCount) {
-          return `
-          <p class="small text-soft mb-12">تبقّى لك من سورة ${s.name} ${App.arDigits(s.ayahsCount - (p.memorized || []).length)} آية</p>
-          <button class="btn btn-gold btn-block" data-action="journey-continue-surah" data-s="${s.number}">
-            <span class="ico" data-ico="rocket"></span> أكمل باقي السورة
-          </button>`;
-        }
+        return `
+        <p class="small text-soft mb-12">واصل حفظ باقي سورة ${s.name}</p>
+        <button class="btn btn-gold btn-block" data-action="journey-continue-surah" data-s="${s.number}">
+          <span class="ico" data-ico="rocket"></span> أكمل باقي السورة
+        </button>`;
       }
       const next = App.Quran.suggestNext();
       return `
-      <p class="small text-soft mb-12">اقتراحنا التالي: سورة ${next.name} (${App.arDigits(next.ayahsCount)} آية)</p>
+      <p class="small text-soft mb-12">اقتراحنا التالي: سورة ${next.name}</p>
       <button class="btn btn-gold btn-block" data-href="#/journey/${next.number}">
         <span class="ico" data-ico="rocket"></span> ابدأ رحلة جديدة
       </button>`;

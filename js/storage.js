@@ -32,7 +32,9 @@ App.version = "1.0.0";
         repeatCount: 3,
         quranFontSize: "md",
         soundEffects: true,
-        showTranslationless: true
+        showTranslationless: true,
+        autoPlay: true,
+        theme: "auto"        // "light" | "dark" | "auto"
       },
       progress: {},          // { "<surahNo>": SurahProg }
       session: null,         // رحلة الحفظ الجارية
@@ -54,6 +56,8 @@ App.version = "1.0.0";
         storiesRead: [],
         moralsDone: []
       },
+      dailyNotes: {},        // {"YYYY-MM-DD": "نص ملاحظة"} — يوميات الطفل
+      ranges: [],            // [{id,label,surah,from,to,createdAt,lastUsedAt}] — أوراد محفوظة
       lastAyah: { s: 112, a: 1 }
     };
   }
@@ -221,6 +225,104 @@ App.version = "1.0.0";
     setLastAyah(s, a) {
       this.state.lastAyah = { s, a };
       this.save();
+    },
+
+    /* ---------- الأوراد المحفوظة (saved ranges) ---------- */
+    getRanges() {
+      // مرتبة حسب آخر استخدام
+      return (this.state.ranges || []).slice().sort((a, b) => (b.lastUsedAt || 0) - (a.lastUsedAt || 0));
+    },
+    getRangeById(id) {
+      return (this.state.ranges || []).find(r => r.id === id) || null;
+    },
+    saveRange({ label, surah, from, to }) {
+      const s = Number(surah);
+      const f = Number(from);
+      const t = Number(to);
+      const id = "r_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
+      const entry = {
+        id,
+        label: (label || "").trim() || "ورد بدون اسم",
+        surah: s,
+        from: f,
+        to: t,
+        createdAt: Date.now(),
+        lastUsedAt: 0
+      };
+      this.state.ranges = this.state.ranges || [];
+      // حدّ أقصى للأوراد المحفوظة (٢٠ وردًا)
+      if (this.state.ranges.length >= 20) {
+        // احذف الأقدم استخدامًا
+        const sorted = this.state.ranges.slice().sort((a, b) => (a.lastUsedAt || 0) - (b.lastUsedAt || 0));
+        this.state.ranges = this.state.ranges.filter(r => r.id !== sorted[0].id);
+      }
+      this.state.ranges.push(entry);
+      this.save();
+      return entry;
+    },
+    updateRange(id, patch) {
+      const r = this.getRangeById(id);
+      if (!r) return false;
+      Object.assign(r, patch);
+      this.save();
+      return true;
+    },
+    deleteRange(id) {
+      const before = (this.state.ranges || []).length;
+      this.state.ranges = (this.state.ranges || []).filter(r => r.id !== id);
+      const after = this.state.ranges.length;
+      if (before !== after) { this.save(); return true; }
+      return false;
+    },
+    touchRange(id) {
+      const r = this.getRangeById(id);
+      if (r) { r.lastUsedAt = Date.now(); this.save(); }
+    },
+
+    /* ---------- يوميات الانتظام (daily notes) ---------- */
+    setDailyNote(dateKey, text) {
+      const k = dateKey || todayKey();
+      const t = (text || "").trim();
+      if (t) this.state.dailyNotes[k] = t;
+      else delete this.state.dailyNotes[k];
+      // تنظيف الملاحظات القديمة (نحتفظ بـ 90 يومًا)
+      const keys = Object.keys(this.state.dailyNotes);
+      if (keys.length > 90) {
+        keys.sort().slice(0, keys.length - 90).forEach(k2 => delete this.state.dailyNotes[k2]);
+      }
+      this.save();
+    },
+    getDailyNote(dateKey) {
+      const k = dateKey || todayKey();
+      return this.state.dailyNotes[k] || "";
+    },
+
+    /* ---------- أطول سلسلة (longest streak) ---------- */
+    longestStreak() {
+      const days = (this.state.stats.activeDays || []).slice().sort();
+      if (!days.length) return 0;
+      let longest = 1, current = 1;
+      for (let i = 1; i < days.length; i++) {
+        const a = new Date(days[i] + "T00:00:00");
+        const b = new Date(days[i - 1] + "T00:00:00");
+        if (Math.round((a - b) / 86400000) === 1) {
+          current++;
+          if (current > longest) longest = current;
+        } else {
+          current = 1;
+        }
+      }
+      return longest;
+    },
+
+    /* ---------- ثواني يوم محدد ---------- */
+    daySeconds(dateKey) {
+      return (this.state.stats.dailySeconds[dateKey] || 0);
+    },
+
+    /* ---------- عدد الأيام النشطة الكلي ---------- */
+    totalActiveDays() {
+      return (this.state.stats.activeDays || []).length;
     },
 
     /* ---------- derived ---------- */

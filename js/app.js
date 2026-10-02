@@ -503,35 +503,6 @@ App.actions = App.actions || {};
         </button>
       </div>` : ""}
 
-      <div class="section-head"><h2>عالمي</h2></div>
-      <div class="quick-grid">
-        <button class="quick-card" data-href="#/quran">
-          <span class="quick-ico qi-green"><span class="ico" data-ico="book"></span></span>
-          <span><span class="quick-title">مدينة القرآن</span><br><span class="quick-sub">حفظ وتلاوة وتكرار</span></span>
-        </button>
-        <button class="quick-card" data-href="#/review">
-          <span class="quick-ico qi-turquoise"><span class="ico" data-ico="refresh"></span></span>
-          ${dueCount ? `<span class="quick-badge">${App.arDigits(dueCount)}</span>` : ""}
-          <span><span class="quick-title">وادي المراجعة</span><br><span class="quick-sub">ثبّت ما حفظت</span></span>
-        </button>
-        <button class="quick-card" data-href="#/stories">
-          <span class="quick-ico qi-purple"><span class="ico" data-ico="bookOpen"></span></span>
-          <span><span class="quick-title">واحة القصص</span><br><span class="quick-sub">قصص تنفعك</span></span>
-        </button>
-        <button class="quick-card" data-href="#/morals">
-          <span class="quick-ico qi-green" style="background:linear-gradient(135deg,#57B98A,#2E8F63)"><span class="ico" data-ico="leaf"></span></span>
-          <span><span class="quick-title">حديقة الأخلاق</span><br><span class="quick-sub">مواقف تربيك</span></span>
-        </button>
-        <button class="quick-card" data-href="#/challenges">
-          <span class="quick-ico qi-gold"><span class="ico" data-ico="trophy"></span></span>
-          <span><span class="quick-title">تحديات الإتقان</span><br><span class="quick-sub">ألعاب وتحديات</span></span>
-        </button>
-        <button class="quick-card" data-href="#/achievements">
-          <span class="quick-ico qi-coral"><span class="ico" data-ico="medal"></span></span>
-          <span><span class="quick-title">إنجازاتي</span><br><span class="quick-sub">نجومك وأوسمتك</span></span>
-        </button>
-      </div>
-
       ${vodHtml}
 
       <button class="install-banner hidden" data-install-btn data-action="app-install" style="width:100%">

@@ -283,6 +283,99 @@
 .jh-range .chip.on { background: var(--c-gold); border-color: var(--c-gold); color: #4A3305; }
 
 .journey-steps { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
+
+/* ===== مراحل الحفظ الأيقونات (icons-only، صف أفقي واحد) ===== */
+.journey-steps-icons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 14px 6px 8px;
+  padding: 14px 10px;
+  background: var(--c-white);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.journey-steps-icons::-webkit-scrollbar { display: none; }
+.jsi-step {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 36px;
+  position: relative;
+  justify-content: center;
+}
+.jsi-connector {
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 2px;
+  background: var(--c-line);
+  z-index: 0;
+}
+.jsi-connector.first { display: none; }
+.jsi-step:last-child .jsi-connector { display: none; }
+.jsi-dot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--c-white);
+  border: 2px solid var(--c-line);
+  color: var(--c-text-faint);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1;
+  transition: all var(--motion-base) var(--ease);
+  position: relative;
+}
+.jsi-dot .ico { width: 18px; height: 18px; }
+.jsi-step.done .jsi-dot {
+  background: var(--c-success);
+  border-color: var(--c-success);
+  color: #fff;
+}
+.jsi-step.done .jsi-connector { background: var(--c-success); }
+.jsi-step.active .jsi-dot {
+  background: var(--grad-gold);
+  border-color: var(--c-gold-deep);
+  color: #2A1F08;
+  box-shadow: 0 0 0 4px rgba(230,181,80,.18), 0 4px 10px rgba(230,181,80,.25);
+  transform: scale(1.12);
+  animation: jsPulse 2.4s ease infinite;
+}
+[data-theme="dark"] .jsi-step.active .jsi-dot {
+  background: linear-gradient(135deg, #F5CB7C 0%, #E6B450 100%);
+  color: #1F1505;
+}
+.jsi-step.active .jsi-dot::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(230,181,80,.4);
+  animation: spin 8s linear infinite;
+}
+@keyframes jsPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(230,181,80,.18), 0 4px 10px rgba(230,181,80,.25); }
+  50% { box-shadow: 0 0 0 6px rgba(230,181,80,.25), 0 6px 16px rgba(230,181,80,.35); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== رسائل الإكمال ===== */
+.stage-msg { padding: 8px 4px; text-align: center; }
+.stage-msg-body {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--c-primary-deep);
+  line-height: 1.8;
+  margin: 0;
+}
+[data-theme="dark"] .stage-msg-body { color: var(--c-text); }
 .jstep {
   display: flex; gap: 14px;
   position: relative;

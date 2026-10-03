@@ -1,16 +1,14 @@
 /* ============================================================
    رفيق القرآن للأطفال — service-worker.js
    Cache-First للأصول الأساسية + Runtime Cache للصوت والخطوط
-   متوافق 100% مع GitHub Pages (مسارات نسبية فقط)
    ============================================================ */
 "use strict";
 
-const VERSION = "v1.1.0";
+const VERSION = "v1.1.1";
 const CORE_CACHE = `rafiq-core-${VERSION}`;
 const AUDIO_CACHE = `rafiq-audio-${VERSION}`;
 const MAX_AUDIO_ENTRIES = 300;
 
-/* كل الأصول الأساسية — تُخزَّن أول تشغيل وتعمل Offline بعدها */
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -36,6 +34,11 @@ const CORE_ASSETS = [
   "./js/app.js",
   "./data/quran.json",
   "./data/stories.json",
+  "./data/stories/index.json",
+  "./data/stories/story-01.json",
+  "./data/stories/story-02.json",
+  "./data/stories/story-03.json",
+  "./data/stories/story-04.json",
   "./data/morals.json",
   "./data/challenges.json",
   "./assets/icons/icon-192.png",
@@ -43,7 +46,6 @@ const CORE_ASSETS = [
   "./assets/icons/icon-maskable-512.png",
   "./assets/icons/apple-touch-icon.png",
   "./assets/icons/favicon-32.png",
-  /* الخطوط — تُخزَّن مسبقًا لضمان الأوفلاين الكامل */
   "./assets/fonts/tajawal-400-arabic.woff2",
   "./assets/fonts/tajawal-400-latin.woff2",
   "./assets/fonts/tajawal-500-arabic.woff2",
@@ -58,7 +60,6 @@ const CORE_ASSETS = [
   "./assets/fonts/amiri-quran-400-latin.woff2"
 ];
 
-/* التثبيت: تخزين الأصول الأساسية (بمتسامح — لا يفشل التثبيت كله لملف واحد) */
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
@@ -71,7 +72,6 @@ self.addEventListener("install", (event) => {
   );
 });
 
-/* التفعيل: حذف الكاشات القديمة */
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
@@ -86,27 +86,22 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-/* الجلب */
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
 
-  /* 1) الصوت (everyayah): Cache-First — يُخزَّن أول ما يُسمَع ليعمل Offline لاحقًا */
   if (url.hostname.endsWith("everyayah.com") && url.pathname.endsWith(".mp3")) {
     event.respondWith(cacheFirst(req, AUDIO_CACHE, { trim: MAX_AUDIO_ENTRIES }));
     return;
   }
 
-  /* 2) الطلبات داخل نطاق التطبيق */
   if (url.origin === location.origin) {
-    /* تنقل الصفحات: الشبكة أولًا ثم الكاش ثم index.html (لا شاشة بيضاء أبدًا) */
     if (req.mode === "navigate") {
       event.respondWith(navigateHandler(req));
       return;
     }
-    /* الأصول الثابتة: Cache-First ثم تحديث خلفي */
     event.respondWith(cacheFirst(req, CORE_CACHE));
   }
 });
@@ -123,10 +118,7 @@ async function navigateHandler(req) {
       (await cache.match(req)) ||
       (await cache.match("./index.html")) ||
       (await cache.match("./")) ||
-      new Response(
-        "<!DOCTYPE html><html lang='ar' dir='rtl'><body style='font-family:sans-serif;text-align:center;padding:40px'><h1>رفيق القرآن</h1><p>لا يوجد اتصال — افتح التطبيق مرة واحدة مع الإنترنت لتحميل الملفات الأساسية.</p></body></html>",
-        { headers: { "Content-Type": "text/html; charset=utf-8" } }
-      )
+      new Response("<!DOCTYPE html><html lang='ar' dir='rtl'><body style='font-family:sans-serif;text-align:center;padding:40px'><h1>رفيق القرآن</h1><p>لا يوجد اتصال — افتح التطبيق لاحقًا</p></body></html>", { headers: { "Content-Type": "text/html; charset=utf-8" } })
     );
   }
 }
@@ -137,7 +129,6 @@ async function cacheFirst(req, cacheName, opts = {}) {
   if (cached) return cached;
   try {
     const fresh = await fetch(req);
-    /* نخزن حتى الردود الشفافة (cross-origin بدون CORS مثل الصوت) */
     if (fresh && (fresh.ok || fresh.type === "opaque")) {
       cache.put(req, fresh.clone());
       if (opts.trim) trimCache(cacheName, opts.trim);

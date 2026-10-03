@@ -1,6 +1,6 @@
 /* ============================================================
    رفيق القرآن للأطفال — stories.js
-   واحة القصص: قصص قرآنية وأنبية مع استماع وأسئلة ومكافآت
+   تحميل القصص من data/stories/ مع احتفاظ بالنسخة القديمة
    ============================================================ */
 window.App = window.App || {};
 App.actions = App.actions || {};
@@ -13,10 +13,30 @@ App.actions = App.actions || {};
 
     load() {
       if (this.data) return Promise.resolve(this.data);
-      return fetch("./data/stories.json")
-        .then(r => r.json())
-        .then(json => { this.data = json.stories; return json; })
-        .catch(e => { console.error("stories load failed", e); throw e; });
+      const primary = fetch("./data/stories/index.json")
+        .then(r => {
+          if (!r.ok) throw new Error("stories index missing");
+          return r.json();
+        })
+        .then(json => {
+          const files = Array.isArray(json) ? json : (json.files || []);
+          return Promise.all(files.map(f => fetch(`./data/stories/${f}`).then(r => {
+            if (!r.ok) throw new Error("story fetch failed: " + f);
+            return r.json();
+          })));
+        })
+        .then(list => {
+          this.data = list.filter(Boolean);
+          return this.data;
+        })
+        .catch(() => fetch("./data/stories.json")
+          .then(r => r.json())
+          .then(json => {
+            this.data = (json.stories || []).filter(Boolean);
+            return this.data;
+          })
+        );
+      return primary;
     },
 
     byId(id) { return (this.data || []).find(s => s.id === id); },
@@ -26,7 +46,6 @@ App.actions = App.actions || {};
       this.load().then(() => App.Router.render()).catch(() => App.toast("تعذر تحميل القصص", "error"));
     },
 
-    /* ---------- القائمة ---------- */
     pageStories() {
       if (!this.data) { S.ensure(); return { nav: "more", html: App.loadingHtml() }; }
       const read = App.Storage.state.stats.storiesRead;
@@ -52,10 +71,10 @@ App.actions = App.actions || {};
           <span class="story-thumb">${S.thumbSvg(st)}</span>
           <span class="story-info">
             <span class="story-title">${st.title}</span>
-            <span class="story-excerpt">${st.excerpt}</span>
+            <span class="story-excerpt">${st.description || st.excerpt || ""}</span>
             <span class="row" style="gap:6px">
               <span class="chip ${st.category === "أنبياء" ? "chip-turquoise" : "chip-gold"}">${st.category}</span>
-              ${read.includes(st.id) ? '<span class="chip chip-success">قرأتها</span>' : `<span class="chip">+${App.arDigits(st.stars)} نجوم</span>`}
+              ${read.includes(st.id) ? '<span class="chip chip-success">قرأتها</span>' : `<span class="chip">+${App.arDigits(st.stars || 3)} نجوم</span>`}
             </span>
           </span>
         </button>`).join("")}
@@ -65,7 +84,6 @@ App.actions = App.actions || {};
     },
 
     thumbSvg(st) {
-      // غلاف SVG بسيط واحترافي لكل قصة
       const c1 = st.colors ? st.colors[0] : "#0C7A5C";
       const c2 = st.colors ? st.colors[1] : "#2FB5A3";
       return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -80,43 +98,37 @@ App.actions = App.actions || {};
       </svg>`;
     },
 
-    /* ---------- القارئ ---------- */
     pageStory(params) {
       if (!this.data) { S.ensure(); return { nav: "more", html: App.loadingHtml() }; }
       const st = S.byId(params.id);
       if (!st) return { nav: "more", html: App.emptyHtml("القصة غير موجودة") };
 
-      // السابق والتالي (يدور حول القائمة بشكل دائري)
       const idx = this.data.findIndex(s => s.id === st.id);
       const prevIdx = idx > 0 ? idx - 1 : this.data.length - 1;
       const nextIdx = idx < this.data.length - 1 ? idx + 1 : 0;
       const prevStory = this.data[prevIdx];
       const nextStory = this.data[nextIdx];
+      const pages = st.pages || [{ text: st.paragraphs ? st.paragraphs.join(" ") : (st.story || "") }];
+      const cover = st.cover || "";
 
       return {
         nav: "more",
         html: `
         <header class="screen-head">
           <button class="icon-btn btn-back" data-href="#/stories" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
-          <div class="sh-title"><h1>${st.title}</h1><p>${st.category} — ${st.ayahRef || ""}</p></div>
+          <div class="sh-title"><h1>${st.title}</h1><p>${st.category} — ${st.sources && st.sources[0] ? st.sources[0] : st.ayahRef || ""}</p></div>
         </header>
 
-        <div class="story-reader-img">${st.image ? `<img src="${st.image}" alt="${App.esc(st.title)}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'story-img-placeholder',innerHTML:'${S.thumbSvg(st)}'}))">` : S.thumbSvg(st)}</div>
+        <div class="story-reader-img">${cover ? `<img src="${cover}" alt="${App.esc(st.title)}" onerror="this.style.display='none'">` : `<div class="story-img-placeholder">${S.thumbSvg(st)}</div>`}</div>
 
         <div class="card">
-          <div class="modal-actions" style="margin-top:0;margin-bottom:12px">
-            <button class="btn btn-primary grow" data-action="story-listen">
-              <span class="ico" data-ico="headphones"></span> <span data-tts-label>استمع للقصة</span>
-            </button>
-            <button class="btn btn-soft" data-action="story-stop-listen" aria-label="إيقاف"><span class="ico" data-ico="stop"></span></button>
-          </div>
           <div class="story-body">
-            ${st.paragraphs.map(p => `<p>${p}</p>`).join("")}
+            ${pages.map(p => `<p>${p.text || p}</p>`).join("")}
           </div>
-          <div class="lesson-box"><b>العبرة:</b> ${st.lesson}</div>
+          ${st.lesson ? `<div class="lesson-box"><b>العبرة:</b> ${st.lesson}</div>` : ""}
         </div>
 
-        <div class="section-head"><h2>أسئلة القصة</h2><span class="tiny text-faint">أجب لتكسب ${App.arDigits(st.stars)} نجوم</span></div>
+        <div class="section-head"><h2>أسئلة القصة</h2><span class="tiny text-faint">أجب لتكسب ${App.arDigits(st.stars || 3)} نجوم</span></div>
         <div data-story-quiz></div>
 
         <div class="story-nav-rtl mt-16">
@@ -138,7 +150,7 @@ App.actions = App.actions || {};
         `,
         mount(el) {
           const quizHost = el.querySelector("[data-story-quiz]");
-          const questions = st.questions.map(q => ({
+          const questions = (st.questions || []).map(q => ({
             type: "story",
             surahName: st.title,
             prompt: q.q,
@@ -165,7 +177,6 @@ App.actions = App.actions || {};
       };
     },
 
-    /* ---------- الاستماع (SpeechSynthesis) ---------- */
     ttsVoice: null,
     ttsGetVoice() {
       if (!("speechSynthesis" in window)) return null;
@@ -180,7 +191,7 @@ App.actions = App.actions || {};
         return;
       }
       speechSynthesis.cancel();
-      const text = st.title + ". " + st.paragraphs.join(" ");
+      const text = st.title + ". " + (st.pages || []).map(p => p.text || p).join(" ");
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "ar-SA";
       u.rate = 0.92;

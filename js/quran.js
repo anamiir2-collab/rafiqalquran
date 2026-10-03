@@ -39,20 +39,18 @@ App.actions = App.actions || {};
     all() { return this.data ? this.data.surahs : []; },
     bismillah() { return this.data ? this.data.meta.bismillah : "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"; },
 
-    /* هل السورة تبدأ بالبسملة؟ (كل السور عدا الفاتحة والتوبة) */
     startsWithBismillah(n) {
-      // الفاتحة (1): البسملة آية كاملة فيها
-      // التوبة (9): لا بسملة
-      // الباقي: البسملة مدمجة في أول آية من API
+      const s = this.surah(n);
+      if (!s) return false;
+      if (s.basmala === false) return false;
+      if (s.basmala === true) return true;
       return n !== 1 && n !== 9;
     },
 
-    /* تفصل البسملة عن أول آية إذا كانت مدمجة في نصها */
     ayahsForDisplay(n) {
       const s = this.surah(n);
       if (!s) return [];
       const bism = this.bismillah();
-      // تطبيع: يحذف الحركات والشدّة لمقارنة بصرية
       const normalize = (str) => str.replace(/[\u064B-\u0652\u0670\u0640]/g, "").replace(/\s+/g, " ").trim();
       const bismNorm = normalize(bism);
       return s.ayahs.map(a => {
@@ -60,11 +58,8 @@ App.actions = App.actions || {};
         if (a.number === 1 && this.startsWithBismillah(n)) {
           const norm = normalize(text);
           if (norm.startsWith(bismNorm)) {
-            // ابحث عن موضع نهاية البسملة في النص الأصلي
-            // نطابق حرفًا بحرف مراعين الحركات
             let bi = 0, ai = 0;
             while (bi < bism.length && ai < text.length) {
-              // تخطّى الحركات في كلا النصين
               while (ai < text.length && /[\u064B-\u0652\u0670]/.test(text[ai])) ai++;
               while (bi < bism.length && /[\u064B-\u0652\u0670]/.test(bism[bi])) bi++;
               if (bi >= bism.length) break;
@@ -80,21 +75,17 @@ App.actions = App.actions || {};
       });
     },
 
-    /** السورة التالية المقترحة للحفظ: تحترم اتجاه الحفظ (backward = من الناس → يس) */
     suggestNext() {
       const st = App.Storage.state;
       const surahs = this.all();
       const direction = (st.settings && st.settings.memorizationDirection) || "backward";
-      // مرّتب حسب الاتجاه المختار
       const sorted = surahs.slice().sort((a, b) =>
         direction === "backward" ? b.number - a.number : a.number - b.number
       );
-      // أولًا: سورة بدأها الطفل ولم يكملها
       for (const s of sorted) {
         const p = st.progress[s.number];
         if (p && p.status === "learning" && (p.memorized || []).length < s.ayahsCount) return s;
       }
-      // ثانيًا: أقصر سورة لم تُتقن بعد
       const notMastered = sorted.filter(s => {
         const p = st.progress[s.number];
         return !p || p.status !== "mastered";
@@ -116,10 +107,8 @@ App.actions = App.actions || {};
       };
     },
 
-    /* ================= مدينة القرآن ================= */
     pageQuran(params) {
       const tab = (params && params.tab) || "memorize";
-      const bism = Q.bismillah();
       const last = App.Storage.state.lastAyah;
       const lastS = Q.surah(last.s);
       const suggest = Q.suggestNext();
@@ -242,7 +231,6 @@ App.actions = App.actions || {};
       }).join("");
     },
 
-    /* ================= تفاصيل السورة ================= */
     pageSurah(params) {
       const n = Number(params.id);
       const s = Q.surah(n);
@@ -250,8 +238,6 @@ App.actions = App.actions || {};
 
       const pr = Q.progressOf(n);
       const fsClass = App.Storage.getSettings().quranFontSize === "sm" ? "md" : (App.Storage.getSettings().quranFontSize === "lg" ? "lg" : "");
-
-      // استخدم النص المفصول عن البسملة
       const ayahs = Q.ayahsForDisplay(n);
       const showBismillah = Q.startsWithBismillah(n);
       const ayahsHtml = ayahs.map(a => `
@@ -299,7 +285,6 @@ App.actions = App.actions || {};
       };
     },
 
-    /* ================= التلاوة / التكرار للسورة كاملة ================= */
     pageMode(params) {
       const kind = params.kind || "recite";
       const n = Number(params.id);
@@ -307,13 +292,10 @@ App.actions = App.actions || {};
       if (!s) return { nav: "quran", html: App.emptyHtml("السورة غير موجودة") };
       const isRecite = kind === "recite";
 
-      // استخدم النص المفصول عن البسملة
       const ayahs = Q.ayahsForDisplay(n);
       const showBismillah = Q.startsWithBismillah(n);
-
-      // شكل المصحف: نص متصل مع علامة الآية الزخرفية
       const mushafText = ayahs.map(a =>
-        `<span class="ayah-segment" data-surah="${s.number}" data-ayah="${a.number}">${a.text}<span class="ayah-marker" data-surah="${s.number}" data-ayah="${a.number}" role="button" aria-label="الآية ${App.arDigits(a.number)}">${App.arDigits(a.number)}</span></span> `
+        `<span class="ayah-segment" data-surah="${s.number}" data-ayah="${a.number}">${a.text}<span class="ayah-marker" data-surah="${s.number}" data-ayah="${a.number}" role="button" aria-label="الآية ${App.arDigits(a.number)}">${App.arDigits(a.number)}</span></span>`
       ).join("");
 
       return {
@@ -338,76 +320,61 @@ App.actions = App.actions || {};
         </div>
         `,
         mount(el) {
-          // في وضع التلاوة: شغّل السورة كاملة + Highlight + Scroll تلقائي
           const list = s.ayahs.map(a => ({ surah: s.number, ayah: a.number }));
           const playerOpts = {
             list,
-            loop: !isRecite, // وضع التكرار يدور تلقائيًا
+            loop: !isRecite,
             title: "سورة " + s.name,
-            // في وضع التلاوة: شغّل تلقائيًا (autoplay مسموح هنا فقط)
             autoStart: isRecite,
-            // في وضع التلاوة: فعّل الـ autoplay لأي انتقال تلقائي
-            scopeAutoplay: true
+            scopeAutoplay: true,
+            mode: isRecite ? "tilawah" : "memorization"
           };
-          // أنشئ مشغل عائم بدون toolbar ظاهر (المصحف نفسه هو الـ toolbar)
-          // سنستخدم مشغل مدمج مخفي + شريط تحكم بسيط
           App.Player.renderMushafPlayer(el, playerOpts, el);
 
-          // عند تغيّر الآية الحالية: Highlight + Scroll
           App.Player.onState((state) => {
             if (!state.item) return;
-            // امسح الـ highlight السابق
             el.querySelectorAll(".ayah-segment").forEach(seg => seg.classList.remove("current"));
             el.querySelectorAll(".ayah-marker").forEach(m => m.classList.remove("current"));
-            // أبرز الآية الحالية
             const cur = el.querySelector(`.ayah-segment[data-surah="${state.item.surah}"][data-ayah="${state.item.ayah}"]`);
             const curMarker = el.querySelector(`.ayah-marker[data-surah="${state.item.surah}"][data-ayah="${state.item.ayah}"]`);
             if (cur) {
               cur.classList.add("current");
               if (curMarker) curMarker.classList.add("current");
-              // Scroll تلقائي للآية الحالية
-              try {
-                cur.scrollIntoView({ behavior: "smooth", block: "center" });
-              } catch (e) {}
+              try { cur.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
             }
           });
 
-          // الضغط على علامة الآية يفتح أدوات بسيطة
           el.addEventListener("click", (e) => {
             const marker = e.target.closest(".ayah-marker");
             if (!marker) return;
             e.preventDefault();
             const surah = Number(marker.dataset.surah);
             const ayah = Number(marker.dataset.ayah);
-            // أبرز الآية المختارة
             el.querySelectorAll(".ayah-marker.selected").forEach(m => m.classList.remove("selected"));
             marker.classList.add("selected");
-            // اعرض شريط الأدوات
             const tb = el.querySelector("#ayahToolbar");
             if (tb) {
               tb.classList.remove("hidden");
               tb.dataset.surah = surah;
               tb.dataset.ayah = ayah;
             }
-            // شغّل الآية مباشرة في وضع التلاوة
             if (isRecite) {
               const idx = list.findIndex(it => it.surah === surah && it.ayah === ayah);
               if (idx >= 0) App.Player.play(idx);
             }
           });
 
-          // عند مغادرة الصفحة: أوقف التشغيل
           App.Router.onLeave(() => App.Player.stopAll());
         }
       };
     }
   };
 
-  /* ---------- actions ---------- */
   App.actions["ayah-play"] = (el) => {
     const surah = Number(el.dataset.surah);
     const ayah = Number(el.dataset.ayah);
     const s = Q.surah(surah);
+    App.Player.setAudioMode("tilawah");
     App.Player.renderAndPlayFloating(surah, ayah, s ? s.name : "");
     document.querySelectorAll(".ayah-row").forEach(r => r.classList.remove("current"));
     el.classList.add("current");
@@ -423,12 +390,12 @@ App.actions = App.actions || {};
     App.Router.go("#/repeat/" + el.dataset.surah);
   };
 
-  /* ---------- أدوات المصحف (تشغيل/حفظ/ترديد آية محددة) ---------- */
   App.actions["ayah-replay"] = (el) => {
     const tb = el.closest("#ayahToolbar");
     if (!tb) return;
     const surah = Number(tb.dataset.surah);
     const ayah = Number(tb.dataset.ayah);
+    App.Player.setAudioMode("tilawah");
     App.Player.renderAndPlayFloating(surah, ayah, Q.surah(surah) ? Q.surah(surah).name : "");
   };
   App.actions["ayah-memorize"] = (el) => {
@@ -436,7 +403,6 @@ App.actions = App.actions || {};
     if (!tb) return;
     const surah = Number(tb.dataset.surah);
     const ayah = Number(tb.dataset.ayah);
-    // اضبط النطاق ليبدأ من هذه الآية
     const s = Q.surah(surah);
     if (!s) return;
     const end = Math.min(s.ayahsCount, ayah + 4);
@@ -448,12 +414,10 @@ App.actions = App.actions || {};
     if (!tb) return;
     const surah = Number(tb.dataset.surah);
     const ayah = Number(tb.dataset.ayah);
-    // ابدأ رحلة الحفظ عند هذه الآية (خطوة الترديد مباشرة)
     const s = Q.surah(surah);
     if (!s) return;
     const end = Math.min(s.ayahsCount, ayah + 2);
     App.Range.set(surah, ayah, end);
-    // ابدأ الترديد مباشرة (خطوة recite)
     if (App.Storage.state.session) {
       App.Storage.state.session.step = "recite";
       App.Storage.save();
@@ -461,7 +425,6 @@ App.actions = App.actions || {};
     App.Router.go("#/journey/" + surah);
   };
   App.actions["recite-jump"] = () => {
-    // عرض قائمة سريعة للقفز إلى آية (نستخدم toast كحل بسيط)
     App.toast("اضغط على رقم أي آية للقفز إليها", "info");
   };
 

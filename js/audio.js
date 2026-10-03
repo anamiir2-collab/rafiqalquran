@@ -1,7 +1,6 @@
 /* ============================================================
    رفيق القرآن للأطفال — audio.js
-   مشغل صوت احترافي: تشغيل/إيقاف/إعادة/تالي/سابق/سرعة/تكرار
-   المصدر: everyayah.com (بلا مفاتيح API) + كاش في Service Worker
+   مشغل صوت موحد: التلاوة + الحفظ / الترديد
    ============================================================ */
 window.App = window.App || {};
 App.actions = App.actions || {};
@@ -12,11 +11,39 @@ App.actions = App.actions || {};
   const RECITERS = {
     Alafasy_128kbps: "مشاري العفاسي",
     Husary_128kbps: "محمود خليل الحصري",
-    Minshawi_Murattal_128kbps: "محمد صديق المنشاوي"
+    Minshawi_Murattal_128kbps: "محمد صديق المنشاوي — Murattal",
+    Muallim: "محمد صديق المنشاوي — Muallim"
+  };
+
+  const AUDIO_PROVIDERS = {
+    murattal: {
+      id: "murattal",
+      mode: "tilawah",
+      label: "Muhammad Siddiq Al-Minshawi — Murattal — Hafs",
+      reciter: "Minshawi_Murattal_128kbps",
+      enabled: true,
+      source: "https://everyayah.com",
+      licenseNote: "يُستخدم كاستماع مباشر من مصدر خارجي. لا يُفترض أن الملفات قابلة لإعادة التوزيع إلا إذا تم توثيق الترخيص صراحةً. هذا التطبيق يحدّده كخيار تلاوة معزول عن أي مصدر غير موثَّق."
+    },
+    muallim: {
+      id: "muallim",
+      mode: "memorization",
+      label: "Muhammad Siddiq Al-Minshawi — Muallim",
+      reciter: "Muallim",
+      enabled: false,
+      source: "unverified",
+      licenseNote: "لا يتم استخدام هذا المصدر إلا بعد توثيق ترخيص واضح يسمح بإعادة التوزيع في موقع عام. هذا التطبيق يحافظ على إمكانية الاستبدال دون تعديل الواجهة."
+    }
   };
 
   function ayahUrl(reciter, surah, ayah) {
+    if (!reciter || reciter === "Muallim") return null;
     return `https://everyayah.com/data/${reciter}/${String(surah).padStart(3, "0")}${String(ayah).padStart(3, "0")}.mp3`;
+  }
+
+  function resolveProvider(mode) {
+    const normalized = mode === "memorization" ? "muallim" : "murattal";
+    return AUDIO_PROVIDERS[normalized] || AUDIO_PROVIDERS.murattal;
   }
 
   const Player = {
@@ -29,6 +56,7 @@ App.actions = App.actions || {};
     _stateCbs: [],
     _floatingHost: null,
     _errorShown: 0,
+    _audioMode: "tilawah",
 
     _ensureAudio() {
       if (!this.audio) {
@@ -49,6 +77,11 @@ App.actions = App.actions || {};
       this._stateCbs = this._stateCbs.filter(f => f !== cb);
     }; },
 
+    setAudioMode(mode) {
+      this._audioMode = mode === "memorization" ? "memorization" : "tilawah";
+      return this._audioMode;
+    },
+
     _emit() {
       const st = this.state();
       this._stateCbs.forEach(cb => { try { cb(st); } catch (e) {} });
@@ -65,7 +98,8 @@ App.actions = App.actions || {};
         speed: this._speed,
         item: this.currentItem(),
         idx: this.idx,
-        total: this.list.length
+        total: this.list.length,
+        mode: this._audioMode
       };
     },
 
@@ -76,18 +110,22 @@ App.actions = App.actions || {};
       this.opts = opts || {};
       this.idx = 0;
       this._repeatLeft = 0;
+      this._audioMode = (opts && opts.mode === "memorization") ? "memorization" : "tilawah";
     },
 
-    /* ---------- Mushaf Player (مشغل المصحف المخفي) ----------
-       في شاشة المصحف لا نعرض toolbar كبير، فقط شريط تحكم بسيط يطفو في الأسفل.
-       المستخدم يضغط على علامة الآية لتشغيلها. */
     renderMushafPlayer(rootEl, opts, scrollRoot) {
       const p = this;
       if (this._uiUnsubs) this._uiUnsubs.forEach(u => u());
       this._uiUnsubs = [];
-      p.load(opts.list, { loop: !!opts.loop, onComplete: opts.onComplete, scopeAutoplay: opts.scopeAutoplay !== false });
+      const mode = opts && opts.mode === "memorization" ? "memorization" : "tilawah";
+      p.setAudioMode(mode);
+      p.load(opts.list, {
+        loop: !!opts.loop,
+        onComplete: opts.onComplete,
+        scopeAutoplay: opts.scopeAutoplay !== false,
+        mode
+      });
 
-      // أنشئ شريط تحكم بسيط عائم في أسفل الشاشة
       let bar = rootEl.querySelector(".mushaf-control-bar");
       if (!bar) {
         bar = document.createElement("div");
@@ -103,7 +141,6 @@ App.actions = App.actions || {};
           <button class="mc-btn" data-action="mc-close" aria-label="إغلاق"><span class="ico" data-ico="x"></span></button>`;
         rootEl.appendChild(bar);
         if (App.fillIcons) App.fillIcons(bar);
-        // Local click handler
         bar.addEventListener("click", (e) => {
           const b = e.target.closest("[data-action]");
           if (!b) return;
@@ -117,7 +154,6 @@ App.actions = App.actions || {};
       }
       bar.classList.remove("hidden");
 
-      // اشتراك الـ state
       const unsub = p.onState((st) => {
         const playIco = bar.querySelector(".mc-play .ico");
         if (playIco && App.icons) playIco.innerHTML = App.icons[st.loading ? "loader" : (st.playing ? "pause" : "play")];
@@ -132,10 +168,13 @@ App.actions = App.actions || {};
       this._uiUnsubs.push(unsub);
       App.Router.onLeave(unsub);
 
-      // في وضع التلاوة مع autoStart: شغّل أول آية تلقائيًا (بعد تفاعل المستخدم الأول)
       if (opts.autoStart) {
-        // نضعّم autoplay flag ليُتاح الانتقال التلقائي بين الآيات
         this._pendingAutoStart = true;
+        setTimeout(() => {
+          if (this._pendingAutoStart && this.list.length && mode === "tilawah") {
+            this.play(0);
+          }
+        }, 250);
       }
     },
 
@@ -144,10 +183,21 @@ App.actions = App.actions || {};
       if (typeof idx === "number") this.idx = Math.max(0, Math.min(idx, this.list.length - 1));
       const item = this.currentItem();
       if (!item) return;
+      const mode = this._audioMode === "memorization" ? "memorization" : "tilawah";
+      const provider = resolveProvider(mode);
+      if (!provider.enabled) {
+        App.toast("مصدر الحفظ غير متاح بعد لأن مصدر Muallim غير موثّق ترخيصه. يُبقى النظام قابلاً للاستبدال دون تعديل الواجهة.", "info");
+        return;
+      }
       const a = this._ensureAudio();
+      const src = ayahUrl(provider.reciter, item.surah, item.ayah);
+      if (!src) {
+        App.toast("تعذر بناء رابط الصوت لهذا المصدر", "error");
+        return;
+      }
       const settings = App.Storage.getSettings();
       this._speed = settings.speed || 1;
-      a.src = ayahUrl(settings.reciter, item.surah, item.ayah);
+      a.src = src;
       a.playbackRate = this._speed;
       a.play().catch(() => this._onError());
       this._emit();
@@ -182,14 +232,12 @@ App.actions = App.actions || {};
     },
 
     _onEnded() {
-      // كرر الآية إذا كان هناك عدد تكرار متبقٍ
       if (this._repeatLeft > 0) {
         this._repeatLeft--;
         this.play(this.idx);
         return;
       }
       const loop = this.opts.loop;
-      // الوضع Loop (وضع التكرار) — تنقّل دائقي بين الآيات
       if (loop && this.idx < this.list.length - 1) {
         this.idx++;
         setTimeout(() => this.play(this.idx), 650);
@@ -200,14 +248,11 @@ App.actions = App.actions || {};
         setTimeout(() => this.play(this.idx), 900);
         return;
       }
-      // scopeAutoplay = التشغيل التلقائي داخل النطاق (التلاوة فقط)
-      // إذا لم يُفعّل: توقف عند نهاية الآية (الطفل يضغط التالي بنفسه)
       if (this.opts.scopeAutoplay && this.idx < this.list.length - 1) {
         this.idx++;
         setTimeout(() => this.play(this.idx), 650);
         return;
       }
-      // عند نهاية النطاق أو إيقاف التشغيل التلقائي
       if (this.opts.onComplete) {
         try { this.opts.onComplete(); } catch (e) { console.warn(e); }
         return;
@@ -215,7 +260,6 @@ App.actions = App.actions || {};
       this._emit();
     },
 
-    /* ---------- التشغيل التلقائي Scoped (يُستخدم في شاشة المصحف فقط) ---------- */
     _isAutoPlayEnabled() {
       try {
         const s = App.Storage.getSettings();
@@ -247,24 +291,22 @@ App.actions = App.actions || {};
       this._emit = this._emit.bind(this);
     },
 
-    /* ---------- UI ---------- */
     renderPlayer(host, opts) {
       const p = this;
-      // إزالة اشتراكات المشغلات القديمة (منع التسريب)
       if (this._uiUnsubs) this._uiUnsubs.forEach(u => u());
       this._uiUnsubs = [];
-      // scopeAutoplay: في التلاوة فقط نسمح بالانتقال التلقائي بين الآيات
-      // hideAutoplayBtn: في الحفظ نخفي زر "تلقائي" تمامًا
+      const mode = opts && opts.mode === "memorization" ? "memorization" : "tilawah";
+      p.setAudioMode(mode);
       p.load(opts.list, {
         loop: !!opts.loop,
         onComplete: opts.onComplete,
-        scopeAutoplay: opts.scopeAutoplay === true  // false افتراضيًا (الحفظ/الترديد لا autoplay)
+        scopeAutoplay: opts.scopeAutoplay === true,
+        mode
       });
       const st = App.Storage.getSettings();
       const hideAuto = opts.hideAutoplayBtn === true;
       const autoOn = !hideAuto && st.autoPlay !== false;
-      const autoBtnHtml = hideAuto ? "" :
-        `<button class="pc-btn auto-btn ${autoOn ? "on" : ""}" data-action="p-autoplay" aria-label="تشغيل تلقائي" aria-pressed="${autoOn}"><span class="ico" data-ico="${autoOn ? "playAuto" : "stopAuto"}"></span><span>تلقائي</span></button>`;
+      const autoBtnHtml = hideAuto ? "" : `<button class="pc-btn auto-btn ${autoOn ? "on" : ""}" data-action="p-autoplay" aria-label="تشغيل تلقائي" aria-pressed="${autoOn}"><span class="ico" data-ico="${autoOn ? "playAuto" : "stopAuto"}"></span></button>`;
       host.innerHTML = `
         <div class="player" data-player-ui>
           <div class="player-main">
@@ -295,7 +337,6 @@ App.actions = App.actions || {};
       this._uiUnsubs.push(unsub);
       App.Router.onLeave(unsub);
 
-      // actions scoped to this host
       const local = {
         "p-toggle": () => p.toggle(),
         "p-prev": () => p.prev(),
@@ -314,13 +355,6 @@ App.actions = App.actions || {};
           const ico = el.querySelector(".ico");
           if (ico && App.icons) ico.innerHTML = App.icons[next ? "playAuto" : "stopAuto"];
           App.toast(next ? "تم تفعيل التشغيل التلقائي" : "تم إيقاف التشغيل التلقائي", "info");
-        },
-        "p-repeat": (el) => {
-          const c = Number(el.dataset.count) || 3;
-          p._repeatLeft = c;
-          el.classList.add("on");
-          App.toast(`سيتم تكرار الآية ${App.arDigits(c)} مرات`, "info");
-          if (!p.state().playing) p.play(p.idx);
         }
       };
       ui.addEventListener("click", (e) => {
@@ -338,7 +372,6 @@ App.actions = App.actions || {};
       if (seek && st.duration) seek.style.width = (st.currentTime / st.duration * 100) + "%";
       const sub = host.querySelector("[data-p-sub]");
       if (sub) {
-        // لا نعرض عداد "N من M" للطفل — فقط اسم السورة ورقم الآية الحالية
         if (st.item) {
           const sName = App.Quran && App.Quran.surah(st.item.surah);
           sub.textContent = (sName ? "سورة " + sName.name + " — " : "") + "الآية " + App.arDigits(st.item.ayah);
@@ -348,26 +381,20 @@ App.actions = App.actions || {};
       }
     },
 
-    /* ---------- Floating mini player ---------- */
     renderAndPlayFloating(surah, ayah, surahName) {
       const s = App.Quran.surah(surah);
       if (!s) return;
-      // احترام نطاق الحفظ: لو النطاق شامل لهذه الآية، القائمة من الآية إلى نهاية النطاق فقط
       let list;
       const range = (App.Range && App.Range.isValid()) ? App.Range.get() : null;
       if (range && range.surah === surah && ayah >= range.from && ayah <= range.to) {
-        list = s.ayahs
-          .filter(a => a.number >= ayah && a.number <= range.to)
-          .map(a => ({ surah: s.number, ayah: a.number }));
+        list = s.ayahs.filter(a => a.number >= ayah && a.number <= range.to).map(a => ({ surah: s.number, ayah: a.number }));
       } else if (range && range.surah === surah && (ayah < range.from || ayah > range.to)) {
-        // الآية خارج النطاق — شغّل هذه الآية فقط (لا يوجد تالي)
         list = [{ surah: s.number, ayah }];
       } else {
-        // لا يوجد نطاق — السلوك القديم: من الآية إلى نهاية السورة
         list = s.ayahs.filter(a => a.number >= ayah).map(a => ({ surah: s.number, ayah: a.number }));
       }
       this._showFloating();
-      this.load(list, {});
+      this.load(list, { mode: "tilawah" });
       const host = this._floatingHost;
       this._floatingUnsub && this._floatingUnsub();
       this._floatingUnsub = this.onState(() => this._syncFloating(this.state()));
@@ -423,4 +450,5 @@ App.actions = App.actions || {};
 
   App.Player = Player;
   App.RECITERS = RECITERS;
+  App.AUDIO_PROVIDERS = AUDIO_PROVIDERS;
 })();

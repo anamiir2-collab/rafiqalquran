@@ -210,6 +210,69 @@ App.actions = App.actions || {};
     }
   };
 
+  /* ================= اختبار الإتقان — كل آية محفوظة ================= */
+  function buildMasteryQuiz(surahNo, rangeOverride) {
+    const s = App.Quran.surah(Number(surahNo));
+    if (!s) return [];
+
+    const range = rangeOverride || (currentRange() && currentRange().surah === s.number ? currentRange() : null);
+    const from = range ? Number(range.from) : 1;
+    const to = range ? Number(range.to) : s.ayahsCount;
+
+    const prog = App.Storage.prog(s.number);
+    const memorized = new Set((prog && prog.memorized || []).map(Number));
+    const ayahs = s.ayahs.filter(a =>
+      memorized.has(Number(a.number)) &&
+      Number(a.number) >= from &&
+      Number(a.number) <= to
+    );
+
+    const questions = ayahs.map(a => {
+      const tokens = tokenize(a.text);
+
+      // الآيات القصيرة جدًا: سؤال اختيار الآية نفسها.
+      if (tokens.length < 3) {
+        const others = s.ayahs
+          .filter(x => x.number !== a.number)
+          .map(x => x.text);
+        const distractors = sample(others, 3);
+        while (distractors.length < 3) distractors.push("آية أخرى");
+        const options = App.shuffle([a.text, ...distractors]);
+        return {
+          type: "masteryAyah",
+          surah: s.number,
+          ayah: a.number,
+          prompt: "اختر نص الآية التي حفظتها",
+          options,
+          answer: options.indexOf(a.text)
+        };
+      }
+
+      // كل آية محفوظة تحصل على سؤال مستقل.
+      // نحذف كلمة من الآية ونطلب من الطفل إكمالها.
+      const idx = 1 + Math.floor(Math.random() * (tokens.length - 1));
+      const correct = tokens[idx];
+      const pool = wordPool(s.number, correct);
+      const distractors = sample(pool, 3);
+      while (distractors.length < 3) distractors.push("كلمة");
+      const options = App.shuffle([correct, ...distractors]);
+      const displayTokens = tokens.slice();
+      displayTokens[idx] = '<span class="blank-slot">؟</span>';
+
+      return {
+        type: "masteryAyah",
+        surah: s.number,
+        ayah: a.number,
+        prompt: "أكمل الآية بالكلمة الصحيحة",
+        display: displayTokens.join(" "),
+        options,
+        answer: options.indexOf(correct)
+      };
+    });
+
+    return App.shuffle(questions);
+  }
+
   /* ================= بناء اختبار ================= */
   function buildQuiz(surahIds, count, types, rangeOpts) {
     const qs = [];
@@ -612,5 +675,5 @@ App.actions = App.actions || {};
   App.actions["quiz-exit"] = () => App.Router.go("#/challenges");
 
   App.Challenges = Challenges;
-  App.Games = { mountQuiz, mountMemory, buildQuiz, Gens, pickSurahs, tokenize, resultView };
+  App.Games = { mountQuiz, mountMemory, buildQuiz, buildMasteryQuiz, Gens, pickSurahs, tokenize, resultView };
 })();

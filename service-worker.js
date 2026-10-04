@@ -4,7 +4,7 @@
    ============================================================ */
 "use strict";
 
-const VERSION = "v1.1.9";
+const VERSION = "v1.2.0";
 const CORE_CACHE = `rafiq-core-${VERSION}`;
 const AUDIO_CACHE = `rafiq-audio-${VERSION}`;
 const MAX_AUDIO_ENTRIES = 300;
@@ -33,7 +33,6 @@ const CORE_ASSETS = [
   "./js/pwa.js",
   "./js/app.js",
   "./data/quran.json",
-  "./data/stories.json",
   "./data/stories/index.json",
   "./data/stories/story-01.json",
   "./data/stories/story-02.json",

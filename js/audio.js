@@ -12,7 +12,7 @@ App.actions = App.actions || {};
   const RECITERS = {
     Alafasy_128kbps: "مشاري العفاسي",
     Husary_128kbps: "محمود خليل الحصري",
-    Minshawi_Murattal_128kbps: "محمد صديق المنشاوي"
+    Minshawy_Murattal_128kbps: "محمد صديق المنشاوي"
   };
 
   function ayahUrl(reciter, surah, ayah) {

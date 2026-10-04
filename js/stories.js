@@ -1,6 +1,6 @@
 /* ============================================================
    رفيق القرآن للأطفال — stories.js
-   تحميل القصص من data/stories/ مع احتفاظ بالنسخة القديمة
+   تحميل القصص من data/stories/
    ============================================================ */
 window.App = window.App || {};
 App.actions = App.actions || {};
@@ -13,7 +13,7 @@ App.actions = App.actions || {};
 
     load() {
       if (this.data) return Promise.resolve(this.data);
-      const primary = fetch("./data/stories/index.json")
+      return fetch("./data/stories/index.json")
         .then(r => {
           if (!r.ok) throw new Error("stories index missing");
           return r.json();
@@ -28,15 +28,7 @@ App.actions = App.actions || {};
         .then(list => {
           this.data = list.filter(Boolean);
           return this.data;
-        })
-        .catch(() => fetch("./data/stories.json")
-          .then(r => r.json())
-          .then(json => {
-            this.data = (json.stories || []).filter(Boolean);
-            return this.data;
-          })
-        );
-      return primary;
+        });
     },
 
     byId(id) { return (this.data || []).find(s => s.id === id); },

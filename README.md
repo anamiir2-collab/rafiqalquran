@@ -1,110 +1,235 @@
-<h1 align="center">rafiqalquran</h1>
-<p align="center">Your steadfast digital companion for profound Quranic engagement, anytime, anywhere.</p>
+# رفيق القرآن للأطفال 🕌
 
-<p align="center">
-  <img src="https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge&logo=github" alt="Build Status">
-  <img src="https://img.shields.io/github/license/username/rafiqalquran?style=for-the-badge&color=blue" alt="License">
-  <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge&logo=github" alt="PRs Welcome">
-  <img src="https://img.shields.io/github/stars/username/rafiqalquran?style=for-the-badge&color=yellow" alt="GitHub Stars">
-</p>
+<div dir="rtl">
+
+تطبيق ويب تفاعلي (PWA) لحفظ جزء عمّ وتعليم الأطفال القيم القرآنية — مصمم أولاً للهاتف (Mobile First)، يعمل **بدون إنترنت** بعد أول تشغيل، وجاهز للرفع المباشر على **GitHub Pages** بدون أي سيرفر أو Build.
+
+</div>
 
 ---
 
-## The Strategic "Why"
+## وصف المشروع
 
-> Navigating the sacred text of the Quran can often be fragmented across multiple platforms, demanding constant internet access, or presenting clunky interfaces that hinder consistent engagement. The journey of reflection and study should be seamless, intuitive, and always at your fingertips.
+«رفيق القرآن للأطفال» تطبيق تعليمي عربي كامل للأطفال، يأخذ الطفل في رحلة منظمة: **استماع ← ترديد (تسجيل صوتي) ← اختبار الإتقان ← إتقان ← مكافأة**. يضم جزء عمّ كاملاً (37 سورة بالرسم العثماني)، ونظام مراجعة ذكي بالتكرار المتباعد، وألعاب إتقان، وقصصاً قرآنية وأنبية، وحديقة أخلاق تفاعلية، ونظام نجوم ونقاط وأوسمة ومستويات، ولوحة متابعة لولي الأمر مع شهادات إتقان قابلة للطباعة.
 
-**rafiqalquran** addresses this challenge head-on by providing a modern, reliable, and user-centric Progressive Web App (PWA) designed to foster a deeper, uninterrupted connection with the Holy Quran. It transforms your device into a dedicated portal for spiritual growth, ensuring the divine wisdom is always accessible, regardless of connectivity.
+- **بدون Backend**: كل شيء يعمل في المتصفح، والتقدم محفوظ على الجهاز (localStorage).
+- **PWA حقيقي**: قابل للتثبيت على أندرويد وآيفون، مع شاشة تشغيل ووضع Offline كامل.
+- **بدون أي مفاتيح API مكشوفة**: التلاوات تُبَث مجاناً من everyayah.com (العفاسي والحصري).
 
----
+## المميزات
 
-## Key Features
+| القسم | التفاصيل |
+|---|---|
+| الرئيسية | تحية شخصية للطفل، بطاقة «رحلتك اليوم» بخطوات ومراحل، آية اليوم، عدادات النجوم والمستوى |
+| مدينة القرآن | جزء عمّ كامل (37 سورة / 564 آية بالرسم العثماني)، تبويبات: حفظ جديد، السور، التلاوة، التكرار، مع نسبة تقدم كل سورة |
+| رحلة الحفظ | استماع بمشغل احترافي (تشغيل/إيقاف/إعادة/تالي/سابق/سرعة/تكرار)، ترديد بتسجيل الصوت (MediaRecorder)، اختبار إتقان، مكافآت |
+| وادي المراجعة | مراجعة اليوم بنظام تكرار متباعد، سجل الأخطاء، سور تحتاج تثبيت، مستوى الإتقان العام |
+| واحة القصص | 7 قصص (أنبياء + قرآنية) مع استماع صوتي وأسئلة تفاعلية ومكافآت |
+| حديقة الأخلاق | 7 مواضيع (صدق، أمانة، بر الوالدين…) بمواقف واختيارات وتغذية راجعة |
+| تحديات الإتقان | 6 ألعاب: ترتيب الكلمات، الكلمة المفقودة، أكمل الآية، الآية التالية، رتب الآيات، تحدي الذاكرة + تحدي شامل |
+| نظام المكافآت | نجوم، نقاط، 16 وساماً، 7 مستويات، شاشة إنجازات مع احتفالات وConfetti |
+| لوحة ولي الأمر | إحصائيات كاملة، رسم أسبوعي لوقت التعلم، تقارير السور، شهادات إتقان PNG، تصدير/استيراد بيانات JSON |
+| Offline | Service Worker يخزّن كل الأصول + كاش الصوتيات المستمعة — لا شاشة بيضاء أبداً |
 
-✨ **Offline Accessibility**: Read and reflect on the Quran without an internet connection, ensuring uninterrupted study wherever you are.
-🔍 **Intelligent Search**: Quickly find specific verses, chapters, or keywords, making your research and memorization efforts highly efficient.
-📱 **Progressive Web App (PWA)**: Enjoy an installable, app-like experience directly from your browser, complete with fast loading and reliable performance.
-📖 **Beautiful Rendition**: Experience the Quranic text displayed with clarity and aesthetic precision, enhancing your reading experience.
-💡 **Intuitive Navigation**: Effortlessly browse through chapters (Surahs) and verses (Ayahs) with a clean, user-friendly interface.
-🚀 **Lightweight & Fast**: Built for performance, ensuring a smooth and responsive experience across various devices.
+## طريقة التشغيل محلياً
 
----
+التطبيق يحتاج سيرفر محلي بسيط (لأنه يجلب ملفات JSON — لا يعمل بفتح الملف مباشرة file://):
 
-## Technical Architecture
-
-rafiqalquran is built on a robust and modern web stack, designed for performance, reliability, and an exceptional user experience.
-
-| Technology | Purpose                               | Key Benefit                                       |
-| :--------- | :------------------------------------ | :------------------------------------------------ |
-| JavaScript | Core application logic & interactivity | Dynamic, responsive user interactions             |
-| HTML5      | Structural foundation & content       | Semantic, accessible, and standard web markup     |
-| CSS3       | Styling & responsive design           | Visually appealing and adaptive interface         |
-| PWA        | Offline capabilities & installability | App-like experience, reliability, and performance |
-
-### Directory Structure
-
-```
-rafiqalquran/
-├── assets/                  # Images, icons, and other static media files
-│   └── (e.g., app-icon.png, splash-screen.png)
-├── css/                     # Stylesheets for application layout and design
-│   └── style.css
-├── data/                    # Quranic text, translations, or other structured data
-│   └── quran.json
-├── js/                      # JavaScript modules for application logic
-│   └── app.js
-│   └── service-worker-registration.js
-├── index.html               # Main entry point of the application
-├── manifest.json            # Web app manifest for PWA features
-├── service-worker.js        # Service worker for offline caching and background sync
-└── README.md                # Project documentation (this file)
+```bash
+# بطريقتك المفضلة:
+python3 -m http.server 8080
+# أو
+npx serve .
 ```
 
+ثم افتح `http://localhost:8080` من المتصفح.
+
+## طريقة الرفع على GitHub
+
+1. أنشئ Repository جديداً في حسابك على GitHub (Public أو Private مع Pages المدفوع).
+2. ارفع **كل محتويات هذا المجلد** (index.html, css/, js/, data/, assets/, manifest.json, service-worker.js) إلى المستودع:
+
+```bash
+git init
+git add .
+git commit -m "رفيق القرآن للأطفال - الإصدار الأول"
+git branch -M main
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+git push -u origin main
+```
+
+> ملاحظة: ارفع محتويات المجلد نفسها (حيث يوجد index.html مباشرة في جذر المستودع)، وارفع `.gitkeep` ضمن مجلدي assets/images و assets/audio للحفاظ على البنية.
+
+## تفعيل GitHub Pages
+
+1. من صفحة المستودع: **Settings ← Pages**
+2. في Source اختر: **Deploy from a branch**
+3. اختر الفرع **main** والمجلد **/ (root)** ثم **Save**
+4. بعد دقيقة أو دقيقتين سيكون التطبيق متاحاً على:
+   `https://USERNAME.github.io/REPOSITORY/`
+
+جميع المسارات داخل التطبيق **نسبية** (`./css/style.css`…) لذا يعمل داخل أي Sub-path بدون أي تعديل. التنقل يعتمد Hash Routing (`#/home`) ولا يحتاج Server Rewrites.
+
+## طريقة تحديث المشروع
+
+عند تعديل أي ملف، **ارفع رقم الإصدار** في أول سطر من `service-worker.js`:
+
+```js
+const VERSION = "v1.0.1"; // غيّر الرقم مع كل تحديث
+```
+
+ثم:
+
+```bash
+git add . && git commit -m "تحديث ..." && git push
+```
+
+سيحدّث الـ Service Worker ذاكرة التخزين تلقائياً عند زيارة المستخدمين التالية.
+
+## هيكل الملفات
+
+```
+├── index.html            الصفحة الوحيدة (SPA بـ Hash Routing)
+├── manifest.json         تعريف التطبيق (PWA)
+├── service-worker.js     الكاش ووضع Offline
+├── css/
+│   ├── fonts.css         تعريفات الخطوط المُستضافة محلياً
+│   ├── style.css         نظام التصميم الأساسي (ألوان/أزرار/بطاقات/مشغل)
+│   ├── child.css         واجهة الطفل (رحلة الحفظ/الألعاب/القصص/المكافآت)
+│   ├── parent.css        لوحة ولي الأمر
+│   └── responsive.css    نقاط الاستجابة (360 → 1024px)
+├── js/
+│   ├── storage.js        التخزين المحلي (طبقة البيانات القابلة للاستبدال بـ Supabase)
+│   ├── navigation.js     الراوتر (Hash Router)
+│   ├── quran.js          مدينة القرآن وبيانات السور
+│   ├── audio.js          المشغل الصوتي + المشغل العائم
+│   ├── memorization.js   رحلة الحفظ الكاملة (استماع/تسجيل/اختبار/مكافأة)
+│   ├── challenges.js     محرك الألعاب والاختبارات
+│   ├── revision.js       وادي المراجعة (تكرار متباعد)
+│   ├── stories.js        واحة القصص (+ قراءة صوتية)
+│   ├── morals.js         حديقة الأخلاق
+│   ├── rewards.js        النجوم والنقاط والأوسمة والمستويات
+│   ├── parent.js         لوحة ولي الأمر + الشهادات
+│   ├── pwa.js            التثبيت والـ Service Worker والـ Offline
+│   └── app.js            الأيقونات SVG والأدوات والشاشات الرئيسية
+├── data/
+│   ├── quran.json        جزء عمّ كامل (37 سورة بالرسم العثماني)
+│   ├── stories.json      القصص والأسئلة
+│   ├── morals.json       مواقف الأخلاق
+│   └── challenges.json   إعدادات الألعاب والأوسمة
+└── assets/
+    ├── icons/            أيقونات التطبيق (PWA)
+    ├── fonts/            خطوط Tajawal و Amiri (woff2 — تعمل بدون إنترنت)
+    ├── images/           للصور المستقبلية
+    └── audio/            للصوتيات المستقبلية (التلاوات الحالية تُبَث من everyayah.com)
+```
+
+## طريقة إضافة سور جديدة
+
+بيانات السور في `data/quran.json`:
+
+```json
+{
+  "number": 1,
+  "name": "الفاتحة",
+  "englishName": "Al-Fatihah",
+  "revelationType": "مكية",
+  "ayahsCount": 7,
+  "juz": 1,
+  "ayahs": [
+    { "number": 1, "text": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" }
+  ]
+}
+```
+
+أضف السورة إلى مصفوفة `surahs` (يُفضَّل بالترتيب)، وحدّث `meta.surahsCount`. الصوت يعمل تلقائياً لأن الترقيم الدولي للآيات متوافق مع everyayah.com. *نصيحة*: يمكن توليد الملف لأي جزء من المصحح عبر واجهة `api.alquran.cloud/v1/surah/{رقم}/quran-uthmani` بنفس بنية هذا المشروع.
+
+## طريقة إضافة قصص جديدة
+
+أضف كائناً في مصفوفة `stories` داخل `data/stories.json`:
+
+```json
+{
+  "id": "musa",
+  "title": "موسى والفرعون",
+  "category": "أنبياء",
+  "stars": 3,
+  "ayahRef": "سورة القصص",
+  "colors": ["#0C7A5C", "#2FB5A3"],
+  "excerpt": "سطر تمهيدي يظهر في البطاقة",
+  "paragraphs": ["فقرة 1...", "فقرة 2..."],
+  "lesson": "العبرة من القصة",
+  "questions": [
+    { "q": "السؤال؟", "options": ["صحيح", "خطأ 1", "خطأ 2", "خطأ 3"], "correct": 0 }
+  ]
+}
+```
+
+- `id` يجب أن يكون فريداً. `correct` هو فهرس الإجابة الصحيحة (يبدأ من 0).
+- الغلاف يُرسم تلقائياً بألوان `colors`.
+
+## طريقة إضافة ألعاب جديدة
+
+1. أضف تعريفاً في `data/challenges.json` داخل `games`.
+2. في `js/challenges.js` أضف مولد سؤال جديد داخل كائن `Gens` بنفس نمط البقية:
+
+```js
+myGame(surahNo) {
+  const s = App.Quran.surah(surahNo);
+  return {
+    type: "myGame",
+    surah: surahNo, ayah: 1,
+    prompt: "نص السؤال للطفل",
+    options: ["أ", "ب", "ج", "د"],
+    answer: 0            // فهرس الإجابة الصحيحة
+  };
+}
+```
+
+3. أضف النوع إلى قائمة `GAMES` في نفس الملف ليظهر زره في شاشة التحديات. الأسئلة ذات `options` تعمل تلقائياً داخل الاختبار الشامل.
+
+## طريقة تغيير اسم التطبيق
+
+ابحث واستبدل «رفيق القرآن للأطفال» في هذه الملفات فقط:
+
+1. `index.html` (وسم `<title>` و`meta apple-mobile-web-app-title`)
+2. `manifest.json` (`name` و`short_name`)
+3. `js/app.js` (نصوص الشاشات)
+4. `README.md`
+
+## طريقة تغيير الألوان
+
+كل الألوان متغيرات CSS في أول `css/style.css` تحت `:root`:
+
+```css
+--c-primary: #0C7A5C;      /* الأخضر الزمردي الأساسي */
+--c-gold: #E8A93E;         /* الذهبي للمكافآت */
+--c-cream: #FBF6EC;        /* خلفية التطبيق */
+--c-turquoise: #2FB5A3;    /* تركوازي */
+```
+
+غيّر هذه المتغيرات وسينتشر التغيير على التطبيق كاملاً. ولا تنسَ تحديث `theme_color` في `index.html` و`manifest.json` لتطابق اللون الأساسي.
+
+## إضافة Backend مستقبلاً (Supabase)
+
+التطبيق مبني بطبقة بيانات واحدة قابلة للاستبدال:
+
+- كل القراءة/الكتابة تمر عبر `js/storage.js` (`App.Storage`) — لن تحتاج لمس أي ملف آخر.
+- التصدير/الاستيراد جاهزان (`App.Storage.export()/import()`) ويمكن استخدامهما للرفع السحابي.
+- خطة الربط المقترحة:
+  1. أنشئ مشروعاً على Supabase وجدولاً باسم `progress` فيه عمود `device_id` و`state` (JSONB).
+  2. أضف في `storage.js` دالة `sync()` تستدعي `supabase.from('progress').upsert(...)` بعد كل `save()`.
+  3. عند التشغيل: حمّل السحابة، وادمجها مع الحالة المحلية (الأحدث زمنياً يفوز)، ثم احفظ.
+  4. لا تنسَ: مفاتيح Supabase العامة (anon key) فقط — قواعد RLS تحمي بيانات كل جهاز/حساب.
+
+بهذا تبقى الواجهة كما هي تماماً، ويصبح التقدم متزامناً بين الأجهزة.
+
 ---
 
-## Operational Setup
+<div dir="rtl">
 
-### Prerequisites
+**«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»**
 
-To run rafiqalquran, you will need:
+النص القرآني: مصحف المدينة (رسم عثماني) عبر Tanzil. التلاوات: everyayah.com (مشاري العفاسي / محمود خليل الحصري).
 
-*   A modern web browser (e.g., Chrome, Firefox, Edge, Safari) that supports Progressive Web App (PWA) features.
-
-### Installation
-
-Follow these simple steps to get rafiqalquran up and running on your local machine:
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/username/rafiqalquran.git
-    ```
-2.  **Navigate to the project directory:**
-    ```bash
-    cd rafiqalquran
-    ```
-3.  **Open `index.html`:**
-    Simply open the `index.html` file in your preferred web browser. For local development and to fully test PWA features like service workers, it is recommended to serve the files using a local web server (e.g., `python -m http.server` or `npx serve`).
-
-    ```bash
-    # Option 1: Using a simple Python web server (recommended for local testing)
-    python3 -m http.server 8000
-    # Then navigate to http://localhost:8000 in your browser
-    ```
-
-### Environment Configuration
-
-This project is designed to be highly portable and does not require specific environment variables or complex configuration files for basic operation. All necessary data and settings are bundled within the application.
-
----
-
-## Community & Governance
-
-We believe in the power of community and welcome contributions to enhance rafiqalquran.
-
-### Contributing
-
-We encourage and welcome contributions from the community to make rafiqalquran even better. If you'd like to contribute, please follow these steps:
-
-1.  **Fork** the repository.
-2.  **Create a new branch** for your feature or bug fix: `git checkout -b feature/your-feature-name` or `git checkout -b bugfix/issue-description`.
-3.  **Make your changes** and ensure they adhere to the project's coding standards.
-4
+</div>

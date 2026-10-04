@@ -50,26 +50,47 @@ App.actions = App.actions || {};
     ayahsForDisplay(n) {
       const s = this.surah(n);
       if (!s) return [];
+
       const bism = this.bismillah();
-      const normalize = (str) => str.replace(/[\u064B-\u0652\u0670\u0640]/g, "").replace(/\s+/g, " ").trim();
+
+      // إزالة البسملة من بداية الآية الأولى للعرض فقط.
+      // نتجاهل التشكيل والتطويل والمسافات حتى تعمل مع اختلافات كتابة المصحف.
+      const normalize = (str) => String(str)
+        .replace(/[\\u064B-\\u0652\\u0670\\u0640\\u06D6-\\u06ED]/g, "")
+        .replace(/\\s+/g, "")
+        .trim();
+
       const bismNorm = normalize(bism);
+
+      const stripBismillah = (text) => {
+        const source = String(text);
+        const sourceNorm = normalize(source);
+        if (!bismNorm || !sourceNorm.startsWith(bismNorm)) return source;
+
+        let sourceIndex = 0;
+        let matched = 0;
+
+        while (sourceIndex < source.length && matched < bismNorm.length) {
+          const ch = source[sourceIndex];
+          if (/[\\u064B-\\u0652\\u0670\\u0640\\u06D6-\\u06ED]/.test(ch) || /\\s/.test(ch)) {
+            sourceIndex++;
+            continue;
+          }
+
+          if (ch !== bismNorm[matched]) return source;
+          sourceIndex++;
+          matched++;
+        }
+
+        return matched === bismNorm.length
+          ? source.slice(sourceIndex).trim()
+          : source;
+      };
+
       return s.ayahs.map(a => {
         let text = a.text;
         if (a.number === 1 && this.startsWithBismillah(n)) {
-          const norm = normalize(text);
-          if (norm.startsWith(bismNorm)) {
-            let bi = 0, ai = 0;
-            while (bi < bism.length && ai < text.length) {
-              while (ai < text.length && /[\u064B-\u0652\u0670]/.test(text[ai])) ai++;
-              while (bi < bism.length && /[\u064B-\u0652\u0670]/.test(bism[bi])) bi++;
-              if (bi >= bism.length) break;
-              if (ai >= text.length || text[ai] !== bism[bi]) { ai = -1; break; }
-              ai++; bi++;
-            }
-            if (ai > 0) {
-              text = text.slice(ai).trim();
-            }
-          }
+          text = stripBismillah(text);
         }
         return { number: a.number, text };
       });

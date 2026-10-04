@@ -135,7 +135,7 @@ App.actions = App.actions || {};
 
         <div class="card">
           <div class="story-body">
-            ${pages.map(p => `<p>${p.text || p}</p>`).join("")}
+            ${pages.map((p, i) => `<article class="story-event"><h3 class="story-event-title">${App.esc(p.title || `الحدث ${i + 1}`)}</h3><p>${App.esc(p.text || p)}</p></article>`).join("")}
           </div>
           ${st.lesson ? `<div class="lesson-box"><b>العبرة:</b> ${st.lesson}</div>` : ""}
         </div>

@@ -1,4 +1,4 @@
-# رفيق القرآن للأطفال 🕌<h1 align="center">
+<h1 align="center"> رفيق القرآن للأطفال 🕌</h1>
 <p align="center">
   <img src="https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge&logo=github" alt="Build Status">
   <img src="https://img.shields.io/github/license/username/rafiqalquran?style=for-the-badge&color=blue" alt="License">

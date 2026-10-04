@@ -48,9 +48,8 @@ App.actions = App.actions || {};
     saveSession() { App.Storage.save(); },
 
     rangeAyahs(sess) {
-      // استخدم نسخة العرض التي تزيل البسملة من بداية الآية الأولى عند الحاجة.
-      const ayahs = App.Quran.ayahsForDisplay(sess.surah);
-      return ayahs.filter(a => a.number >= sess.range[0] && a.number <= sess.range[1]);
+      const s = App.Quran.surah(sess.surah);
+      return s.ayahs.filter(a => a.number >= sess.range[0] && a.number <= sess.range[1]);
     },
 
     /* ---------- الصفحة الرئيسية للرحلة ---------- */

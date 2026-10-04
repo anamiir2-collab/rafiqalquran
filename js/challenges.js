@@ -210,7 +210,6 @@ App.actions = App.actions || {};
     }
   };
 
-
   /* ================= بناء اختبار ================= */
   function buildQuiz(surahIds, count, types, rangeOpts) {
     const qs = [];

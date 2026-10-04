@@ -66,21 +66,33 @@ App.actions = App.actions || {};
             </span>
           </div>
         </div>
+        <div class="stories-grid">
         ${this.data.map(st => `
-        <button class="story-card" data-href="#/story/${st.id}">
-          <span class="story-thumb">${S.thumbSvg(st)}</span>
+        <button class="story-card ${read.includes(st.id) ? "is-read" : ""}" data-href="#/story/${st.id}" aria-label="فتح قصة ${App.esc(st.title)}">
+          <span class="story-thumb">${S.thumbVisual(st)}</span>
+          ${read.includes(st.id) ? '<span class="story-read-mark" aria-label="تمت القراءة"><span class="ico" data-ico="check"></span></span>' : ""}
           <span class="story-info">
             <span class="story-title">${st.title}</span>
-            <span class="story-excerpt">${st.description || st.excerpt || ""}</span>
-            <span class="row" style="gap:6px">
-              <span class="chip ${st.category === "أنبياء" ? "chip-turquoise" : "chip-gold"}">${st.category}</span>
-              ${read.includes(st.id) ? '<span class="chip chip-success">قرأتها</span>' : `<span class="chip">+${App.arDigits(st.stars || 3)} نجوم</span>`}
+            <span class="story-excerpt">${st.description || st.excerpt || "قصة من قصص القرآن فيها عبرة وفائدة"}</span>
+            <span class="story-meta">
+              <span class="chip ${st.category === "أنبياء" ? "chip-turquoise" : "chip-gold"}">${st.category || "قصص قرآنية"}</span>
+              ${read.includes(st.id)
+                ? '<span class="chip chip-success">قرأتها</span>'
+                : `<span class="chip story-stars">★ +${App.arDigits(st.stars || 3)}</span>`}
             </span>
           </span>
         </button>`).join("")}
+        </div>
         `,
         mount() {}
       };
+    },
+
+    thumbVisual(st) {
+      if (st.cover) {
+        return `<img src="${st.cover}" alt="${App.esc(st.title)}" loading="lazy" onerror="this.outerHTML=S.thumbSvg(S.byId('${st.id}'))">`;
+      }
+      return S.thumbSvg(st);
     },
 
     thumbSvg(st) {

@@ -518,69 +518,189 @@ App.actions = App.actions || {};
   }
 
   /* ---------- عالمي ---------- */
-  function pageMore() {
-    const st = App.Storage.state;
-    return {
-      nav: "more",
-      html: `
+ function pageMore() {
+  const st = App.Storage.state;
+
+  return {
+    nav: "more",
+
+    html: `
       <header class="screen-head">
-        <div class="sh-title"><h1>عالمي</h1><p>كل أقسام التطبيق</p></div>
+        <div class="sh-title">
+          <h1>عالمي</h1>
+          <p>كل أقسام التطبيق</p>
+        </div>
       </header>
 
-      <div class="card" style="display:flex;align-items:center;gap:13px" data-href="#/more/settings">
-        <span class="avatar-big" style="width:58px;height:58px">${App.avatarSvg(st.profile.avatar)}</span>
+      <div
+        class="card"
+        style="display:flex;align-items:center;gap:13px"
+        data-href="#/more/settings"
+      >
+        <span
+          class="avatar-big"
+          style="width:58px;height:58px"
+        >${App.avatarSvg(st.profile.avatar)}</span>
+
         <span class="grow">
-          <span class="bold" style="font-size:1.05rem">${st.profile.name ? App.esc(st.profile.name) : "بطل القرآن"}</span><br>
-          <span class="tiny text-soft">اضغط لتعديل الملف الشخصي</span>
+          <span
+            class="bold"
+            style="font-size:1.05rem"
+          >${st.profile.name ? App.esc(st.profile.name) : "بطل القرآن"}</span><br>
+
+          <span class="tiny text-soft">
+            اضغط لتعديل الملف الشخصي
+          </span>
         </span>
-        <span class="ico" data-ico="chevronLeft" style="color:var(--c-text-faint)"></span>
+
+        <span
+          class="ico"
+          data-ico="chevronLeft"
+          style="color:var(--c-text-faint)"
+        ></span>
       </div>
 
       <div class="more-list mt-16">
+
         <button class="more-item" data-href="#/streak">
-          <span class="mi-ico" style="background:linear-gradient(135deg,#1F3A30,#163025);color:var(--c-gold)"><span class="ico" data-ico="flameBig"></span></span>
-          <span class="mi-txt"><span class="mi-title">يوميات الانتظام</span><span class="mi-sub">تقويم رحلتك وملاحظاتك اليومية</span></span>
+          <span
+            class="mi-ico"
+            style="background:linear-gradient(135deg,#1F3A30,#163025);color:var(--c-gold)"
+          >
+            <span class="ico" data-ico="flameBig"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">يوميات الانتظام</span>
+            <span class="mi-sub">تقويم رحلتك وملاحظاتك اليومية</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
+
         <button class="more-item" data-href="#/achievements">
-          <span class="mi-ico" style="background:var(--grad-gold)"><span class="ico" data-ico="medal"></span></span>
-          <span class="mi-txt"><span class="mi-title">إنجازاتي</span><span class="mi-sub">النجوم والنقاط والأوسمة</span></span>
+          <span
+            class="mi-ico"
+            style="background:var(--grad-gold)"
+          >
+            <span class="ico" data-ico="medal"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">إنجازاتي</span>
+            <span class="mi-sub">النجوم والنقاط والأوسمة</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
+
         <button class="more-item" data-href="#/stories">
-          <span class="mi-ico" style="background:linear-gradient(135deg,#9B8CCB,#6F5FA8)"><span class="ico" data-ico="bookOpen"></span></span>
-          <span class="mi-txt"><span class="mi-title">واحة القصص</span><span class="mi-sub">قصص قرآنية وأنبية</span></span>
+          <span
+            class="mi-ico"
+            style="background:linear-gradient(135deg,#9B8CCB,#6F5FA8)"
+          >
+            <span class="ico" data-ico="bookOpen"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">واحة القصص</span>
+            <span class="mi-sub">قصص قرآنية وأنبية</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
+
         <button class="more-item" data-href="#/morals">
-          <span class="mi-ico" style="background:linear-gradient(135deg,#57B98A,#2E8F63)"><span class="ico" data-ico="leaf"></span></span>
-          <span class="mi-txt"><span class="mi-title">حديقة الأخلاق</span><span class="mi-sub">مواقف واختيارات</span></span>
+          <span
+            class="mi-ico"
+            style="background:linear-gradient(135deg,#57B98A,#2E8F63)"
+          >
+            <span class="ico" data-ico="leaf"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">حديقة الأخلاق</span>
+            <span class="mi-sub">مواقف واختيارات</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
+
         <button class="more-item" data-href="#/parent">
-          <span class="mi-ico" style="background:linear-gradient(135deg,#86B9D8,#5A92B4)"><span class="ico" data-ico="chart"></span></span>
-          <span class="mi-txt"><span class="mi-title">لوحة ولي الأمر</span><span class="mi-sub">تقارير وشهادات</span></span>
+          <span
+            class="mi-ico"
+            style="background:linear-gradient(135deg,#86B9D8,#5A92B4)"
+          >
+            <span class="ico" data-ico="chart"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">لوحة ولي الأمر</span>
+            <span class="mi-sub">تقارير وشهادات</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
+
         <button class="more-item" data-href="#/more/settings">
-          <span class="mi-ico" style="background:linear-gradient(135deg,#8FA3A0,#5F6F68)"><span class="ico" data-ico="settings"></span></span>
-          <span class="mi-txt"><span class="mi-title">الإعدادات</span><span class="mi-sub">القارئ والسرعة والخط</span></span>
+          <span
+            class="mi-ico"
+            style="background:linear-gradient(135deg,#8FA3A0,#5F6F68)"
+          >
+            <span class="ico" data-ico="settings"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">الإعدادات</span>
+            <span class="mi-sub">القارئ والسرعة والخط</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
-        <button class="more-item hidden" data-install-btn data-action="app-install">
-          <span class="mi-ico" style="background:linear-gradient(135deg,#43C6B4,#23958A)"><span class="ico" data-ico="download"></span></span>
-          <span class="mi-txt"><span class="mi-title">تثبيت التطبيق</span><span class="mi-sub">على الشاشة الرئيسية لجهازك</span></span>
+
+        <button
+          class="more-item hidden"
+          data-install-btn
+          data-action="app-install"
+        >
+          <span
+            class="mi-ico"
+            style="background:linear-gradient(135deg,#43C6B4,#23958A)"
+          >
+            <span class="ico" data-ico="download"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">تثبيت التطبيق</span>
+            <span class="mi-sub">على الشاشة الرئيسية لجهازك</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
+
         <button class="more-item" data-action="about-app">
-          <span class="mi-ico" style="background:var(--grad-primary)"><span class="ico" data-ico="heart"></span></span>
-          <span class="mi-txt"><span class="mi-title">حول التطبيق</span><span class="mi-sub">رفيق القرآن للأطفال</span></span>
+          <span
+            class="mi-ico"
+            style="background:var(--grad-primary)"
+          >
+            <span class="ico" data-ico="heart"></span>
+          </span>
+
+          <span class="mi-txt">
+            <span class="mi-title">حول التطبيق</span>
+            <span class="mi-sub">رفيق القرآن للأطفال</span>
+          </span>
+
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
-      </div>`,
-      mount() {}
-    };
-  }
+
+      </div>
+    `,
+
+    mount() {}
+  };
+}
+
 
   /* ---------- الإعدادات ---------- */
   function pageSettings() {

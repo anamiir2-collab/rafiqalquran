@@ -297,8 +297,7 @@ App.actions = App.actions || {};
     /* ---------- 3) الاختبار ---------- */
     renderQuiz(host, sess, s) {
       const rangeOpts = sess.range ? { from: sess.range[0], to: sess.range[1] } : null;
-      // اختبار الإتقان يشمل كل آية تم حفظها داخل نطاق الرحلة، دون إسقاط أي آية.
-      const questions = App.Games.buildMasteryQuiz(s.number, rangeOpts);
+      const questions = App.Games.buildQuiz([s.number], 5, ["wordOrder", "missingWord", "completeAyah", "nextAyah"], rangeOpts);
       App.Games.mountQuiz(host, {
         questions,
         title: "اختبار الإتقان",

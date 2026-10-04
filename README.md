@@ -1,5 +1,12 @@
 # رفيق القرآن للأطفال 🕌
+<p align="center">
+  <img src="https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge&logo=github" alt="Build Status">
+  <img src="https://img.shields.io/github/license/username/rafiqalquran?style=for-the-badge&color=blue" alt="License">
+  <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge&logo=github" alt="PRs Welcome">
+  <img src="https://img.shields.io/github/stars/username/rafiqalquran?style=for-the-badge&color=yellow" alt="GitHub Stars">
+</p>
 
+---
 <div dir="rtl">
 
 تطبيق ويب تفاعلي (PWA) لحفظ جزء عمّ وتعليم الأطفال القيم القرآنية — مصمم أولاً للهاتف (Mobile First)، يعمل **بدون إنترنت** بعد أول تشغيل، وجاهز للرفع المباشر على **GitHub Pages** بدون أي سيرفر أو Build.

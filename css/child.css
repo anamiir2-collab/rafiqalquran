@@ -944,3 +944,22 @@
   background: #fff;
 }
 .avatar-big img, .avatar-big svg { width: 100%; height: 100%; }
+
+.story-event {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border, rgba(0,0,0,.08));
+}
+
+.story-event:last-child { border-bottom: 0; }
+
+.story-event-title {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.story-event p {
+  margin: 0;
+  line-height: 2;
+}

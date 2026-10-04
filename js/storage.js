@@ -27,7 +27,7 @@ App.version = "1.0.0";
         onboarded: false
       },
       settings: {
-        reciter: "Minshawi_Murattal_128kbps",
+        reciter: "Minshawy_Murattal_128kbps",
         speed: 1,
         repeatCount: 3,
         quranFontSize: "md",
@@ -85,6 +85,10 @@ App.version = "1.0.0";
           const parsed = JSON.parse(raw);
           this.state = Object.assign(defaults(), parsed);
           this.state.settings = Object.assign(defaults().settings, parsed.settings || {});
+          // Migration: older builds used the incorrect EveryAyah folder name for Minshawi.
+          if (this.state.settings.reciter === "Minshawi_Murattal_128kbps") {
+            this.state.settings.reciter = "Minshawy_Murattal_128kbps";
+          }
           this.state.rewards = Object.assign(defaults().rewards, parsed.rewards || {});
           this.state.stats = Object.assign(defaults().stats, parsed.stats || {});
           this.state.profile = Object.assign(defaults().profile, parsed.profile || {});

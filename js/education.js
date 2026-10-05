@@ -9,30 +9,30 @@ App.Education = {
       id:"wudu", title:"الوضوء", sub:"نتعلم الطهارة خطوة بخطوة", image:"./assets/education/wudu.svg",
       intro:"الوضوء طهارة جميلة نستعد بها للصلاة. نتعلمه بهدوء ونطبقه مع أحد الوالدين أو المعلم.",
       items:[
-        ["النية","أن تنوي بقلبك أنك تتوضأ للصلاة، والنية محلها القلب."],
-        ["غسل الكفين","نغسل الكفين جيدًا إلى الرسغين، ونحرص على وصول الماء بين الأصابع."],
-        ["المضمضة والاستنشاق","نتمضمض بالماء، ثم نستنشقه بلطف وننثره. وإذا كان الطفل صغيرًا فليتعلم ذلك برفق."],
-        ["غسل الوجه","نغسل الوجه كله من منابت الشعر المعتادة إلى أسفل الذقن ومن الأذن إلى الأذن."],
-        ["غسل اليدين إلى المرفقين","نغسل اليد اليمنى ثم اليسرى مع إدخال المرفقين في الغسل."],
-        ["مسح الرأس والأذنين","نمسح الرأس بالماء، ونتعلم مسح الأذنين مع الرأس."],
-        ["غسل الرجلين","نغسل الرجل اليمنى ثم اليسرى إلى الكعبين، ونحرص على الماء بين أصابع القدمين."],
-        ["بعد الوضوء","نحمد الله بعد الوضوء ونتعلم الذكر الوارد بعده مع الوالدين أو المعلم."]
+        ["النية","أن تنوي بقلبك أنك تتوضأ للصلاة، والنية محلها القلب.","./assets/education/wudu-01-niyyah.svg"],
+        ["غسل الكفين","نغسل الكفين جيدًا إلى الرسغين، ونحرص على وصول الماء بين الأصابع.","./assets/education/wudu-02-hands.svg"],
+        ["المضمضة والاستنشاق","نتمضمض بالماء، ثم نستنشقه بلطف وننثره. وإذا كان الطفل صغيرًا فليتعلم ذلك برفق.","./assets/education/wudu-03-mouth-nose.svg"],
+        ["غسل الوجه","نغسل الوجه كله من منابت الشعر المعتادة إلى أسفل الذقن ومن الأذن إلى الأذن.","./assets/education/wudu-04-face.svg"],
+        ["غسل اليدين إلى المرفقين","نغسل اليد اليمنى ثم اليسرى مع إدخال المرفقين في الغسل.","./assets/education/wudu-05-arms.svg"],
+        ["مسح الرأس والأذنين","نمسح الرأس بالماء، ونتعلم مسح الأذنين مع الرأس.","./assets/education/wudu-06-head.svg"],
+        ["غسل الرجلين","نغسل الرجل اليمنى ثم اليسرى إلى الكعبين، ونحرص على الماء بين أصابع القدمين.","./assets/education/wudu-07-feet.svg"],
+        ["بعد الوضوء","نحمد الله بعد الوضوء ونتعلم الذكر الوارد بعده مع الوالدين أو المعلم.","./assets/education/wudu-08-after.svg"]
       ]
     },
     {
       id:"prayer", title:"تعلم الصلاة", sub:"نتعلم الصلاة خطوة بخطوة", image:"./assets/education/prayer.svg",
       intro:"الصلاة صلة بين العبد وربه. نتعلمها بالتدريج، ونطلب من الوالدين أو المعلم أن يصححوا لنا التطبيق.",
       items:[
-        ["الاستعداد للصلاة","نتوضأ، ونلبس ملابس ساترة ونظيفة، ونتأكد من دخول وقت الصلاة ونستقبل القبلة."],
-        ["النية","ننوي في القلب الصلاة التي سنصليها، ولا نحتاج إلى قول النية بصوت مرتفع."],
-        ["تكبيرة الإحرام","نقف إن كنا قادرين ونقول: الله أكبر، ونبدأ الصلاة."],
-        ["القيام والقراءة","نقرأ الفاتحة في الصلاة، ثم نقرأ ما تيسر من القرآن في موضعه."],
-        ["الركوع","نقول الله أكبر ونركع، ونطمئن في الركوع ونسبح الله."],
-        ["الرفع من الركوع","نرفع حتى نعتدل قائمين ونطمئن قبل الانتقال إلى السجود."],
-        ["السجود","نسجد ونطمئن، ونسبح الله، وندعو بما ورد من الدعاء."],
-        ["الجلوس بين السجدتين","نرفع من السجود ونجلس مطمئنين، ثم نسجد السجدة الثانية."],
-        ["التشهد","في موضع التشهد نجلس ونقرأ التشهد، وفي الصلاة التي فيها تشهد أخير نصلي على النبي ﷺ وندعو."],
-        ["السلام","نختم الصلاة بالتسليم عن اليمين ثم عن اليسار بحسب الصلاة التي نصليها."],
+        ["الاستعداد للصلاة","نتوضأ، ونلبس ملابس ساترة ونظيفة، ونتأكد من دخول وقت الصلاة ونستقبل القبلة.","./assets/education/prayer-01-ready.svg"],
+        ["النية","ننوي في القلب الصلاة التي سنصليها، ولا نحتاج إلى قول النية بصوت مرتفع.","./assets/education/prayer-02-niyyah.svg"],
+        ["تكبيرة الإحرام","نقف إن كنا قادرين ونقول: الله أكبر، ونبدأ الصلاة.","./assets/education/prayer-03-takbir.svg"],
+        ["القيام والقراءة","نقرأ الفاتحة في الصلاة، ثم نقرأ ما تيسر من القرآن في موضعه.","./assets/education/prayer-04-standing.svg"],
+        ["الركوع","نقول الله أكبر ونركع، ونطمئن في الركوع ونسبح الله.","./assets/education/prayer-05-ruku.svg"],
+        ["الرفع من الركوع","نرفع حتى نعتدل قائمين ونطمئن قبل الانتقال إلى السجود.","./assets/education/prayer-06-rise.svg"],
+        ["السجود","نسجد ونطمئن، ونسبح الله، وندعو بما ورد من الدعاء.","./assets/education/prayer-07-sujud.svg"],
+        ["الجلوس بين السجدتين","نرفع من السجود ونجلس مطمئنين، ثم نسجد السجدة الثانية.","./assets/education/prayer-08-between.svg"],
+        ["التشهد","في موضع التشهد نجلس ونقرأ التشهد، وفي الصلاة التي فيها تشهد أخير نصلي على النبي ﷺ وندعو.","./assets/education/prayer-09-tashahhud.svg"],
+        ["السلام","نختم الصلاة بالتسليم عن اليمين ثم عن اليسار بحسب الصلاة التي نصليها.","./assets/education/prayer-10-salam.svg"],
         ["ملاحظة مهمة","عدد الركعات يختلف بين الصلوات الخمس، لذلك يتعلم الطفل عدد ركعات كل صلاة مع والديه أو معلمه."]
       ]
     },
@@ -109,7 +109,7 @@ App.Education = {
       nav:"more",
       html:'<header class="screen-head"><button class="icon-btn btn-back" data-href="#/education"><span class="ico" data-ico="chevronRight"></span></button><div class="sh-title"><h1>'+t.title+'</h1><p>'+t.sub+'</p></div></header>'+
       '<section class="edu-topic-hero">'+this.art(t)+'<h2>'+t.title+'</h2><p>'+t.intro+'</p></section>'+
-      '<div class="edu-lessons">'+t.items.map((item,i)=>'<article class="edu-lesson"><div class="edu-number">'+App.arDigits(i+1)+'</div><div class="edu-lesson-art">'+this.art(t)+'</div><div class="edu-lesson-text"><h3>'+item[0]+'</h3><p>'+item[1]+'</p></div></article>').join("")+'</div>'+
+      '<div class="edu-lessons">'+t.items.map((item,i)=>'<article class="edu-lesson"><div class="edu-number">'+App.arDigits(i+1)+'</div><div class="edu-lesson-art"><img class="edu-step-image" src="'+(item[2]||t.image)+'" alt="'+App.esc(item[0])+'" loading="lazy"></div><div class="edu-lesson-text"><h3>'+item[0]+'</h3><p>'+item[1]+'</p></div></article>').join("")+'</div>'+
       '<div class="edu-note">تعلم خطوة خطوة، واسأل والديك أو معلمك عن أي شيء لا تفهمه.</div>',
       mount(){}
     };
@@ -117,5 +117,5 @@ App.Education = {
 };
 
 const es=document.createElement("style");
-es.textContent=".edu-hero,.edu-topic-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:24px;background:#F7FBF8;border:1px solid #DCEBE3;margin-bottom:16px}.edu-hero-image{width:120px;height:92px;object-fit:cover;border-radius:18px}.edu-image{width:100%;height:100%;object-fit:cover;display:block}.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.edu-card{background:var(--c-white);border:1px solid #E6E2D7;border-radius:20px;overflow:hidden;text-align:right;padding:0}.edu-art{display:block;height:105px}.edu-card-body{display:block;padding:10px}.edu-card-body strong{display:block;color:var(--c-primary-deep)}.edu-card-body small{display:block;color:var(--c-text-soft);font-size:.7rem;margin-top:3px}.edu-open{display:block;color:var(--c-primary);font-size:.7rem;font-weight:800;margin-top:8px}.edu-topic-hero{display:block;text-align:center}.edu-topic-hero .edu-image{width:180px;height:125px;margin:0 auto 10px;border-radius:20px}.edu-topic-hero h2{margin:0;color:var(--c-primary-deep)}.edu-topic-hero p{color:var(--c-text-soft);line-height:1.8;margin:7px 0 0}.edu-lessons{display:flex;flex-direction:column;gap:10px}.edu-lesson{display:grid;grid-template-columns:34px 70px 1fr;gap:10px;align-items:center;padding:10px;background:var(--c-white);border:1px solid #E6E2D7;border-radius:20px}.edu-number{width:32px;height:32px;border-radius:11px;background:var(--c-primary-soft);display:flex;align-items:center;justify-content:center;font-weight:900}.edu-lesson-art{width:70px;height:58px;overflow:hidden;border-radius:14px}.edu-lesson-text h3{margin:0;color:var(--c-primary-deep);font-size:.88rem}.edu-lesson-text p{margin:5px 0 0;color:var(--c-text-soft);font-size:.74rem;line-height:1.75}.edu-note{margin:14px 0;padding:14px;border-radius:18px;background:#FFF8E7;border:1px solid #F1DEAD;color:#6B5530;font-size:.78rem;line-height:1.8}@media(max-width:380px){.edu-grid{grid-template-columns:1fr}.edu-lesson{grid-template-columns:30px 58px 1fr}.edu-lesson-art{width:58px;height:52px}}";
+es.textContent=".edu-hero,.edu-topic-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:24px;background:#F7FBF8;border:1px solid #DCEBE3;margin-bottom:16px}.edu-hero-image{width:120px;height:92px;object-fit:cover;border-radius:18px}.edu-image,.edu-step-image{width:100%;height:100%;object-fit:cover;display:block}.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.edu-card{background:var(--c-white);border:1px solid #E6E2D7;border-radius:20px;overflow:hidden;text-align:right;padding:0}.edu-art{display:block;height:105px}.edu-card-body{display:block;padding:10px}.edu-card-body strong{display:block;color:var(--c-primary-deep)}.edu-card-body small{display:block;color:var(--c-text-soft);font-size:.7rem;margin-top:3px}.edu-open{display:block;color:var(--c-primary);font-size:.7rem;font-weight:800;margin-top:8px}.edu-topic-hero{display:block;text-align:center}.edu-topic-hero .edu-image{width:180px;height:125px;margin:0 auto 10px;border-radius:20px}.edu-topic-hero h2{margin:0;color:var(--c-primary-deep)}.edu-topic-hero p{color:var(--c-text-soft);line-height:1.8;margin:7px 0 0}.edu-lessons{display:flex;flex-direction:column;gap:10px}.edu-lesson{display:grid;grid-template-columns:34px 70px 1fr;gap:10px;align-items:center;padding:10px;background:var(--c-white);border:1px solid #E6E2D7;border-radius:20px}.edu-number{width:32px;height:32px;border-radius:11px;background:var(--c-primary-soft);display:flex;align-items:center;justify-content:center;font-weight:900}.edu-lesson-art{width:70px;height:58px;overflow:hidden;border-radius:14px}.edu-lesson-text h3{margin:0;color:var(--c-primary-deep);font-size:.88rem}.edu-lesson-text p{margin:5px 0 0;color:var(--c-text-soft);font-size:.74rem;line-height:1.75}.edu-note{margin:14px 0;padding:14px;border-radius:18px;background:#FFF8E7;border:1px solid #F1DEAD;color:#6B5530;font-size:.78rem;line-height:1.8}@media(max-width:380px){.edu-grid{grid-template-columns:1fr}.edu-lesson{grid-template-columns:30px 58px 1fr}.edu-lesson-art{width:58px;height:52px}}";
 document.head.appendChild(es);

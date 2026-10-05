@@ -137,15 +137,14 @@ App.actions = App.actions || {};
       const tabs = [
         { id: "memorize", label: "حفظ جديد" },
         { id: "surahs", label: "السور" },
-        { id: "recite", label: "التلاوة" },
-        { id: "repeat", label: "التكرار" }
+        { id: "recite", label: "التلاوة" }
       ];
 
       let body = "";
       if (tab === "memorize") body = Q.tabMemorize(suggest);
       else if (tab === "surahs") body = Q.tabSurahs();
       else if (tab === "recite") body = Q.tabPick("recite", "التلاوة", "استمع للسورة كاملة بتلاوة جميلة");
-      else body = Q.tabPick("repeat", "التكرار", "كرر الآيات حتى تثبت في قلبك");
+      else body = Q.tabPick("recite", "التلاوة", "استمع للسورة كاملة بتلاوة جميلة");
 
       return {
         nav: "quran",
@@ -292,9 +291,6 @@ App.actions = App.actions || {};
             </button>
             <button class="btn btn-soft" data-action="surah-play" data-surah="${s.number}">
               <span class="ico" data-ico="headphones"></span> تلاوة
-            </button>
-            <button class="btn btn-soft" data-action="surah-loop" data-surah="${s.number}">
-              <span class="ico" data-ico="loop"></span> تكرار
             </button>
           </div>
         </div>

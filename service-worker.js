@@ -4,7 +4,7 @@
    ============================================================ */
 "use strict";
 
-const VERSION = "v1.4.0";
+const VERSION = "v1.5.0";
 const CORE_CACHE = `rafiq-core-${VERSION}`;
 const AUDIO_CACHE = `rafiq-audio-${VERSION}`;
 const MAX_AUDIO_ENTRIES = 300;

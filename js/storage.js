@@ -35,7 +35,7 @@ App.version = "1.0.0";
         uiSounds: true,        // مؤثرات الواجهة فقط (ضغط/انتقال) — منفصلة عن القرآن
         showTranslationless: true,
         autoPlay: true,
-        theme: "auto",        // "light" | "dark" | "auto"
+        theme: "light",       // الوضع النهاري فقط
         memorizationDirection: "backward"  // "backward" (من الناس → يس) | "forward" (من يس → الناس)
       },
       progress: {},          // { "<surahNo>": SurahProg }

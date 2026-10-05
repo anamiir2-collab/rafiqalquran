@@ -145,7 +145,7 @@ App.actions = App.actions || {};
       if (tab === "memorize") body = Q.tabMemorize(suggest);
       else if (tab === "surahs") body = Q.tabSurahs();
       else if (tab === "recite") body = Q.tabPick("recite", "استماع", "استمع للقرآن بتلاوة جميلة");
-      else if (tab === "tasmee") body = App.Tasmee.choose();
+      else if (tab === "tasmee") body = App.Tasmee.choose().html;
       else body = Q.tabPick("recite", "استماع", "استمع للقرآن بتلاوة جميلة");
 
       return {
@@ -292,7 +292,7 @@ App.actions = App.actions || {};
               <span class="ico" data-ico="rocket"></span> ${pr.status === "mastered" ? "أعد رحلة الإتقان" : (pr.memorized > 0 ? "أكمل الحفظ" : "ابدأ رحلة الحفظ")}
             </button>
             <button class="btn btn-soft" data-action="surah-play" data-surah="${s.number}">
-              <span class="ico" data-ico="headphones"></span> تلاوة
+              <span class="ico" data-ico="headphones"></span> استماع
             </button>
           </div>
         </div>
@@ -327,7 +327,11 @@ App.actions = App.actions || {};
         </header>
 
         <div class="mushaf-page">
-          <div class="mushaf-surah-name">سُورَةُ ${s.name}</div>
+          <div class="mushaf-topline">
+            <span>الجزء ${App.arDigits(30)}</span>
+            <span>سُورَةُ ${s.name}</span>
+          </div>
+          <div class="mushaf-ornament" aria-hidden="true">۞</div>
           ${showBismillah ? `<div class="mushaf-bismillah">${Q.bismillah()}</div>` : ""}
           <div class="mushaf-text ${App.Storage.getSettings().quranFontSize === "lg" ? "lg" : "md"}">${mushafText}</div>
           <div class="mushaf-page-number">${App.arDigits(n)}</div>

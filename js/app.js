@@ -450,8 +450,7 @@ App.actions = App.actions || {};
           <span class="ico" data-ico="book" style="width:24px;height:24px"></span>
         </span>
         <div class="sh-title"><h1>رفيق القرآن</h1><p>رفيقك في رحلة الحفظ</p></div>
-        <button class="icon-btn" data-action="toggle-theme" aria-label="تبديل الوضع الليلي"><span class="ico" data-ico="${(st.settings && st.settings.theme === 'dark') || (!st.settings || st.settings.theme === 'auto' || !st.settings.theme) ? 'moon' : 'sun'}"></span></button>
-        <button class="icon-btn" data-href="#/more/settings" aria-label="الإعدادات"><span class="ico" data-ico="settings"></span></button>
+        <span class="avatar-home">${App.avatarSvg(pr.avatar, 42)}</span>
       </header>
 
       <div class="hero">
@@ -532,7 +531,7 @@ App.actions = App.actions || {};
     html: `
       <header class="screen-head">
         <div class="sh-title">
-          <h1>عالمي</h1>
+          <h1>المزيد</h1>
           <p>كل أقسام التطبيق</p>
         </div>
       </header>
@@ -612,6 +611,17 @@ App.actions = App.actions || {};
             <span class="mi-sub">قصص قرآنية وأنبية</span>
           </span>
 
+          <span class="ico mi-arrow" data-ico="chevronLeft"></span>
+        </button>
+
+        <button class="more-item" data-href="#/education">
+          <span class="mi-ico" style="background:linear-gradient(135deg,#F2A65A,#E8784A)">
+            <span class="ico" data-ico="heart"></span>
+          </span>
+          <span class="mi-txt">
+            <span class="mi-title">تعلم ديني</span>
+            <span class="mi-sub">الصلاة وأركان الإسلام والإيمان وآداب المسلم</span>
+          </span>
           <span class="ico mi-arrow" data-ico="chevronLeft"></span>
         </button>
 
@@ -719,42 +729,39 @@ App.actions = App.actions || {};
         <div class="sh-title"><h1>الإعدادات</h1><p>خصّص رحلتك</p></div>
       </header>
 
-      <div class="card">
+      <div class="card profile-edit-card">
         <div class="card-title"><span class="ico" data-ico="user"></span> الملف الشخصي</div>
-        <div class="field">
-          <label for="setName">اسم البطل</label>
-          <input type="text" id="setName" maxlength="20" value="${App.esc(pf.name)}" placeholder="اكتب اسمك هنا">
-          <button class="btn btn-soft btn-block mt-8" data-action="save-name"><span class="ico" data-ico="check"></span> حفظ الاسم</button>
+        <div class="profile-current">
+          <span class="profile-current-avatar">${App.avatarSvg(pf.avatar, 78)}</span>
+          <span class="grow">
+            <span class="bold profile-current-name">${App.esc(pf.name || "بطل")}</span>
+            <span class="tiny text-soft">شخصيتك الحالية: ${App.esc((App.AVATARS[pf.avatar] || App.AVATARS.falcon).name)}</span>
+          </span>
         </div>
-        <label class="field" style="display:block">
-          <label>شخصيتك</label>
-          <div class="avatar-grid">
-            ${Object.keys(App.AVATARS).map(id => `
-            <button class="avatar-opt ${pf.avatar === id ? "on" : ""}" data-action="set-avatar" data-id="${id}">${App.avatarSvg(id)}</button>`).join("")}
-          </div>
-        </label>
+        <button class="btn btn-primary btn-block mt-12" data-action="edit-profile">
+          <span class="ico" data-ico="pen"></span> تعديل البيانات
+        </button>
       </div>
 
       <div class="card">
         <div class="card-title"><span class="ico" data-ico="headphones"></span> الصوت والتلاوة</div>
         <div class="field">
           <label>القارئ</label>
-          <div class="seg-group">
-            ${Object.keys(App.RECITERS).map(k => `<button class="seg-item ${st.reciter === k ? "on" : ""}" data-action="set-setting" data-k="reciter" data-v="${k}">${App.RECITERS[k]}</button>`).join("")}
-          </div>
+          <select data-setting-select data-k="reciter" aria-label="اختيار القارئ">
+            ${Object.keys(App.RECITERS).map(k => `<option value="${k}" ${st.reciter === k ? "selected" : ""}>${App.RECITERS[k]}</option>`).join("")}
+          </select>
         </div>
         <div class="field">
           <label>سرعة التلاوة</label>
-          <div class="seg-group">
-            ${[[0.75, "بطيئة"], [1, "عادية"], [1.25, "هادئة"], [1.5, "سريعة"]].map(([v, l]) => `
-            <button class="seg-item ${Number(st.speed) === v ? "on" : ""}" data-action="set-setting" data-k="speed" data-v="${v}">${l}</button>`).join("")}
-          </div>
+          <select data-setting-select data-k="speed" aria-label="سرعة التلاوة">
+            ${[[0.75, "بطيئة"], [1, "عادية"], [1.25, "هادئة"], [1.5, "سريعة"]].map(([v,l]) => `<option value="${v}" ${Number(st.speed) === v ? "selected" : ""}>${l}</option>`).join("")}
+          </select>
         </div>
         <div class="field">
           <label>عدد تكرار الآية الافتراضي</label>
-          <div class="seg-group">
-            ${[1, 3, 5, 7].map(v => `<button class="seg-item ${Number(st.repeatCount) === v ? "on" : ""}" data-action="set-setting" data-k="repeatCount" data-v="${v}">× ${App.arDigits(v)}</button>`).join("")}
-          </div>
+          <select data-setting-select data-k="repeatCount" aria-label="عدد تكرار الآية">
+            ${[1, 3, 5, 7].map(v => `<option value="${v}" ${Number(st.repeatCount) === v ? "selected" : ""}>${App.arDigits(v)} مرات</option>`).join("")}
+          </select>
         </div>
         <div class="switch-row">
           <span class="sw-label">أصوات المكافآت والاهتزاز</span>
@@ -766,10 +773,10 @@ App.actions = App.actions || {};
         </div>
         <div class="field mt-12">
           <label>اتجاه الحفظ</label>
-          <div class="seg-group">
-            <button class="seg-item ${(st.memorizationDirection || "backward") === "backward" ? "on" : ""}" data-action="set-setting" data-k="memorizationDirection" data-v="backward">من الناس ← يس</button>
-            <button class="seg-item ${st.memorizationDirection === "forward" ? "on" : ""}" data-action="set-setting" data-k="memorizationDirection" data-v="forward">من يس ← الناس</button>
-          </div>
+          <select data-setting-select data-k="memorizationDirection" aria-label="اتجاه الحفظ">
+            <option value="backward" ${(st.memorizationDirection || "backward") === "backward" ? "selected" : ""}>من الناس إلى يس</option>
+            <option value="forward" ${st.memorizationDirection === "forward" ? "selected" : ""}>من يس إلى الناس</option>
+          </select>
         </div>
       </div>
 
@@ -798,6 +805,7 @@ App.actions = App.actions || {};
         <button class="btn btn-danger btn-block" data-action="parent-reset"><span class="ico" data-ico="trash"></span> إعادة تعيين كل التقدم</button>
       </div>`,
       mount(el) {
+        App.bindSettingSelects(el);
         const file = el.querySelector("#importFile");
         if (file) {
           file.addEventListener("change", (e) => {
@@ -817,7 +825,62 @@ App.actions = App.actions || {};
     };
   }
 
-  /* ---------- أفعال عامة ---------- */
+  /* ---------- تعديل بيانات الطفل ---------- */
+  App.actions["edit-profile"] = () => {
+    const pf = App.Storage.getProfile();
+    App._editAvatar = pf.avatar || "falcon";
+    App.modal({
+      title: "تعديل البيانات",
+      body: `
+        <div class="field">
+          <label for="editProfileName">الاسم</label>
+          <input type="text" id="editProfileName" maxlength="20" value="${App.esc(pf.name || "")}" placeholder="اكتب اسمك هنا">
+        </div>
+        <div class="field">
+          <label>اختر شخصيتك</label>
+          <div class="avatar-grid edit-avatar-grid">
+            ${Object.keys(App.AVATARS).map(id => `
+              <button class="avatar-opt ${App._editAvatar === id ? "on" : ""}" data-action="set-edit-avatar" data-edit-avatar="${id}" type="button">${App.avatarSvg(id)}</button>
+            `).join("")}
+          </div>
+        </div>`,
+      actions: [{ label: "حفظ التعديلات", action: "save-profile", primary: true }]
+    });
+  };
+
+  App.actions["save-profile"] = () => {
+    const name = (document.getElementById("editProfileName")?.value || "").trim();
+    App.Storage.setProfile({ name: name || "بطل", avatar: App._editAvatar || App.Storage.getProfile().avatar || "falcon" });
+    App.closeModal();
+    App.toast("تم تحديث بياناتك", "success");
+    App.Router.render();
+  };
+
+  App.actions["set-edit-avatar"] = (el) => {
+    App._editAvatar = el.dataset.editAvatar;
+    document.querySelectorAll("[data-edit-avatar]").forEach(b => b.classList.toggle("on", b.dataset.editAvatar === App._editAvatar));
+  };
+
+  App.actions["set-setting"] = (el) => {
+    const k = el.dataset.k;
+    let v = el.dataset.v;
+    if (v === "true") v = true; else if (v === "false") v = false;
+    else if (!isNaN(Number(v)) && k !== "reciter" && k !== "memorizationDirection") v = Number(v);
+    App.Storage.setSetting(k, v);
+    App.Router.render();
+  };
+
+  App.bindSettingSelects = function(root) {
+    (root || document).querySelectorAll("[data-setting-select]").forEach(sel => {
+      sel.addEventListener("change", () => {
+        let v = sel.value;
+        if (sel.dataset.k === "speed" || sel.dataset.k === "repeatCount") v = Number(v);
+        App.Storage.setSetting(sel.dataset.k, v);
+      });
+    });
+  };
+
+    /* ---------- أفعال عامة ---------- */
   App.actions["save-name"] = () => {
     const input = document.getElementById("setName");
     const name = input ? input.value.trim() : "";
@@ -912,34 +975,11 @@ App.actions = App.actions || {};
   /* ================= التسجيل والبدء ================= */
   /* ---------- تطبيق الوضع الليلي ---------- */
   App.applyTheme = function () {
-    const settings = App.Storage.getSettings();
-    const theme = settings.theme || "auto";
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.setAttribute("data-theme", "dark");
-    } else if (theme === "light") {
-      root.setAttribute("data-theme", "light");
-    } else {
-      // auto — احترم تفضيل النظام
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      root.setAttribute("data-theme", prefersDark ? "dark" : "light");
-    }
-    // حدّث theme-color
+    root.setAttribute("data-theme", "light");
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) {
-      metaTheme.setAttribute("content", theme === "dark" ? "#0F172A" : (theme === "light" ? "#1B7F5A" : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "#0F172A" : "#1B7F5A")));
-    }
+    if (metaTheme) metaTheme.setAttribute("content", "#1B7F5A");
   };
-  // استمع لتغييرات تفضيل النظام
-  if (window.matchMedia) {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      const settings = App.Storage.getSettings();
-      if ((settings.theme || "auto") === "auto") App.applyTheme();
-    };
-    if (mq.addEventListener) mq.addEventListener("change", handler);
-    else if (mq.addListener) mq.addListener(handler);
-  }
 
   function init() {
     App.Storage.load();
@@ -967,6 +1007,8 @@ App.actions = App.actions || {};
     App.Router.add("stories", () => App.Stories.pageStories());
     App.Router.add("story/:id", (p) => App.Stories.pageStory(p));
     App.Router.add("morals", () => App.Morals.pageMorals());
+    App.Router.add("education", () => App.Education.pageHub());
+    App.Router.add("education/:id", (p) => App.Education.pageTopic(p));
     App.Router.add("moral/:id", (p) => App.Morals.pageMoral(p));
     App.Router.add("achievements", () => App.Rewards.pageAchievements());
     App.Router.add("more", pageMore);
@@ -1290,20 +1332,8 @@ App.actions = App.actions || {};
     App.Router.render();
   };
 
-  /* ---------- إجراء تبديل الوضع الليلي ---------- */
-  App.actions["toggle-theme"] = () => {
-    const st = App.Storage.getSettings();
-    const cur = st.theme || "auto";
-    let next;
-    if (cur === "auto") next = "dark";
-    else if (cur === "dark") next = "light";
-    else next = "auto";
-    App.Storage.setSetting("theme", next);
-    App.applyTheme();
-    App.Router.render();
-    const label = next === "dark" ? "الوضع الليلي" : (next === "light" ? "الوضع النهاري" : "الوضع التلقائي");
-    App.toast(label, "info");
-  };
+  /* الوضع النهاري فقط */
+  App.actions["toggle-theme"] = () => {};
 
   /* ================= يوميات الانتظام (Streak Diary) ================= */
   /* حالة شاشة اليوميات: الشهر المعروض حاليًا */

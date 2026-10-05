@@ -27,6 +27,7 @@ const CORE_ASSETS = [
   "./js/challenges.js",
   "./js/revision.js",
   "./js/memorization.js",
+  "./js/tasmee.js",
   "./js/stories.js",
   "./js/morals.js",
   "./js/parent.js",

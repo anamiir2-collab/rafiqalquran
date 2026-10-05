@@ -640,21 +640,15 @@ a { color: var(--c-primary); text-decoration: none; }
   border-radius: 14px;
   background: var(--grad-primary);
   color: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px;
+  display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 12px rgba(27,127,90,.35);
   flex: 0 0 auto;
   transition: transform var(--motion-fast) var(--ease);
 }
-.mushaf-control-bar .mc-play:active { transform: scale(.92); }
+.mushaf-control-bar .mc-play:active { transform: scale(.9); }
+.mushaf-control-bar .mc-play .ico { transition: transform .22s ease; }
+.mushaf-control-bar .mc-play:active .ico { transform: scale(.86) rotate(-6deg); }
 .mushaf-control-bar .mc-play .ico { width: 20px; height: 20px; }
-.mushaf-control-bar .mc-play-label,
-.mushaf-control-bar .mc-label {
-  font-size: .56rem;
-  font-weight: 800;
-  line-height: 1;
-  white-space: nowrap;
-}
 .mushaf-control-bar .mc-info { flex: 1; min-width: 70px; }
 .mushaf-control-bar .mc-title {
   font-size: .82rem; font-weight: 800; color: var(--c-primary-deep);
@@ -677,8 +671,32 @@ a { color: var(--c-primary); text-decoration: none; }
   flex: 0 0 auto;
   transition: transform var(--motion-fast) var(--ease);
 }
-.mushaf-control-bar .mc-btn:active { transform: scale(.9); }
-.mushaf-control-bar .mc-btn { flex-direction: column; gap: 3px; }
+.mushaf-control-bar .mc-btn:active { transform: scale(.88); }
+.mushaf-control-bar .mc-btn .ico { transition: transform .22s ease, filter .22s ease; }
+.mushaf-control-bar .mc-btn:hover .ico { transform: translateY(-1px) scale(1.08); }
+.mushaf-control-bar .mc-btn.on { animation: repeatGlow 1.8s ease-in-out infinite; }
+.mushaf-control-bar .mc-btn.on .ico { animation: repeatTurn 2.4s linear infinite; }
+@keyframes repeatGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(194,136,78,0); }
+  50% { box-shadow: 0 0 0 4px rgba(194,136,78,.13); }
+}
+@keyframes repeatTurn {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.mushaf-control-bar button { position: relative; overflow: hidden; }
+.mushaf-control-bar button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  transform: scale(.65);
+  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none;
+}
+.mushaf-control-bar button:active::after { opacity: .09; transform: scale(1); }
 .mushaf-control-bar .mc-btn .ico { width: 18px; height: 18px; }
 .mushaf-control-bar .mc-btn.on {
   background: var(--c-gold-light);
@@ -693,8 +711,7 @@ a { color: var(--c-primary); text-decoration: none; }
   .mushaf-control-bar { gap: 4px; padding: 8px; }
   .mushaf-control-bar .mc-play { width: 52px; }
   .mushaf-control-bar .mc-btn { width: 42px; }
-  .mushaf-control-bar .mc-label,
-  .mushaf-control-bar .mc-play-label { font-size: .5rem; }
+
 }
 
 /* ---------- Toast ---------- */

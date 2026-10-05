@@ -137,14 +137,16 @@ App.actions = App.actions || {};
       const tabs = [
         { id: "memorize", label: "حفظ جديد" },
         { id: "surahs", label: "السور" },
-        { id: "recite", label: "التلاوة" }
+        { id: "recite", label: "استماع" },
+        { id: "tasmee", label: "تسميع" }
       ];
 
       let body = "";
       if (tab === "memorize") body = Q.tabMemorize(suggest);
       else if (tab === "surahs") body = Q.tabSurahs();
-      else if (tab === "recite") body = Q.tabPick("recite", "التلاوة", "استمع للسورة كاملة بتلاوة جميلة");
-      else body = Q.tabPick("recite", "التلاوة", "استمع للسورة كاملة بتلاوة جميلة");
+      else if (tab === "recite") body = Q.tabPick("recite", "استماع", "استمع للقرآن بتلاوة جميلة");
+      else if (tab === "tasmee") body = App.Tasmee.choose();
+      else body = Q.tabPick("recite", "استماع", "استمع للقرآن بتلاوة جميلة");
 
       return {
         nav: "quran",
@@ -320,7 +322,7 @@ App.actions = App.actions || {};
         html: `
         <header class="screen-head">
           <button class="icon-btn btn-back" data-href="#/quran" aria-label="رجوع"><span class="ico" data-ico="chevronRight"></span></button>
-          <div class="sh-title"><h1>${isRecite ? "تلاوة" : "تكرار"} — سورة ${s.name}</h1><p>${App.arDigits(s.ayahsCount)} آية</p></div>
+          <div class="sh-title"><h1>استماع — سورة ${s.name}</h1><p>${App.arDigits(s.ayahsCount)} آية · تلاوة</p></div>
           <button class="icon-btn" data-action="recite-jump" aria-label="انتقال سريع"><span class="ico" data-ico="list"></span></button>
         </header>
 
@@ -328,6 +330,7 @@ App.actions = App.actions || {};
           <div class="mushaf-surah-name">سُورَةُ ${s.name}</div>
           ${showBismillah ? `<div class="mushaf-bismillah">${Q.bismillah()}</div>` : ""}
           <div class="mushaf-text ${App.Storage.getSettings().quranFontSize === "lg" ? "lg" : "md"}">${mushafText}</div>
+          <div class="mushaf-page-number">${App.arDigits(n)}</div>
         </div>
 
         <div class="mushaf-actions hidden" id="ayahToolbar" role="toolbar">

@@ -244,7 +244,9 @@ App.actions = App.actions || {};
           } else {
             this._words[cursor].state = "wrong";
             this._wrong++;
-            // ننتظر الكلمة التالية بدل ما نوقف التسميع كله.
+            cursor++;
+            this._matched = cursor;
+            if (cursor < this._words.length) this._words[cursor].state = "next";
           }
         }
       }

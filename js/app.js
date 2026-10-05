@@ -415,10 +415,10 @@ App.actions = App.actions || {};
     const streak = App.Storage.streak();
 
     const stepsData = sess ? [
-      { label: "استماع", done: sess.listened.length >= (sess.range[1] - sess.range[0] + 1), active: sess.step === "listen" },
-      { label: "الترديد", done: sess.recited.length >= (sess.range[1] - sess.range[0] + 1), active: sess.step === "recite" },
-      { label: "اختبار الإتقان", done: !!(sess.quizResult && sess.quizResult.passed), active: sess.step === "quiz" },
-      { label: "المكافأة", done: !!sess.rewarded, active: sess.step === "mastery" || sess.step === "reward" && !sess.rewarded }
+      { label: "استماع", icon: "headphones", done: sess.listened.length >= (sess.range[1] - sess.range[0] + 1), active: sess.step === "listen" },
+      { label: "الترديد", icon: "mic", done: sess.recited.length >= (sess.range[1] - sess.range[0] + 1), active: sess.step === "recite" },
+      { label: "اختبار الإتقان", icon: "brain", done: !!(sess.quizResult && sess.quizResult.passed), active: sess.step === "quiz" },
+      { label: "المكافأة", icon: "trophy", done: !!sess.rewarded, active: sess.step === "mastery" || sess.step === "reward" && !sess.rewarded }
     ] : null;
 
     // آية اليوم — ثابتة لكل يوم
@@ -489,13 +489,18 @@ App.actions = App.actions || {};
         <div class="jc-steps">
           ${stepsData.map(s2 => `
           <div class="jc-step ${s2.done ? "done" : ""} ${s2.active ? "active" : ""}">
-            <span class="jc-dot"><span class="ico" data-ico="${s2.done ? "check" : "sparkle"}"></span></span>
+            <span class="jc-dot"><span class="ico" data-ico="${s2.icon}"></span></span>
             <span>${s2.label}</span>
           </div>`).join("")}
         </div>` : `
         <div class="jc-steps">
-          ${["استماع", "الترديد", "اختبار الإتقان", "المكافأة"].map(l => `
-          <div class="jc-step"><span class="jc-dot"><span class="ico" data-ico="sparkle"></span></span><span>${l}</span></div>`).join("")}
+          ${[
+            { label: "استماع", icon: "headphones" },
+            { label: "الترديد", icon: "mic" },
+            { label: "اختبار الإتقان", icon: "brain" },
+            { label: "المكافأة", icon: "trophy" }
+          ].map(s2 => `
+          <div class="jc-step"><span class="jc-dot"><span class="ico" data-ico="${s2.icon}"></span></span><span>${s2.label}</span></div>`).join("")}
         </div>`}
         <button class="btn btn-gold btn-lg btn-block btn-pulse jc-cta" data-href="#/journey/${target.number}">
           ${sess ? "أكمل رحلتي" : "ابدأ رحلتي"}

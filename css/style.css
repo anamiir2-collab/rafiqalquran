@@ -910,3 +910,173 @@ a { color: var(--c-primary); text-decoration: none; }
 .empty-state .ico { width: 54px; height: 54px; margin: 0 auto 12px; color: var(--c-text-faint); opacity: .6; }
 .empty-state p { font-size: .92rem; font-weight: 700; }
 .empty-state span { font-size: .8rem; }
+
+/* ============================================================
+   مصحف مدينة القرآن — نمط المصحف المرفق
+   ============================================================ */
+.mushaf-page {
+  background: #FFF9ED;
+  border: 1px solid #D9C7A0;
+  border-radius: 6px;
+  padding: 18px 12px 22px;
+  margin: 4px -2px 90px;
+  box-shadow: 0 8px 26px rgba(87, 65, 35, .10);
+  position: relative;
+  overflow: hidden;
+}
+.mushaf-page::before,
+.mushaf-page::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(164, 129, 72, .18);
+  border-radius: 3px;
+  pointer-events: none;
+}
+.mushaf-page::after {
+  inset: 11px;
+  border-color: rgba(164, 129, 72, .08);
+}
+.mushaf-topline {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 0 9px 8px;
+  color: #5C513F;
+  font-family: var(--font-ui);
+  font-size: .75rem;
+  font-weight: 700;
+}
+.mushaf-topline span:last-child {
+  font-family: var(--font-quran);
+  font-size: 1rem;
+  font-weight: 400;
+}
+.mushaf-ornament {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #A8844E;
+  font-family: var(--font-quran);
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+}
+.mushaf-text {
+  position: relative;
+  z-index: 2;
+  padding: 4px 7px 2px;
+  font-family: var(--font-quran);
+  color: #191611;
+  font-weight: 400;
+  text-align: justify;
+  text-align-last: center;
+  direction: rtl;
+  word-spacing: .10em;
+  letter-spacing: 0;
+}
+.mushaf-text.md { font-size: 1.78rem; line-height: 2.28; }
+.mushaf-text.lg { font-size: 2.18rem; line-height: 2.52; }
+.ayah-segment { padding: 1px 0; border-radius: 4px; }
+.ayah-segment.current {
+  background: rgba(12, 122, 92, .10);
+  color: #075C45;
+  box-shadow: none;
+}
+.ayah-marker {
+  min-width: 27px;
+  height: 27px;
+  margin: 0 3px;
+  padding: 0 5px;
+  background: transparent;
+  color: #5B4630;
+  border: 1px solid #A8844E;
+  border-radius: 50%;
+  font-family: var(--font-ui);
+  font-size: .64rem;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 2px rgba(168,132,78,.07);
+}
+.ayah-marker:hover { background: #EFE2C3; color: #5B4630; }
+.ayah-marker.selected { background: #E9D5A8; color: #5B4630; }
+.ayah-marker.current { background: #0C7A5C; color: #fff; border-color: #0C7A5C; }
+.mushaf-page-number {
+  position: relative;
+  z-index: 2;
+  width: 74px;
+  min-height: 26px;
+  margin: 12px auto 0;
+  padding: 3px 12px;
+  border: 1px solid #8A7A60;
+  border-radius: 6px;
+  color: #5C513F;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: .68rem;
+  background: #F7EEDB;
+}
+
+/* ============================================================
+   التسميع الصوتي المباشر
+   ============================================================ */
+.tasmee-intro,
+.tasmee-choice-hero,
+.tasmee-live-card {
+  border: 1px solid var(--c-line);
+  background: var(--c-white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+.tasmee-intro { display: flex; align-items: center; gap: 11px; padding: 12px 14px; margin-bottom: 12px; }
+.tasmee-intro-icon,
+.tasmee-choice-hero > .ico {
+  width: 42px; height: 42px; flex: 0 0 42px; border-radius: 14px;
+  display: grid; place-items: center; color: var(--c-primary); background: var(--c-primary-soft);
+}
+.tasmee-intro strong { color: var(--c-primary-deep); }
+.tasmee-intro p { margin: 2px 0 0; color: var(--c-text-soft); font-size: .76rem; }
+.tasmee-mushaf { margin-bottom: 12px; }
+.tasmee-ayah {
+  position: relative; z-index: 2; padding: 12px 8px 8px;
+  font-family: var(--font-quran); font-size: 2rem; line-height: 2.45;
+  color: #191611; text-align: justify; text-align-last: center;
+}
+.tasmee-word { display: inline; border-radius: 7px; padding: 2px 1px; transition: background .18s ease, color .18s ease, box-shadow .18s ease; }
+.tasmee-word.pending { color: #191611; }
+.tasmee-word.next { color: #0D6D52; background: rgba(12,122,92,.08); box-shadow: 0 0 0 2px rgba(12,122,92,.08); }
+.tasmee-word.correct { color: #117A4E; background: rgba(25,155,95,.10); }
+.tasmee-word.wrong { color: #B33A32; background: rgba(206,70,62,.13); text-decoration: underline wavy currentColor 1.5px; }
+.tasmee-progress { position: relative; z-index: 2; display: flex; align-items: center; gap: 9px; padding: 10px 8px 0; color: #6A5A44; font-family: var(--font-ui); font-size: .72rem; font-weight: 800; }
+.tasmee-progress-track { flex: 1; height: 8px; background: #E7DDCB; border-radius: 99px; overflow: hidden; }
+.tasmee-progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0C7A5C, #47A978); transition: width .35s ease; }
+.tasmee-live-card { padding: 13px; }
+.tasmee-status { display: flex; align-items: center; gap: 8px; min-height: 24px; color: var(--c-primary-deep); font-size: .82rem; font-weight: 800; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; background: #B4AA98; flex: 0 0 9px; }
+.tasmee-status.active .status-dot { background: #D5A52E; box-shadow: 0 0 0 5px rgba(213,165,46,.12); animation: tasmeePulse 1.2s ease infinite; }
+.tasmee-status.success .status-dot { background: #15945B; }
+.tasmee-status.warn .status-dot { background: #D08A22; }
+.tasmee-status.error .status-dot { background: #C63E37; }
+@keyframes tasmeePulse { 50% { transform: scale(1.25); opacity: .65; } }
+.tasmee-transcript { min-height: 52px; margin: 10px 0; padding: 10px 12px; border-radius: 13px; background: var(--c-primary-soft); color: var(--c-text); font-size: .9rem; line-height: 1.8; }
+.tasmee-transcript .interim { color: var(--c-text-faint); }
+.tasmee-actions { display: grid; gap: 8px; }
+.tasmee-choice-hero { display: grid; gap: 7px; justify-items: center; text-align: center; padding: 18px 14px; margin-bottom: 12px; }
+.tasmee-choice-hero > .ico { width: 52px; height: 52px; }
+.tasmee-choice-hero strong { color: var(--c-primary-deep); font-size: 1rem; }
+.tasmee-choice-hero span:last-child { color: var(--c-text-soft); font-size: .78rem; }
+.tasmee-surah-list { display: grid; gap: 10px; }
+.tasmee-surah-card { padding: 12px; border: 1px solid var(--c-line); background: var(--c-white); border-radius: var(--r-lg); }
+.tasmee-surah-head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.tasmee-surah-head .surah-num { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; background: var(--c-primary-soft); color: var(--c-primary); font-weight: 800; }
+.tasmee-surah-head .surah-info { display: grid; gap: 2px; }
+.tasmee-surah-head .surah-info b { color: var(--c-primary-deep); }
+.tasmee-surah-head .surah-info small { color: var(--c-text-faint); }
+.tasmee-ayahs { display: flex; flex-wrap: wrap; gap: 7px; }
+.tasmee-ayah-btn { min-height: 38px; padding: 6px 11px; border: 1px solid var(--c-line); border-radius: 10px; background: var(--c-cream); color: var(--c-text-soft); font-size: .75rem; font-weight: 700; }
+.tasmee-ayah-btn:active { transform: scale(.96); }
+@media (max-width: 390px) {
+  .tasmee-ayah { font-size: 1.72rem; line-height: 2.25; }
+  .mushaf-text.md { font-size: 1.63rem; }
+}

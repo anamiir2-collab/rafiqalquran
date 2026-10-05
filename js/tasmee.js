@@ -367,6 +367,7 @@ App.actions = App.actions || {};
 
     choose() {
       const surahs = App.Quran.all().slice().sort((a,b) => a.number - b.number);
+      const first = surahs[0];
       return {
         nav: "quran",
         html: `
@@ -379,25 +380,51 @@ App.actions = App.actions || {};
         <div class="tasmee-choice-hero">
           <span class="ico" data-ico="mic"></span>
           <strong>اختبر حفظك بصوتك</strong>
-          <span>الآية قدامك، وصوتك بيتقارن معاها كلمة بكلمة</span>
+          <span>انطق الآية، والكلمات هتظهر قدامك ويتحدد الصحيح والخطأ</span>
         </div>
-        <div class="tasmee-surah-list">
-          ${surahs.map(s => `
-            <div class="tasmee-surah-card">
-              <div class="tasmee-surah-head">
-                <span class="surah-num">${App.arDigits(s.number)}</span>
-                <span class="surah-info"><b>سورة ${s.name}</b><small>${App.arDigits(s.ayahsCount)} آية</small></span>
-              </div>
-              <div class="tasmee-ayahs">
-                ${s.ayahs.map(a => `
-                  <button class="tasmee-ayah-btn" data-href="#/tasmee/${s.number}/${a.number}">
-                    الآية ${App.arDigits(a.number)}
-                  </button>`).join("")}
-              </div>
-            </div>
-          `).join("")}
+
+        <div class="card tasmee-selector-card">
+          <div class="field">
+            <label for="tasmeeSurahSelect">السورة</label>
+            <select id="tasmeeSurahSelect" data-tasmee-surah>
+              ${surahs.map(s => `<option value="${s.number}">سورة ${s.name} — ${App.arDigits(s.ayahsCount)} آية</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="tasmeeAyahSelect">الآية</label>
+            <select id="tasmeeAyahSelect" data-tasmee-ayah>
+              ${(first ? first.ayahs : []).map(a => `<option value="${a.number}">الآية ${App.arDigits(a.number)}</option>`).join("")}
+            </select>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" data-action="tasmee-open">
+            <span class="ico" data-ico="mic"></span>
+            ابدأ التسميع
+          </button>
         </div>
-        `
+
+        <div class="card tasmee-rules">
+          <div class="card-title"><span class="ico" data-ico="sparkle"></span> التسميع هيكون كده</div>
+          <div class="tasmee-help-grid">
+            <span><b>١</b> اختار السورة</span>
+            <span><b>٢</b> اختار الآية</span>
+            <span><b>٣</b> اتكلم والآية تتحقق معاك</span>
+            <span><b>٤</b> الخطأ يظهر بالأحمر</span>
+          </div>
+        </div>
+        `,
+        mount(el) {
+          const surahSelect = el.querySelector("[data-tasmee-surah]");
+          const ayahSelect = el.querySelector("[data-tasmee-ayah]");
+          if (!surahSelect || !ayahSelect) return;
+
+          surahSelect.addEventListener("change", () => {
+            const s = App.Quran.surah(Number(surahSelect.value));
+            if (!s) return;
+            ayahSelect.innerHTML = s.ayahs.map(a =>
+              `<option value="${a.number}">الآية ${App.arDigits(a.number)}</option>`
+            ).join("");
+          });
+        }
       };
     }
   };

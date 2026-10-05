@@ -15,20 +15,116 @@ App.actions = App.actions || {};
     load() {
       if (this.data) return Promise.resolve(this.data);
       if (this._loading) return this._loading;
-      this._loading = fetch("./data/quran.json")
-        .then(r => {
-          if (!r.ok) throw new Error("quran.json HTTP " + r.status);
-          return r.json();
-        })
-        .then(json => {
-          this.data = json;
-          return json;
+
+      const FULL_URL = "https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/quran.json";
+      const CACHE_NAME = "rafiq-quran-full-v1";
+
+      const normalizeFull = (raw) => {
+        const source = raw && Array.isArray(raw.chapters)
+          ? raw.chapters
+          : raw && Array.isArray(raw.surahs)
+            ? raw.surahs
+            : Array.isArray(raw)
+              ? raw
+              : [];
+
+        const surahs = source.map((s, index) => {
+          const number = Number(s.id || s.number || index + 1);
+          const verses = Array.isArray(s.verses) ? s.verses : (Array.isArray(s.ayahs) ? s.ayahs : []);
+          return {
+            number,
+            name: s.name || s.name_ar || s.arabicName || "",
+            englishName: s.transliteration || s.englishName || "",
+            revelationType: String(s.type || s.revelationType || "").toLowerCase().includes("mad")
+              ? "مدنية"
+              : "مكية",
+            ayahsCount: Number(s.total_verses || s.verses_count || s.ayahsCount || verses.length),
+            ayahs: verses.map((a, i) => ({
+              number: Number(a.id || a.number || i + 1),
+              text: String(a.text || a.text_ar || "")
+            }))
+          };
+        }).filter(s => s.number >= 1 && s.number <= 114 && s.ayahs.length);
+
+        return {
+          meta: {
+            app: "رفيق القرآن للأطفال",
+            edition: "quran-uthmani",
+            source: "Quran JSON / The Noble Qur'an Encyclopedia",
+            range: "القرآن الكريم كاملًا",
+            surahsCount: surahs.length,
+            ayahsCount: surahs.reduce((sum, s) => sum + s.ayahs.length, 0),
+            bismillah: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
+          },
+          surahs
+        };
+      };
+
+      const getLocal = () => fetch("./data/quran.json").then(r => {
+        if (!r.ok) throw new Error("quran.json HTTP " + r.status);
+        return r.json();
+      });
+
+      const getFull = async () => {
+        try {
+          if ("caches" in window) {
+            const cached = await caches.match(FULL_URL);
+            if (cached) {
+              const raw = await cached.json();
+              const full = normalizeFull(raw);
+              if (full.surahs.length === 114) return full;
+            }
+          }
+        } catch (e) {
+          console.warn("cached full Quran unavailable", e);
+        }
+
+        const response = await fetch(FULL_URL, { mode: "cors", cache: "no-cache" });
+        if (!response.ok) throw new Error("full Quran HTTP " + response.status);
+
+        const copy = response.clone();
+        const raw = await response.json();
+
+        try {
+          if ("caches" in window) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(FULL_URL, copy);
+          }
+        } catch (e) {
+          console.warn("full Quran cache write failed", e);
+        }
+
+        const full = normalizeFull(raw);
+        if (full.surahs.length !== 114) {
+          throw new Error("full Quran validation failed: expected 114 surahs");
+        }
+        return full;
+      };
+
+      this._loading = getLocal()
+        .then(async local => {
+          if (local && local.surahs && local.surahs.length === 114) {
+            this.data = local;
+            return local;
+          }
+
+          try {
+            const full = await getFull();
+            this.data = full;
+            return full;
+          } catch (e) {
+            // لو مفيش إنترنت أول مرة، نفضل على النسخة المحلية الحالية بدل ما التطبيق يقع.
+            console.warn("full Quran download failed; using local Quran data", e);
+            this.data = local;
+            return local;
+          }
         })
         .catch(e => {
           console.error("quran data load failed", e);
           this._loading = null;
           throw e;
         });
+
       return this._loading;
     },
 
@@ -154,7 +250,7 @@ App.actions = App.actions || {};
         <header class="screen-head">
           <div class="sh-title">
             <h1>مدينة القرآن</h1>
-            <p>من سورة يس إلى سورة الناس — ${App.arDigits(this.all().length)} سورة</p>
+            <p>القرآن الكريم كاملًا — ${App.arDigits(this.all().length)} سورة</p>
           </div>
           <button class="icon-btn" data-href="#/range" aria-label="نطاق الحفظ"><span class="ico" data-ico="target"></span></button>
           <button class="icon-btn" data-href="#/more/settings" aria-label="الإعدادات"><span class="ico" data-ico="settings"></span></button>

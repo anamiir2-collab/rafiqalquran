@@ -636,18 +636,26 @@ a { color: var(--c-primary); text-decoration: none; }
   border-color: var(--c-line);
 }
 .mushaf-control-bar .mc-play {
-  width: 48px; height: 48px;
-  border-radius: 50%;
+  width: 56px; min-height: 52px;
+  border-radius: 14px;
   background: var(--grad-primary);
   color: #fff;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
   box-shadow: 0 4px 12px rgba(27,127,90,.35);
   flex: 0 0 auto;
   transition: transform var(--motion-fast) var(--ease);
 }
 .mushaf-control-bar .mc-play:active { transform: scale(.92); }
-.mushaf-control-bar .mc-play .ico { width: 22px; height: 22px; }
-.mushaf-control-bar .mc-info { flex: 1; min-width: 0; }
+.mushaf-control-bar .mc-play .ico { width: 20px; height: 20px; }
+.mushaf-control-bar .mc-play-label,
+.mushaf-control-bar .mc-label {
+  font-size: .56rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+.mushaf-control-bar .mc-info { flex: 1; min-width: 70px; }
 .mushaf-control-bar .mc-title {
   font-size: .82rem; font-weight: 800; color: var(--c-primary-deep);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -661,7 +669,7 @@ a { color: var(--c-primary); text-decoration: none; }
   transition: width .2s linear;
 }
 .mushaf-control-bar .mc-btn {
-  width: 40px; height: 40px;
+  width: 48px; min-height: 52px;
   border-radius: 11px;
   background: var(--c-primary-soft);
   color: var(--c-primary-dark);
@@ -670,10 +678,23 @@ a { color: var(--c-primary); text-decoration: none; }
   transition: transform var(--motion-fast) var(--ease);
 }
 .mushaf-control-bar .mc-btn:active { transform: scale(.9); }
+.mushaf-control-bar .mc-btn { flex-direction: column; gap: 3px; }
 .mushaf-control-bar .mc-btn .ico { width: 18px; height: 18px; }
-.mushaf-control-bar .mc-btn:last-child {
+.mushaf-control-bar .mc-btn.on {
+  background: var(--c-gold-light);
+  border: 1px solid var(--c-gold);
+  color: var(--c-gold-deep);
+}
+.mushaf-control-bar .mc-stop {
   background: var(--c-danger-light);
   color: var(--c-danger);
+}
+@media (max-width: 390px) {
+  .mushaf-control-bar { gap: 4px; padding: 8px; }
+  .mushaf-control-bar .mc-play { width: 52px; }
+  .mushaf-control-bar .mc-btn { width: 42px; }
+  .mushaf-control-bar .mc-label,
+  .mushaf-control-bar .mc-play-label { font-size: .5rem; }
 }
 
 /* ---------- Toast ---------- */

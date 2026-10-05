@@ -998,7 +998,6 @@ App.actions = App.actions || {};
     App.Router.add("quran/:tab", (p) => App.Quran.pageQuran(p));
     App.Router.add("surah/:id", (p) => App.Quran.pageSurah(p));
     App.Router.add("recite/:id", (p) => App.Quran.pageMode({ kind: "recite", id: p.id }));
-    App.Router.add("repeat/:id", (p) => App.Quran.pageMode({ kind: "repeat", id: p.id }));
     App.Router.add("journey/:id", (p) => App.Memorization.pageJourney(p));
     App.Router.add("review", () => App.Revision.pageReview());
     App.Router.add("review/session", () => App.Revision.pageSession());

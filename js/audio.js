@@ -96,15 +96,15 @@ App.actions = App.actions || {};
         bar = document.createElement("div");
         bar.className = "mushaf-control-bar hidden";
         bar.innerHTML = `
-          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل أو إيقاف مؤقت"><span class="ico" data-ico="play"></span><span class="mc-play-label">تشغيل</span></button>
+          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل أو إيقاف مؤقت"><span class="ico" data-ico="play"></span></button>
           <div class="mc-info">
             <div class="mc-title">سورة ...</div>
             <div class="mc-seek"><div class="mc-seek-fill"></div></div>
           </div>
-          <button class="mc-btn mc-repeat" data-action="mc-repeat" aria-label="تكرار الآية" aria-pressed="false"><span class="ico" data-ico="loop"></span><span class="mc-label">تكرار</span></button>
-          <button class="mc-btn" data-action="mc-prev" aria-label="الآية السابقة"><span class="ico" data-ico="prev"></span><span class="mc-label">السابق</span></button>
-          <button class="mc-btn" data-action="mc-next" aria-label="الآية التالية"><span class="ico" data-ico="next"></span><span class="mc-label">التالي</span></button>
-          <button class="mc-btn mc-stop" data-action="mc-stop" aria-label="إيقاف الصوت"><span class="ico" data-ico="stop"></span><span class="mc-label">إيقاف</span></button>`;
+          <button class="mc-btn mc-repeat" data-action="mc-repeat" aria-label="تكرار الآية" aria-pressed="false"><span class="ico" data-ico="loop"></span></button>
+          <button class="mc-btn" data-action="mc-prev" aria-label="الآية السابقة"><span class="ico" data-ico="prev"></span></button>
+          <button class="mc-btn" data-action="mc-next" aria-label="الآية التالية"><span class="ico" data-ico="next"></span></button>
+          <button class="mc-btn mc-stop" data-action="mc-stop" aria-label="إيقاف الصوت"><span class="ico" data-ico="stop"></span></button>`;
         rootEl.appendChild(bar);
         if (App.fillIcons) App.fillIcons(bar);
         // Local click handler
@@ -128,8 +128,6 @@ App.actions = App.actions || {};
         const playIco = bar.querySelector(".mc-play .ico");
         if (playIco && App.icons) {
           playIco.innerHTML = App.icons[st.loading ? "loader" : (st.playing ? "pause" : "play")];
-          const playLabel = bar.querySelector(".mc-play-label");
-          if (playLabel) playLabel.textContent = st.playing ? "إيقاف مؤقت" : "تشغيل";
         }
         const title = bar.querySelector(".mc-title");
         if (title && st.item) {

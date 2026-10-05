@@ -67,7 +67,7 @@ App.actions = App.actions || {};
       this._runCleanups();
       // stop audio when leaving screens that use it (unless navigating inside journey)
       if (App.Player && typeof App.Player.stopAll === "function") {
-        const insideAudio = ["journey", "recite", "repeat", "review-session", "surah"].includes(segs[0]);
+        const insideAudio = ["journey", "recite", "tasmee", "repeat", "review-session", "surah"].includes(segs[0]);
         if (!insideAudio) App.Player.stopAll();
       }
 

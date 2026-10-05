@@ -81,8 +81,8 @@ App.actions = App.actions || {};
     },
 
     thumbVisual(st) {
-      if (st.cover) {
-        return `<img src="${st.cover}" alt="${App.esc(st.title)}" loading="lazy" onerror="this.outerHTML=S.thumbSvg(S.byId('${st.id}'))">`;
+      if (st.cover || st.id) {
+        return `<img src="${st.cover || `./assets/stories/${st.id}.svg`}" alt="${App.esc(st.title)}" loading="lazy" onerror="this.outerHTML=S.thumbSvg(S.byId('${st.id}'))">`;
       }
       return S.thumbSvg(st);
     },
@@ -113,7 +113,7 @@ App.actions = App.actions || {};
       const prevStory = this.data[prevIdx];
       const nextStory = this.data[nextIdx];
       const pages = st.pages || [{ text: st.paragraphs ? st.paragraphs.join(" ") : (st.story || "") }];
-      const cover = st.cover || "";
+      const cover = st.cover || `./assets/stories/${st.id}.svg`;
 
       return {
         nav: "more",

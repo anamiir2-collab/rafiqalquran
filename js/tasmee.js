@@ -353,8 +353,7 @@ App.actions = App.actions || {};
 
     finishSuccess() {
       this.stop();
-      this._host.querySelectorAll(".tasmee-word").forEach(w => w.classList.remove("next", "wrong", "pending"));
-      this._host.querySelectorAll(".tasmee-word").forEach(w => w.classList.add("correct"));
+      this._host.querySelectorAll(".tasmee-word").forEach(w => w.classList.remove("next", "pending"));
       this.updateProgress();
       this.setStatus(this._wrong ? "أحسنت! راجع الكلمات الحمراء" : "ما شاء الله! الآية صحيحة", this._wrong ? "warn" : "success");
       App.haptic(35);
@@ -408,4 +407,11 @@ App.actions = App.actions || {};
   App.actions["tasmee-start"] = () => T.start();
   App.actions["tasmee-stop"] = () => T.stop();
   App.actions["tasmee-reset"] = () => T.reset();
+  App.actions["tasmee-open"] = (el) => {
+    const host = el.closest("#appMain") || document;
+    const s = host.querySelector("[data-tasmee-surah]");
+    const a = host.querySelector("[data-tasmee-ayah]");
+    if (!s || !a) return;
+    App.Router.go("#/tasmee/" + Number(s.value) + "/" + Number(a.value));
+  };
 })();

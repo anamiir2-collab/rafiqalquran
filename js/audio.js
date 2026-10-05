@@ -25,6 +25,7 @@ App.actions = App.actions || {};
     idx: 0,
     opts: {},
     _repeatLeft: 0,
+    _repeatAyah: false,
     _speed: 1,
     _stateCbs: [],
     _floatingHost: null,
@@ -65,7 +66,8 @@ App.actions = App.actions || {};
         speed: this._speed,
         item: this.currentItem(),
         idx: this.idx,
-        total: this.list.length
+        total: this.list.length,
+        repeatAyah: !!this._repeatAyah
       };
     },
 
@@ -76,6 +78,7 @@ App.actions = App.actions || {};
       this.opts = opts || {};
       this.idx = 0;
       this._repeatLeft = 0;
+      this._repeatAyah = false;
     },
 
     /* ---------- Mushaf Player (مشغل المصحف المخفي) ----------
@@ -93,14 +96,15 @@ App.actions = App.actions || {};
         bar = document.createElement("div");
         bar.className = "mushaf-control-bar hidden";
         bar.innerHTML = `
-          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل/إيقاف"><span class="ico" data-ico="play"></span></button>
+          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل أو إيقاف مؤقت"><span class="ico" data-ico="play"></span></button>
           <div class="mc-info">
             <div class="mc-title">سورة ...</div>
             <div class="mc-seek"><div class="mc-seek-fill"></div></div>
           </div>
-          <button class="mc-btn" data-action="mc-prev" aria-label="السابق"><span class="ico" data-ico="prev"></span></button>
-          <button class="mc-btn" data-action="mc-next" aria-label="التالي"><span class="ico" data-ico="next"></span></button>
-          <button class="mc-btn" data-action="mc-close" aria-label="إغلاق"><span class="ico" data-ico="x"></span></button>`;
+          <button class="mc-btn mc-repeat" data-action="mc-repeat" aria-label="تكرار الآية" aria-pressed="false"><span class="ico" data-ico="loop"></span></button>
+          <button class="mc-btn" data-action="mc-prev" aria-label="الآية السابقة"><span class="ico" data-ico="prev"></span></button>
+          <button class="mc-btn" data-action="mc-next" aria-label="الآية التالية"><span class="ico" data-ico="next"></span></button>
+          <button class="mc-btn mc-stop" data-action="mc-stop" aria-label="إيقاف الصوت"><span class="ico" data-ico="stop"></span></button>`;
         rootEl.appendChild(bar);
         if (App.fillIcons) App.fillIcons(bar);
         // Local click handler
@@ -110,8 +114,10 @@ App.actions = App.actions || {};
           e.stopPropagation();
           const act = b.dataset.action;
           if (act === "mc-toggle") p.toggle();
+          else if (act === "mc-repeat") p.toggleRepeatAyah();
           else if (act === "mc-prev") p.prev();
           else if (act === "mc-next") p.next();
+          else if (act === "mc-stop") p.stop();
           else if (act === "mc-close") { p.stopAll(); bar.classList.add("hidden"); }
         });
       }
@@ -128,6 +134,11 @@ App.actions = App.actions || {};
         }
         const seek = bar.querySelector(".mc-seek-fill");
         if (seek && st.duration) seek.style.width = (st.currentTime / st.duration * 100) + "%";
+        const repeat = bar.querySelector(".mc-repeat");
+        if (repeat) {
+          repeat.classList.toggle("on", !!st.repeatAyah);
+          repeat.setAttribute("aria-pressed", String(!!st.repeatAyah));
+        }
       });
       this._uiUnsubs.push(unsub);
       App.Router.onLeave(unsub);
@@ -163,6 +174,21 @@ App.actions = App.actions || {};
 
     pause() { if (this.audio && !this.audio.paused) { this.audio.pause(); this._emit(); } },
 
+    stop() {
+      if (this.audio) {
+        this.audio.pause();
+        try { this.audio.currentTime = 0; } catch (e) {}
+      }
+      this._emit();
+    },
+
+    toggleRepeatAyah() {
+      this._repeatAyah = !this._repeatAyah;
+      if (this._repeatAyah && !this.state().playing && this.currentItem()) this.play(this.idx);
+      this._emit();
+      App.toast(this._repeatAyah ? "تم تفعيل تكرار الآية الحالية" : "تم إيقاف تكرار الآية", "info");
+    },
+
     next() { if (this.idx < this.list.length - 1) this.play(this.idx + 1); },
     prev() { if (this.idx > 0) this.play(this.idx - 1); },
     restart() { if (this.audio) { this.audio.currentTime = 0; this.play(this.idx); } },
@@ -182,6 +208,11 @@ App.actions = App.actions || {};
     },
 
     _onEnded() {
+      // تكرار الآية الحالية بشكل مستمر حتى يضغط الطفل على التكرار مرة أخرى
+      if (this._repeatAyah) {
+        setTimeout(() => this.play(this.idx), 180);
+        return;
+      }
       // كرر الآية إذا كان هناك عدد تكرار متبقٍ
       if (this._repeatLeft > 0) {
         this._repeatLeft--;
@@ -244,7 +275,9 @@ App.actions = App.actions || {};
       this.idx = 0;
       this._stateCbs = this._stateCbs.filter(cb => cb._persistent);
       this._hideFloating();
-      this._emit = this._emit.bind(this);
+      this._repeatAyah = false;
+      this._repeatLeft = 0;
+      this._emit();
     },
 
     /* ---------- UI ---------- */

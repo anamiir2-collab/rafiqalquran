@@ -96,7 +96,7 @@ App.actions = App.actions || {};
         bar = document.createElement("div");
         bar.className = "mushaf-control-bar hidden";
         bar.innerHTML = `
-          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل أو إيقاف مؤقت"><span class="ico" data-ico="play"></span></button>
+          <button class="mc-play" data-action="mc-toggle" aria-label="تشغيل أو إيقاف مؤقت"><span class="ico" data-ico="play"></span><span class="mc-play-label">تشغيل</span></button>
           <div class="mc-info">
             <div class="mc-title">سورة ...</div>
             <div class="mc-seek"><div class="mc-seek-fill"></div></div>
@@ -126,7 +126,11 @@ App.actions = App.actions || {};
       // اشتراك الـ state
       const unsub = p.onState((st) => {
         const playIco = bar.querySelector(".mc-play .ico");
-        if (playIco && App.icons) playIco.innerHTML = App.icons[st.loading ? "loader" : (st.playing ? "pause" : "play")];
+        if (playIco && App.icons) {
+          playIco.innerHTML = App.icons[st.loading ? "loader" : (st.playing ? "pause" : "play")];
+          const playLabel = bar.querySelector(".mc-play-label");
+          if (playLabel) playLabel.textContent = st.playing ? "إيقاف مؤقت" : "تشغيل";
+        }
         const title = bar.querySelector(".mc-title");
         if (title && st.item) {
           const s = App.Quran.surah(st.item.surah);

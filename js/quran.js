@@ -403,9 +403,6 @@ App.actions = App.actions || {};
   App.actions["surah-play"] = (el) => {
     App.Router.go("#/recite/" + el.dataset.surah);
   };
-  App.actions["surah-loop"] = (el) => {
-    App.Router.go("#/repeat/" + el.dataset.surah);
-  };
 
   App.actions["ayah-replay"] = (el) => {
     const tb = el.closest("#ayahToolbar");

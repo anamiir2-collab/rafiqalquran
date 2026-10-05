@@ -1080,3 +1080,36 @@ a { color: var(--c-primary); text-decoration: none; }
   .tasmee-ayah { font-size: 1.72rem; line-height: 2.25; }
   .mushaf-text.md { font-size: 1.63rem; }
 }
+
+.tasmee-selector-card { margin-bottom: 12px; }
+.tasmee-selector-card .field { margin-bottom: 12px; }
+.tasmee-rules { margin-top: 12px; }
+.tasmee-help-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.tasmee-help-grid span {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 11px;
+  background: var(--c-primary-soft);
+  color: var(--c-text-soft);
+  font-size: .76rem;
+  line-height: 1.6;
+}
+.tasmee-help-grid b {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-inline-end: 4px;
+  border-radius: 7px;
+  background: var(--c-primary);
+  color: #fff;
+  font-size: .68rem;
+}
+@media (max-width: 390px) {
+  .tasmee-help-grid { grid-template-columns: 1fr; }
+}

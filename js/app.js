@@ -73,7 +73,11 @@ App.actions = App.actions || {};
     flameBig: I('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'),
     pen: I('<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>'),
     chevronUp: I('<polyline points="18 15 12 9 6 15"/>'),
-    chevronDown: I('<polyline points="6 9 12 15 18 9"/>')
+    chevronDown: I('<polyline points="6 9 12 15 18 9"/>'),
+    search: I('<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
+    bookmarkCheck: I('<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><polyline points="9 12 11 14 16 9"/>'),
+    index: I('<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/>'),
+    micOff: I('<line x1="2" y1="2" x2="22" y2="22"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V5a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="22"/>')
   };
 
   /* الأحرف/الشخصيات */
@@ -994,13 +998,20 @@ App.actions = App.actions || {};
     App.Router.add("home", pageHome);
     App.Router.add("streak", () => pageStreak());
     App.Router.add("range", () => App.pageRange());
-    App.Router.add("quran", () => App.Quran.pageQuran({}));
-    App.Router.add("quran/:tab", (p) => App.Quran.pageQuran(p));
-    App.Router.add("surah/:id", (p) => App.Quran.pageSurah(p));
-    App.Router.add("recite/:id", (p) => App.Quran.pageMode({ kind: "recite", id: p.id }));
+    App.Router.add("quran", () => App.Quran.pageQuranCity());
+    App.Router.add("quran/:tab", (p) => App.Quran.pageQuranCity());
+    // المسار الجديد لقارئ المصحف الموحد
+    App.Router.add("mushaf", () => App.Quran.pageMushaf({}));
+    App.Router.add("mushaf/:surah", (p) => App.Quran.pageMushaf(p));
+    App.Router.add("mushaf/:surah/:ayah", (p) => App.Quran.pageMushaf(p));
+    // توافق مع المسارات القديمة
+    App.Router.add("surah/:id", (p) => App.Quran.pageMushaf({ surah: p.id }));
+    App.Router.add("recite/:id", (p) => App.Quran.pageMushaf({ surah: p.id }));
+    // التسميع: نطاق من آية إلى آية
     App.Router.add("tasmee", () => App.Tasmee.choose());
-    App.Router.add("tasmee/:id", (p) => App.Tasmee.page({ id: p.id, ayah: 1 }));
-    App.Router.add("tasmee/:id/:ayah", (p) => App.Tasmee.page({ id: p.id, ayah: p.ayah }));
+    App.Router.add("tasmee/:surah/:from/:to", (p) => App.Tasmee.page({ surah: p.surah, from: p.from, to: p.to }));
+    App.Router.add("tasmee/:id", (p) => App.Tasmee.page({ surah: p.id, from: 1, to: 1 }));
+    App.Router.add("tasmee/:id/:ayah", (p) => App.Tasmee.page({ surah: p.id, from: p.ayah, to: p.ayah }));
     App.Router.add("journey/:id", (p) => App.Memorization.pageJourney(p));
     App.Router.add("review", () => App.Revision.pageReview());
     App.Router.add("review/session", () => App.Revision.pageSession());

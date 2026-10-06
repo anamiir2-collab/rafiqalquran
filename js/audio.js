@@ -121,10 +121,19 @@ App.actions = App.actions || {};
           else if (act === "mc-close") { p.stopAll(); bar.classList.add("hidden"); }
         });
       }
-      bar.classList.remove("hidden");
+      // إذا لم يكن autoStart، أبقِ شريط التحكم مخفيًا حتى يضغط المستخدم زر التشغيل
+      if (!opts.autoStart) {
+        bar.classList.add("hidden");
+      } else {
+        bar.classList.remove("hidden");
+      }
 
       // اشتراك الـ state
       const unsub = p.onState((st) => {
+        // أظهر الشريط بمجرد بدء التشغيل
+        if (st.playing || st.loading) {
+          bar.classList.remove("hidden");
+        }
         const playIco = bar.querySelector(".mc-play .ico");
         if (playIco && App.icons) {
           playIco.innerHTML = App.icons[st.loading ? "loader" : (st.playing ? "pause" : "play")];

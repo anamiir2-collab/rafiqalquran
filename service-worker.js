@@ -4,7 +4,7 @@
    ============================================================ */
 "use strict";
 
-const VERSION = "v2.0.0";
+const VERSION = "v2.1.0";
 const CORE_CACHE = `rafiq-core-${VERSION}`;
 const AUDIO_CACHE = `rafiq-audio-${VERSION}`;
 const MAX_AUDIO_ENTRIES = 300;
@@ -16,11 +16,13 @@ const CORE_ASSETS = [
   "./css/fonts.css",
   "./css/style.css",
   "./css/child.css",
+  "./css/quran-wird.css",
   "./css/parent.css",
   "./css/responsive.css",
   "./js/storage.js",
   "./js/navigation.js",
   "./js/quran.js",
+  "./js/quran-wird.js",
   "./js/range.js",
   "./js/audio.js",
   "./js/rewards.js",
@@ -31,6 +33,7 @@ const CORE_ASSETS = [
   "./js/stories.js",
   "./js/morals.js",
   "./js/parent.js",
+  "./js/education.js",
   "./js/pwa.js",
   "./js/app.js",
   "./data/quran.json",
@@ -68,92 +71,75 @@ const CORE_ASSETS = [
   "./assets/fonts/amiri-quran-400-latin.woff2"
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CORE_CACHE);
-      await Promise.allSettled(
-        CORE_ASSETS.map((url) => cache.add(new Request(url, { cache: "reload" })))
-      );
-      await self.skipWaiting();
-    })()
-  );
+self.addEventListener("install",(event)=>{
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CORE_CACHE);
+    await Promise.allSettled(CORE_ASSETS.map(url=>cache.add(new Request(url,{cache:"reload"}))));
+    await self.skipWaiting();
+  })());
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    (async () => {
-      const names = await caches.keys();
-      await Promise.all(
-        names
-          .filter((n) => n.startsWith("rafiq-") && !n.endsWith(VERSION))
-          .map((n) => caches.delete(n))
-      );
-      await self.clients.claim();
-    })()
-  );
+self.addEventListener("activate",(event)=>{
+  event.waitUntil((async()=>{
+    const names=await caches.keys();
+    await Promise.all(names.filter(n=>n.startsWith("rafiq-")&&!n.endsWith(VERSION)).map(n=>caches.delete(n)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
+self.addEventListener("fetch",(event)=>{
+  const req=event.request;
+  if(req.method!=="GET")return;
+  const url=new URL(req.url);
 
-  const url = new URL(req.url);
-
-  if (url.hostname.endsWith("everyayah.com") && url.pathname.endsWith(".mp3")) {
-    event.respondWith(cacheFirst(req, AUDIO_CACHE, { trim: MAX_AUDIO_ENTRIES }));
+  if(url.hostname.endsWith("everyayah.com")&&url.pathname.endsWith(".mp3")){
+    event.respondWith(cacheFirst(req,AUDIO_CACHE,{trim:MAX_AUDIO_ENTRIES}));
     return;
   }
 
-  if (url.origin === location.origin) {
-    if (req.mode === "navigate") {
+  if(url.origin===location.origin){
+    if(req.mode==="navigate"){
       event.respondWith(navigateHandler(req));
       return;
     }
-    event.respondWith(cacheFirst(req, CORE_CACHE));
+    event.respondWith(cacheFirst(req,CORE_CACHE));
   }
 });
 
-async function navigateHandler(req) {
-  try {
-    const fresh = await fetch(req);
-    const cache = await caches.open(CORE_CACHE);
-    cache.put("./index.html", fresh.clone());
+async function navigateHandler(req){
+  try{
+    const fresh=await fetch(req);
+    const cache=await caches.open(CORE_CACHE);
+    cache.put("./index.html",fresh.clone());
     return fresh;
-  } catch (e) {
-    const cache = await caches.open(CORE_CACHE);
-    return (
-      (await cache.match(req)) ||
-      (await cache.match("./index.html")) ||
-      (await cache.match("./")) ||
-      new Response("<!DOCTYPE html><html lang='ar' dir='rtl'><body style='font-family:sans-serif;text-align:center;padding:40px'><h1>رفيق القرآن</h1><p>لا يوجد اتصال — افتح التطبيق لاحقًا</p></body></html>", { headers: { "Content-Type": "text/html; charset=utf-8" } })
-    );
+  }catch(e){
+    const cache=await caches.open(CORE_CACHE);
+    return (await cache.match(req))||
+      (await cache.match("./index.html"))||
+      (await cache.match("./"))||
+      new Response("<!DOCTYPE html><html lang='ar' dir='rtl'><body style='font-family:sans-serif;text-align:center;padding:40px'><h1>رفيق القرآن</h1><p>لا يوجد اتصال — افتح التطبيق لاحقًا</p></body></html>",{headers:{"Content-Type":"text/html; charset=utf-8"}});
   }
 }
 
-async function cacheFirst(req, cacheName, opts = {}) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(req, { ignoreVary: true });
-  if (cached) return cached;
-  try {
-    const fresh = await fetch(req);
-    if (fresh && (fresh.ok || fresh.type === "opaque")) {
-      cache.put(req, fresh.clone());
-      if (opts.trim) trimCache(cacheName, opts.trim);
+async function cacheFirst(req,cacheName,opts={}){
+  const cache=await caches.open(cacheName);
+  const cached=await cache.match(req,{ignoreVary:true});
+  if(cached)return cached;
+  try{
+    const fresh=await fetch(req);
+    if(fresh&&(fresh.ok||fresh.type==="opaque")){
+      cache.put(req,fresh.clone());
+      if(opts.trim)trimCache(cacheName,opts.trim);
     }
     return fresh;
-  } catch (e) {
-    if (req.destination === "audio") {
-      return new Response(new Blob([]), { status: 504, statusText: "Audio offline" });
-    }
-    return new Response("", { status: 504, statusText: "Offline" });
+  }catch(e){
+    if(req.destination==="audio")return new Response(new Blob([]),{status:504,statusText:"Audio offline"});
+    return new Response("",{status:504,statusText:"Offline"});
   }
 }
 
-async function trimCache(cacheName, max) {
-  const cache = await caches.open(cacheName);
-  const keys = await cache.keys();
-  if (keys.length > max) {
-    await cache.delete(keys[0]);
-  }
+async function trimCache(cacheName,max){
+  const cache=await caches.open(cacheName);
+  const keys=await cache.keys();
+  if(keys.length>max)await cache.delete(keys[0]);
 }

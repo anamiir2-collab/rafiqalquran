@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0C7A5C">
-  <meta name="description" content="رفيق القرآن للأطفال — تطبيق تفاعلي لحفظ القرآن الكريم وتعلم القيم القرآنية، يعمل بدون إنترنت">
-  <title>رفيق القرآن للأطفال</title>
+  <meta name="theme-color" content="#5B45D9">
+  <meta name="description" content="رفيق القرآن — تطبيق إسلامي تعليمي للأطفال، رحلة ممتعة مع القرآن: اقرأ وتعلم واحفظ وراجع">
+  <title>رفيق القرآن</title>
 
   <link rel="manifest" href="./manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
@@ -24,6 +24,46 @@
   <link rel="stylesheet" href="./css/responsive.css">
 </head>
 <body>
+  <!-- ===== Splash Screen ===== -->
+  <div class="splash" id="splashScreen" aria-hidden="false">
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- خلفية دائرية -->
+          <defs>
+            <linearGradient id="splashGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#8B6DE8"/>
+              <stop offset="100%" stop-color="#5B45D9"/>
+            </linearGradient>
+            <linearGradient id="splashGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FFD86B"/>
+              <stop offset="100%" stop-color="#F5C85B"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="56" fill="url(#splashGrad)"/>
+          <!-- زخرفة هندسية إسلامية خفيفة -->
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#FFFFFF" stroke-width="1.2" opacity="0.22"/>
+          <circle cx="60" cy="60" r="38" fill="none" stroke="#FFFFFF" stroke-width="0.8" opacity="0.15"/>
+          <!-- كتاب مفتوح -->
+          <path d="M60 38 C50 32 36 32 30 36 L30 80 C36 76 50 76 60 82 C70 76 84 76 90 80 L90 36 C84 32 70 32 60 38 Z" fill="#FFFFFF" opacity="0.96"/>
+          <path d="M60 38 L60 82" stroke="#5B45D9" stroke-width="1.5" opacity="0.4"/>
+          <!-- نجمة ذهبية -->
+          <path d="M60 26 L62.5 33 L70 33.5 L64 38 L66 45.5 L60 41.5 L54 45.5 L56 38 L50 33.5 L57.5 33 Z" fill="url(#splashGold)"/>
+          <!-- خطوط صفحات -->
+          <line x1="38" y1="50" x2="54" y2="52" stroke="#8B6DE8" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>
+          <line x1="38" y1="56" x2="52" y2="58" stroke="#8B6DE8" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+          <line x1="38" y1="62" x2="54" y2="64" stroke="#8B6DE8" stroke-width="1.5" opacity="0.25" stroke-linecap="round"/>
+          <line x1="66" y1="52" x2="82" y2="50" stroke="#8B6DE8" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>
+          <line x1="68" y1="58" x2="82" y2="56" stroke="#8B6DE8" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+          <line x1="66" y1="64" x2="82" y2="62" stroke="#8B6DE8" stroke-width="1.5" opacity="0.25" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="splash-title">رفيق القرآن</div>
+      <div class="splash-tagline">رفيقك في رحلة القرآن</div>
+      <div class="splash-loader"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
   <div class="app-shell" id="appShell">
     <main id="appMain" class="app-main" aria-live="polite"></main>
 
@@ -31,8 +71,8 @@
       <button class="nav-item active" data-href="#/home" data-nav="home" aria-label="الرئيسية">
         <span class="nav-ico" data-ico="home"></span><span class="nav-label">الرئيسية</span>
       </button>
-      <button class="nav-item" data-href="#/quran" data-nav="quran" aria-label="القرآن">
-        <span class="nav-ico" data-ico="book"></span><span class="nav-label">القرآن</span>
+      <button class="nav-item" data-href="#/quran" data-nav="quran" aria-label="المصحف">
+        <span class="nav-ico" data-ico="book"></span><span class="nav-label">المصحف</span>
       </button>
       <button class="nav-item" data-href="#/review" data-nav="review" aria-label="المراجعة">
         <span class="nav-ico" data-ico="refresh"></span><span class="nav-label">المراجعة</span>
@@ -40,8 +80,8 @@
       <button class="nav-item" data-href="#/challenges" data-nav="challenges" aria-label="التحديات">
         <span class="nav-ico" data-ico="trophy"></span><span class="nav-label">التحديات</span>
       </button>
-      <button class="nav-item" data-href="#/more" data-nav="more" aria-label="المزيد">
-        <span class="nav-ico" data-ico="grid"></span><span class="nav-label">المزيد</span>
+      <button class="nav-item" data-href="#/more" data-nav="more" aria-label="حسابي">
+        <span class="nav-ico" data-ico="grid"></span><span class="nav-label">حسابي</span>
       </button>
     </nav>
 
@@ -73,5 +113,17 @@
   <script src="./js/education.js" defer></script>
   <script src="./js/pwa.js" defer></script>
   <script src="./js/app.js" defer></script>
+  <script>
+    // إخفاء شاشة البداية بعد تحميل النافذة
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        var s = document.getElementById("splashScreen");
+        if (s) {
+          s.classList.add("splash-hide");
+          setTimeout(function () { s.remove(); }, 600);
+        }
+      }, 1400);
+    });
+  </script>
 </body>
 </html>

@@ -448,11 +448,16 @@ App.actions = App.actions || {};
         </div>` : ""}
 
         <div class="mushaf-page mushaf-page-reader" id="mushafPage">
+          <span class="mushaf-corner-tl" aria-hidden="true"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L18 2 M2 2 L2 18 M2 2 Q10 4 14 8 Q18 12 18 18 M2 2 Q8 6 10 10 Q12 14 12 18" fill="none" stroke="#A88445" stroke-width="1.2" stroke-linecap="round"/><circle cx="6" cy="6" r="2" fill="#A88445" opacity="0.5"/></svg></span>
+          <span class="mushaf-corner-tr" aria-hidden="true"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L18 2 M2 2 L2 18 M2 2 Q10 4 14 8 Q18 12 18 18 M2 2 Q8 6 10 10 Q12 14 12 18" fill="none" stroke="#A88445" stroke-width="1.2" stroke-linecap="round"/><circle cx="6" cy="6" r="2" fill="#A88445" opacity="0.5"/></svg></span>
+          <span class="mushaf-corner-bl" aria-hidden="true"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L18 2 M2 2 L2 18 M2 2 Q10 4 14 8 Q18 12 18 18 M2 2 Q8 6 10 10 Q12 14 12 18" fill="none" stroke="#A88445" stroke-width="1.2" stroke-linecap="round"/><circle cx="6" cy="6" r="2" fill="#A88445" opacity="0.5"/></svg></span>
+          <span class="mushaf-corner-br" aria-hidden="true"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L18 2 M2 2 L2 18 M2 2 Q10 4 14 8 Q18 12 18 18 M2 2 Q8 6 10 10 Q12 14 12 18" fill="none" stroke="#A88445" stroke-width="1.2" stroke-linecap="round"/><circle cx="6" cy="6" r="2" fill="#A88445" opacity="0.5"/></svg></span>
           <div class="mushaf-topline">
             <span>الجزء ${App.arDigits(Q.surahJuz(surahNo))}</span>
             <span>سُورَةُ ${s.name}</span>
           </div>
           <div class="mushaf-ornament" aria-hidden="true">۞</div>
+          <div class="mushaf-surah-name">${s.name}</div>
           ${showBismillah ? `<div class="mushaf-bismillah">${Q.bismillah()}</div>` : ""}
           <div class="mushaf-text ${fs}" id="mushafText">${mushafText}</div>
           <div class="mushaf-page-number">${App.arDigits(pageNumber)}</div>

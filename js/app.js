@@ -274,7 +274,7 @@ App.actions = App.actions || {};
     const ctx = canvas.getContext("2d");
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
-    const colors = ["#E8A93E", "#F5C063", "#0C7A5C", "#2FB5A3", "#6FA8C9", "#D96A5B"];
+    const colors = ["#5B45D9", "#8B6DE8", "#62D6A3", "#FFD86B", "#F58F8F", "#9DDCF2"];
     const pieces = [];
     for (let i = 0; i < 90; i++) {
       pieces.push({
@@ -446,45 +446,60 @@ App.actions = App.actions || {};
 
     const dueCount = App.Quran.data ? App.Revision.dueSurahs().length : 0;
 
+    // أيام الأسبوع للـ Streak
+    const AR_DAYS_SHORT = ["سبت","أحد","إثن","ثلا","أرب","خمي","جمع"];
+    const today = new Date();
+    const last7 = [];
+    for (let i = 6; i >= 0; i--) {
+      const dd = new Date(today.getTime() - i * 86400000);
+      const k = dd.getFullYear() + "-" + String(dd.getMonth() + 1).padStart(2, "0") + "-" + String(dd.getDate()).padStart(2, "0");
+      last7.push({ key: k, active: (st.stats.activeDays || []).includes(k), isToday: i === 0 });
+    }
+
     return {
       nav: "home",
       html: `
       <header class="screen-head">
-        <span style="width:48px;height:48px;border-radius:14px;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-sm)">
-          <span class="ico" data-ico="book" style="width:24px;height:24px"></span>
-        </span>
-        <div class="sh-title"><h1>رفيق القرآن</h1><p>رفيقك في رحلة الحفظ</p></div>
+        <div class="sh-title">
+          <h1>السلام عليكم يا ${pr.name ? App.esc(pr.name) : "بطل"}</h1>
+          <p>جاهز تكمل رحلتك مع القرآن؟</p>
+        </div>
+        <button class="icon-btn" data-href="#/more/settings" aria-label="الإعدادات" style="position:relative">
+          <span class="ico" data-ico="settings"></span>
+        </button>
         <span class="avatar-home">${App.avatarSvg(pr.avatar, 42)}</span>
       </header>
 
-      <div class="hero">
-        <div class="hero-greet">أهلًا بك يا ${pr.name ? App.esc(pr.name) : "بطل"}${streak > 1 ? ` <span class="chip chip-gold" style="margin-inline-start:6px"><span class="ico" data-ico="flame"></span> ${App.arDigits(streak)} يوم</span>` : ""}</div>
-        <div class="hero-sub">رفيقك في رحلة الحفظ وتعلم القرآن</div>
-      </div>
-
       ${App.Range.isValid() ? App.Range.barHtml() : App.Range.emptyHtml()}
 
-      <button class="card streak-card-cta btn-block mt-12" data-href="#/streak" style="text-align:right;background:linear-gradient(135deg,#1F3A30 0%,#163025 100%);color:#fff;border:none">
-        <div class="row-between" style="align-items:center">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="width:42px;height:42px;border-radius:11px;background:rgba(230,181,80,.18);color:var(--c-gold);display:flex;align-items:center;justify-content:center">
-              <span class="ico" data-ico="flameBig" style="width:24px;height:24px"></span>
-            </span>
-            <span>
-              <div style="font-weight:800;font-size:.98rem;color:#fff">يوميات الانتظام</div>
-              <div style="font-size:.74rem;color:rgba(255,255,255,.78)">${streak > 0 ? `${App.arDigits(streak)} ${streak === 1 ? "يوم متواصل" : "أيام متواصلة"}` : "ابدأ رحلتك اليوم"}</div>
-            </span>
+      <!-- STREAK CARD -->
+      <div class="streak-hero-card mt-12">
+        <div class="shc-pattern"></div>
+        <div class="shc-content">
+          <div class="shc-flame">
+            <span class="ico" data-ico="flameBig"></span>
           </div>
-          <span class="ico" data-ico="chevronLeft" style="color:rgba(255,255,255,.6)"></span>
+          <div class="shc-info">
+            <div class="shc-count">${App.arDigits(streak)}</div>
+            <div class="shc-label">${streak === 1 ? "يوم متواصل" : "أيام متواصلة"}</div>
+          </div>
+          <div class="shc-days">
+            ${last7.map((d, i) => `
+              <div class="shc-day ${d.active ? "active" : ""} ${d.isToday ? "today" : ""}">
+                <span class="shc-day-dot"></span>
+                <span class="shc-day-name">${AR_DAYS_SHORT[(d.key ? new Date(d.key + "T00:00:00").getDay() : 0) === 6 ? 0 : ((new Date(d.key + "T00:00:00").getDay() + 1) % 7)] || "ـ"}</span>
+              </div>
+            `).join("")}
+          </div>
         </div>
-      </button>
+      </div>
 
       ${target ? `
       <div class="card journey-card mt-16">
         <div class="jc-head">
           <span class="jc-ico"><span class="ico" data-ico="rocket"></span></span>
           <span class="grow" style="text-align:right">
-            <span class="jc-title">رحلتك اليوم</span>
+            <span class="jc-title">أكمل رحلتك</span>
             <span class="jc-sub">${sess ? "أكمل من حيث توقفت" : "رحلة جديدة بانتظارك"} — سورة ${target.name}</span>
           </span>
         </div>
@@ -505,21 +520,56 @@ App.actions = App.actions || {};
           ].map(s2 => `
           <div class="jc-step"><span class="jc-dot"><span class="ico" data-ico="${s2.icon}"></span></span><span>${s2.label}</span></div>`).join("")}
         </div>`}
-        <button class="btn btn-gold btn-lg btn-block btn-pulse jc-cta" data-href="#/journey/${target.number}">
+        <button class="btn btn-primary btn-lg btn-block btn-pulse jc-cta" data-href="#/journey/${target.number}">
           ${sess ? "أكمل رحلتي" : "ابدأ رحلتي"}
           <span class="ico" data-ico="chevronLeft"></span>
         </button>
       </div>` : ""}
 
+      <!-- LEARNING CARDS GRID -->
+      <div class="section-head"><h2>رحلة القرآن</h2></div>
+      <div class="quick-grid">
+        <button class="quick-card" data-href="#/quran">
+          <span class="quick-ico qi-green"><span class="ico" data-ico="bookOpen"></span></span>
+          <span class="quick-title">قراءة القرآن</span>
+          <span class="quick-sub">اقرأ بتدبر وهدوء</span>
+        </button>
+        <button class="quick-card" data-href="#/journey/${target ? target.number : 112}">
+          <span class="quick-ico qi-purple"><span class="ico" data-ico="brain"></span></span>
+          <span class="quick-title">حفظ القرآن</span>
+          <span class="quick-sub">احفظ آيات جديدة</span>
+        </button>
+        <button class="quick-card" data-href="#/tasmee">
+          <span class="quick-ico qi-coral"><span class="ico" data-ico="mic"></span></span>
+          <span class="quick-title">التلاوة</span>
+          <span class="quick-sub">حسّن تلاوتك</span>
+        </button>
+        <button class="quick-card" data-href="#/challenges">
+          <span class="quick-ico qi-gold"><span class="ico" data-ico="target"></span></span>
+          <span class="quick-title">اختبر حفظك</span>
+          <span class="quick-sub">ألعاب وإتقان</span>
+        </button>
+        <button class="quick-card" data-href="#/achievements">
+          <span class="quick-ico qi-gold"><span class="ico" data-ico="trophy"></span></span>
+          <span class="quick-title">الإنجازات</span>
+          <span class="quick-sub">اكتشف إنجازاتك</span>
+        </button>
+        <button class="quick-card" data-href="#/streak">
+          <span class="quick-ico qi-turquoise"><span class="ico" data-ico="chart"></span></span>
+          <span class="quick-title">تقدمي</span>
+          <span class="quick-sub">تابع رحلتك</span>
+        </button>
+      </div>
+
       ${vodHtml}
 
       <button class="install-banner hidden" data-install-btn data-action="app-install" style="width:100%">
-        <span class="ico" data-ico="download" style="color:#3D6F94;width:26px;height:26px"></span>
+        <span class="ico" data-ico="download" style="color:#3D7A95;width:26px;height:26px"></span>
         <span class="ib-txt">ثبّت التطبيق على جهازك<span>يعمل بدون إنترنت وبدون شريط متصفح</span></span>
-        <span class="chip chip-blue">تثبيت</span>
+        <span class="chip chip-sky">تثبيت</span>
       </button>
 
-      <p class="center tiny text-faint mt-20">رفيق القرآن للأطفال — الإصدار ١.٠.٠</p>
+      <p class="center tiny text-faint mt-20">رفيق القرآن — رفيقك في رحلة القرآن</p>
       `,
       mount() {}
     };
@@ -918,11 +968,11 @@ App.actions = App.actions || {};
       body: `
       <div class="center">
         <span class="ico" style="width:52px;height:52px;margin:0 auto 10px;color:var(--c-primary)" data-ico="book"></span>
-        <div class="bold" style="font-size:1.1rem">رفيق القرآن للأطفال</div>
+        <div class="bold" style="font-size:1.1rem">رفيق القرآن</div>
         <p class="small text-soft mt-8" style="line-height:2">
-        تطبيق تفاعلي لحفظ جزء عمّ وتعلم القيم القرآنية، مصمم خصيصًا للأطفال.<br>
-        الإصدار ١.٠.٠ — يعمل بدون إنترنت بعد أول تشغيل.<br>
-        النص القرآني بالرسم العثماني، والتلاوات من كلٍّ من الشيخ مشاري العفاسي والشيخ محمود خليل الحصري.
+        تطبيق إسلامي تعليمي للأطفال — رحلة ممتعة مع القرآن: اقرأ وتعلم واحفظ وراجع.<br>
+        مصمم خصيصًا للأطفال بطريقة تفاعلية ومحفزة.<br>
+        يعمل بدون إنترنت بعد أول تشغيل، والنص القرآني بالرسم العثماني، والتلاوات من كلٍّ من الشيخ مشاري العفاسي والشيخ محمود خليل الحصري.
         </p>
         <p class="tiny text-faint mt-8">«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»</p>
       </div>`,
@@ -930,8 +980,103 @@ App.actions = App.actions || {};
     });
   };
 
-  /* ---------- الترحيب الأول ---------- */
+  /* ---------- الترحيب الأول (متعدد الخطوات) ---------- */
+  let onbStep = 0;
+  const ONB_SLIDES = [
+    {
+      title: "رحلتك مع القرآن تبدأ هنا",
+      desc: "اقرأ وتعلم واحفظ وراجع بطريقة ممتعة وتفاعلية",
+      icon: "bookOpen",
+      color: "#62D6A3"
+    },
+    {
+      title: "احفظ واختبر نفسك",
+      desc: "نظام ذكي للتكرار المتباعد يضمن عدم نسيان ما حفظته",
+      icon: "brain",
+      color: "#8B6DE8"
+    },
+    {
+      title: "تلاوة وتسميع تفاعلي",
+      desc: "سجّل تلاوتك واحصل على تقييم فوري لإتقانك",
+      icon: "mic",
+      color: "#F58F8F"
+    },
+    {
+      title: "اكسب النجوم والأوسمة",
+      desc: "كل خطوة تقربك من إتقان القرآن، اجمع المكافآت!",
+      icon: "trophy",
+      color: "#FFD86B"
+    }
+  ];
+
   function showOnboarding() {
+    onbStep = 0;
+    App._onbAvatar = "falcon";
+    renderOnboardingSlide();
+  }
+
+  function renderOnboardingSlide() {
+    const slide = ONB_SLIDES[onbStep];
+    const isLast = onbStep === ONB_SLIDES.length - 1;
+
+    const bd = document.getElementById("modalBackdrop");
+    const card = document.getElementById("modalCard");
+    if (!bd || !card) return;
+
+    card.innerHTML = `
+      <div class="onb-wrap">
+        <div class="onb-illustration" style="background:linear-gradient(135deg, ${slide.color}22 0%, ${slide.color}11 100%); color:${slide.color}">
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="100" height="100" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="${slide.color}18"/>
+            <circle cx="60" cy="60" r="42" fill="${slide.color}28"/>
+            <circle cx="60" cy="60" r="32" fill="${slide.color}"/>
+            <g fill="#fff" opacity="0.95" transform="translate(60 60)">
+              ${slide.icon === "bookOpen" ? '<path d="M-20 -10 a8 8 0 0 1 8 -8 h10 v28 h-10 a8 8 0 0 0 -8 8 z M20 -10 a8 8 0 0 0 -8 -8 h-10 v28 h10 a8 8 0 0 1 8 8 z" transform="translate(0 -4) scale(0.7)"/>' : ''}
+              ${slide.icon === "brain" ? '<path d="M-6 -14 a6 6 0 0 0 -6 6 v0 a6 6 0 0 0 -6 6 a6 6 0 0 0 4 6 a6 6 0 0 0 8 4 a6 6 0 0 0 8 -4 a6 6 0 0 0 4 -6 a6 6 0 0 0 -6 -6 v0 a6 6 0 0 0 -6 -6 z M6 -14 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 6 6 a6 6 0 0 1 -4 6 a6 6 0 0 1 -8 4 a6 6 0 0 1 -8 -4 a6 6 0 0 1 -4 -6 a6 6 0 0 1 6 -6 v0 a6 6 0 0 1 6 -6 z" transform="scale(0.9)"/>' : ''}
+              ${slide.icon === "mic" ? '<rect x="-5" y="-18" width="10" height="18" rx="5"/><path d="M-10 -2 a10 10 0 0 0 20 0"/><line x1="0" y1="8" x2="0" y2="16"/><line x1="-5" y1="16" x2="5" y2="16" stroke-width="2"/>' : ''}
+              ${slide.icon === "trophy" ? '<path d="M-10 -14 h20 v6 a10 10 0 0 1 -20 0 z M-6 -14 v-4 h12 v4 M-8 -10 h-4 a4 4 0 0 0 4 4 M8 -10 h4 a4 4 0 0 1 -4 4 M-3 4 h6 l-2 4 h-2 z" transform="translate(0 -2)"/>' : ''}
+            </g>
+          </svg>
+        </div>
+
+        <div class="onb-dots">
+          ${ONB_SLIDES.map((_, i) => `<span class="onb-dot ${i === onbStep ? "active" : ""}"></span>`).join("")}
+        </div>
+
+        <h2 class="onb-title">${slide.title}</h2>
+        <p class="onb-desc">${slide.desc}</p>
+
+        <button class="btn btn-primary btn-lg btn-block onb-cta" data-action="onb-next">
+          ${isLast ? "ابدأ رحلتك" : "التالي"}
+          <span class="ico" data-ico="chevronLeft"></span>
+        </button>
+
+        ${onbStep === 0 ? `<button class="onb-skip" data-action="onb-skip">لدي حساب بالفعل</button>` : `<button class="onb-skip" data-action="onb-prev">السابق</button>`}
+      </div>
+    `;
+    bd.classList.remove("hidden");
+    if (App.fillIcons) App.fillIcons(card);
+  }
+
+  App.actions["onb-next"] = () => {
+    if (onbStep < ONB_SLIDES.length - 1) {
+      onbStep++;
+      renderOnboardingSlide();
+    } else {
+      // بعد آخر شريحة، اعرض إدخال الاسم والشخصية
+      showOnboardingProfile();
+    }
+  };
+
+  App.actions["onb-prev"] = () => {
+    if (onbStep > 0) { onbStep--; renderOnboardingSlide(); }
+  };
+
+  App.actions["onb-skip"] = () => {
+    showOnboardingProfile();
+  };
+
+  function showOnboardingProfile() {
     App.modal({
       title: "أهلًا بك في رفيق القرآن!",
       closable: false,
@@ -977,12 +1122,12 @@ App.actions = App.actions || {};
   }
 
   /* ================= التسجيل والبدء ================= */
-  /* ---------- تطبيق الوضع الليلي ---------- */
+  /* ---------- تطبيق الوضع النهاري ---------- */
   App.applyTheme = function () {
     const root = document.documentElement;
     root.setAttribute("data-theme", "light");
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) metaTheme.setAttribute("content", "#1B7F5A");
+    if (metaTheme) metaTheme.setAttribute("content", "#5B45D9");
   };
 
   function init() {

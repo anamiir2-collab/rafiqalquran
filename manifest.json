@@ -1,7 +1,7 @@
 {
-  "name": "رفيق القرآن للأطفال",
+  "name": "رفيق القرآن",
   "short_name": "رفيق القرآن",
-  "description": "تطبيق تفاعلي لحفظ جزء عمّ وتعلم القيم القرآنية للأطفال — يعمل بدون إنترنت",
+  "description": "تطبيق إسلامي تعليمي للأطفال — رحلة ممتعة مع القرآن: اقرأ وتعلم واحفظ وراجع، يعمل بدون إنترنت",
   "id": "./",
   "start_url": "./index.html",
   "scope": "./",
@@ -10,8 +10,8 @@
   "orientation": "portrait-primary",
   "dir": "rtl",
   "lang": "ar",
-  "background_color": "#FAF7F0",
-  "theme_color": "#1B7F5A",
+  "background_color": "#5B45D9",
+  "theme_color": "#5B45D9",
   "categories": ["education", "kids", "books"],
   "icons": [
     {

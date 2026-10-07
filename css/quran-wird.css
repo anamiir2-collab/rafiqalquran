@@ -1,42 +1,42 @@
-/* رفيق القرآن — ورد اليوم + هيئة المصحف */
-:root{--wird-paper:#fbf3df;--wird-ink:#17140f;--wird-gold:#9a7136;--wird-line:#d8c8a5}
-.quran-wird{margin-top:16px;padding:16px;border-radius:24px;background:linear-gradient(145deg,#fffdf8 0%,#f8f0df 100%);border:1px solid rgba(154,113,54,.18);box-shadow:0 10px 30px rgba(73,54,25,.08)}
+/* رفيق القرآن — ورد اليوم + هيئة المصحف (Redesigned) */
+:root{--wird-paper:#FFFDF7;--wird-ink:#171717;--wird-gold:#A88445;--wird-line:#D9C7A0}
+.quran-wird{margin-top:16px;padding:18px;border-radius:var(--r-2xl);background:linear-gradient(145deg,#FFFDF7 0%,#F7F1E5 100%);border:1px solid rgba(168,132,69,0.20);box-shadow:0 10px 30px rgba(87,65,35,0.10)}
 .quran-wird-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.quran-wird-title{font-size:1.08rem;font-weight:900;color:var(--c-primary-deep)}
-.quran-wird-sub{font-size:.72rem;color:var(--c-text-soft);margin-top:3px}
-.quran-wird-icon{width:42px;height:42px;border-radius:14px;background:var(--grad-gold);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.quran-wird-icon .ico{width:21px;height:21px}
-.quran-wird-range{padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.72);border:1px solid rgba(154,113,54,.15);margin-bottom:12px}
-.quran-wird-range strong{display:block;font-size:.92rem;color:var(--c-primary-deep)}
-.quran-wird-range span{display:block;font-size:.72rem;color:var(--c-text-soft);margin-top:3px}
+.quran-wird-title{font-size:1.1rem;font-weight:800;color:var(--c-text)}
+.quran-wird-sub{font-size:0.72rem;color:var(--c-text-soft);margin-top:3px}
+.quran-wird-icon{width:44px;height:44px;border-radius:var(--r-md);background:var(--grad-gold);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:var(--shadow-gold)}
+.quran-wird-icon .ico{width:22px;height:22px}
+.quran-wird-range{padding:13px 14px;border-radius:var(--r-md);background:rgba(255,255,255,0.75);border:1px solid rgba(168,132,69,0.18);margin-bottom:12px}
+.quran-wird-range strong{display:block;font-size:0.94rem;color:var(--c-text)}
+.quran-wird-range span{display:block;font-size:0.72rem;color:var(--c-text-soft);margin-top:3px}
 .quran-wird-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.wird-action{min-height:82px;border:1px solid var(--c-line);border-radius:17px;background:var(--c-white);padding:12px;text-align:right;display:flex;align-items:center;gap:10px;transition:transform .18s,box-shadow .18s,border-color .18s}
-.wird-action:active{transform:scale(.97)}
-.wird-action .wa-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.wird-action{min-height:82px;border:1px solid var(--c-line);border-radius:var(--r-md);background:var(--c-white);padding:13px;text-align:right;display:flex;align-items:center;gap:10px;transition:transform 0.18s var(--ease),box-shadow 0.18s,border-color 0.18s;box-shadow:var(--shadow-sm)}
+.wird-action:active{transform:scale(0.97)}
+.wird-action .wa-icon{width:42px;height:42px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
 .wird-action .wa-icon .ico{width:20px;height:20px}
 .wird-action .wa-text{min-width:0;flex:1}
-.wird-action .wa-title{display:block;font-weight:900;font-size:.9rem;color:var(--c-primary-deep)}
-.wird-action .wa-sub{display:block;font-size:.67rem;color:var(--c-text-soft);margin-top:3px;line-height:1.45}
-.wird-action.tilawah .wa-icon{background:#e8f3ed;color:#1d7a5a}
-.wird-action.hifz .wa-icon{background:#f8edd6;color:#9a7136}
-.quran-wird-edit{margin-top:10px;width:100%;min-height:42px;border-radius:12px;border:1px dashed rgba(154,113,54,.35);background:transparent;color:var(--c-primary-dark);font-size:.76rem;font-weight:800}
-.mushaf-page-reader{position:relative;margin:8px 0 18px;padding:26px 18px 34px;border-radius:5px;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.78),transparent 28%),linear-gradient(180deg,#fffaf0 0%,var(--wird-paper) 100%);border:1px solid rgba(126,91,42,.22);box-shadow:0 12px 34px rgba(62,45,20,.13),inset 0 0 0 5px rgba(154,113,54,.035);overflow:hidden}
-.mushaf-page-reader:before,.mushaf-page-reader:after{content:"";position:absolute;left:10px;right:10px;height:1px;background:rgba(154,113,54,.28)}
+.wird-action .wa-title{display:block;font-weight:800;font-size:0.9rem;color:var(--c-text)}
+.wird-action .wa-sub{display:block;font-size:0.67rem;color:var(--c-text-soft);margin-top:3px;line-height:1.45}
+.wird-action.tilawah .wa-icon{background:var(--c-mint-light);color:#1E8E60}
+.wird-action.hifz .wa-icon{background:var(--c-yellow-light);color:#8A6A2E}
+.quran-wird-edit{margin-top:10px;width:100%;min-height:42px;border-radius:var(--r-sm);border:1px dashed rgba(168,132,69,0.4);background:transparent;color:var(--c-primary);font-size:0.76rem;font-weight:800}
+.mushaf-page-reader{position:relative;margin:8px 0 18px;padding:26px 18px 34px;border-radius:6px;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,0.78),transparent 28%),linear-gradient(180deg,#FFFDF7 0%,var(--wird-paper) 100%);border:1px solid rgba(168,132,69,0.25);box-shadow:0 12px 36px rgba(87,65,35,0.14),inset 0 0 0 5px rgba(168,132,69,0.04);overflow:hidden}
+.mushaf-page-reader:before,.mushaf-page-reader:after{content:"";position:absolute;left:10px;right:10px;height:1px;background:rgba(168,132,69,0.30)}
 .mushaf-page-reader:before{top:9px}.mushaf-page-reader:after{bottom:9px}
-.mushaf-topline{font-family:var(--font-ui);font-size:.68rem;font-weight:800;color:#6d5736;display:flex;justify-content:space-between;gap:10px;margin-bottom:5px}
-.mushaf-ornament{font-family:serif;text-align:center;color:#8f6b37;font-size:1.2rem;line-height:1;margin:2px 0 6px}
-.mushaf-bismillah{font-family:"UthmanicHafs","Amiri Quran","Amiri",serif;text-align:center;color:#201b14;font-size:1.35rem;line-height:2;margin:2px 0 10px}
-.mushaf-text{font-family:"UthmanicHafs","Amiri Quran","Amiri",serif;color:var(--wird-ink);direction:rtl;text-align:justify;text-align-last:auto;font-size:1.52rem;line-height:2.15;letter-spacing:0;word-spacing:.04em;font-feature-settings:"liga" 1,"calt" 1}
-.mushaf-text.lg{font-size:1.68rem;line-height:2.2}
-.ayah-segment{border-radius:6px;transition:background .18s,color .18s;cursor:pointer}
-.ayah-segment.current{background:rgba(222,194,130,.22)}
-.ayah-segment.playing{background:rgba(69,151,111,.16)}
-.ayah-marker{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-inline:4px 2px;width:1.38em;height:1.38em;border:1px solid rgba(125,92,47,.52);border-radius:50%;font-family:var(--font-ui);font-size:.45em;line-height:1;color:#75582f;background:rgba(255,252,244,.85);cursor:pointer}
-.ayah-marker.current{background:#d8b66f;color:#fff;border-color:#a47a37;box-shadow:0 0 0 3px rgba(216,182,111,.18)}
-.mushaf-page-number{font-family:var(--font-ui);font-size:.72rem;font-weight:800;color:#765a32;text-align:center;margin-top:12px}
-.mushaf-toolbar{background:rgba(255,250,240,.96)!important;border-color:rgba(126,91,42,.2)!important;box-shadow:0 8px 24px rgba(62,45,20,.12)!important}
-.mushaf-toolbar .mt-btn{background:#fffaf0!important;color:#765a32!important;border-color:rgba(126,91,42,.2)!important}
-.mushaf-toolbar .mt-play{background:#9a7136!important;color:#fff!important;border-color:#9a7136!important}
-.mushaf-resume-hint{background:#f7edd9!important;border-color:#dcc59a!important;color:#765a32!important}
+.mushaf-topline{font-family:var(--font-ui);font-size:0.68rem;font-weight:800;color:#6A5A44;display:flex;justify-content:space-between;gap:10px;margin-bottom:5px}
+.mushaf-ornament{font-family:serif;text-align:center;color:var(--wird-gold);font-size:1.2rem;line-height:1;margin:2px 0 6px}
+.mushaf-bismillah{font-family:"UthmanicHafs","Amiri Quran","Amiri",serif;text-align:center;color:#201b14;font-size:1.4rem;line-height:2;margin:2px 0 10px}
+.mushaf-text{font-family:"UthmanicHafs","Amiri Quran","Amiri",serif;color:var(--wird-ink);direction:rtl;text-align:justify;text-align-last:auto;font-size:1.55rem;line-height:2.18;letter-spacing:0;word-spacing:.04em;font-feature-settings:"liga" 1,"calt" 1}
+.mushaf-text.lg{font-size:1.7rem;line-height:2.22}
+.ayah-segment{border-radius:6px;transition:background 0.18s,color 0.18s;cursor:pointer}
+.ayah-segment.current{background:rgba(168,132,69,0.18)}
+.ayah-segment.playing{background:rgba(168,132,69,0.22)}
+.ayah-marker{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-inline:4px 2px;width:1.38em;height:1.38em;border:1px solid rgba(168,132,69,0.6);border-radius:50%;font-family:var(--font-ui);font-size:0.45em;line-height:1;color:#5B4630;background:rgba(255,253,247,0.9);cursor:pointer}
+.ayah-marker.current{background:var(--wird-gold);color:#fff;border-color:var(--wird-gold);box-shadow:0 0 0 3px rgba(168,132,69,0.22)}
+.mushaf-page-number{font-family:var(--font-ui);font-size:0.72rem;font-weight:800;color:#6A5A44;text-align:center;margin-top:12px}
+.mushaf-toolbar{background:rgba(255,255,255,0.96)!important;border-color:var(--c-line)!important;box-shadow:var(--shadow-lg)!important}
+.mushaf-toolbar .mt-btn{background:var(--c-primary-soft)!important;color:var(--c-primary)!important;border-color:var(--c-line)!important}
+.mushaf-toolbar .mt-play{background:var(--c-primary)!important;color:#fff!important;border-color:var(--c-primary)!important}
+.mushaf-resume-hint{background:var(--c-yellow-soft)!important;border-color:rgba(255,216,107,0.5)!important;color:#5C4F2B!important}
 @font-face{font-family:"UthmanicHafs";src:url("https://raw.githubusercontent.com/alheekmahlib/alquranalkareem/main/assets/fonts/UthmanicHafs_V20.ttf") format("truetype");font-display:swap}
-@media(max-width:390px){.quran-wird{padding:13px;border-radius:20px}.quran-wird-actions{gap:8px}.wird-action{min-height:76px;padding:10px;gap:8px}.wird-action .wa-icon{width:38px;height:38px}.mushaf-page-reader{padding-inline:13px}.mushaf-text{font-size:1.35rem;line-height:2.08}.mushaf-bismillah{font-size:1.2rem}}
+@media(max-width:390px){.quran-wird{padding:14px;border-radius:var(--r-xl)}.quran-wird-actions{gap:8px}.wird-action{min-height:76px;padding:11px;gap:8px}.wird-action .wa-icon{width:38px;height:38px}.mushaf-page-reader{padding-inline:13px}.mushaf-text{font-size:1.38rem;line-height:2.1}.mushaf-bismillah{font-size:1.22rem}}

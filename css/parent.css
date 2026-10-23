@@ -1,5 +1,5 @@
 /* ============================================================
-   رفيق القرآن — Parent Dashboard (Redesigned)
+   رفيق القرآن — Parent Dashboard (Redesigned) — ألوان مبهجة
    ============================================================ */
 
 /* Parent gate */
@@ -16,8 +16,8 @@
   width: 66px; height: 66px;
   margin: 0 auto 12px;
   border-radius: var(--r-xl);
-  background: var(--c-primary-soft);
-  color: var(--c-primary);
+  background: #F0EDFF;
+  color: #7B61FF;
   display: flex; align-items: center; justify-content: center;
 }
 .gate-ico .ico { width: 32px; height: 32px; }
@@ -37,7 +37,7 @@
   border-radius: var(--r-md);
   border: 2px solid var(--c-line);
 }
-.gate-input:focus { border-color: var(--c-primary); outline: none; box-shadow: 0 0 0 3px rgba(91, 69, 217, 0.14); }
+.gate-input:focus { border-color: #7B61FF; outline: none; box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.18); }
 .gate-hint { font-size: 0.78rem; color: var(--c-text-faint); margin-top: 12px; }
 
 /* Stats overview */
@@ -78,10 +78,10 @@
   max-width: 26px;
   min-height: 4px;
   border-radius: 8px 8px 3px 3px;
-  background: var(--grad-purple);
+  background: linear-gradient(180deg, #A78BFA 0%, #4FC3F7 100%);
   transition: height 0.5s ease;
 }
-.wc-col.today .wc-bar { background: var(--grad-gold); }
+.wc-col.today .wc-bar { background: linear-gradient(180deg, #FFD86B 0%, #FFB86C 100%); }
 .wc-val { font-size: 0.58rem; font-weight: 700; color: var(--c-text-faint); }
 .wc-day { font-size: 0.64rem; font-weight: 700; color: var(--c-text-soft); }
 
@@ -126,7 +126,7 @@
   position: absolute;
   right: 5px; top: 6px; bottom: 6px;
   width: 2px;
-  background: var(--c-line);
+  background: #F4E6D0;
   border-radius: 99px;
 }
 .tl-item { position: relative; padding: 0 14px 14px 0; }
@@ -136,8 +136,8 @@
   right: -18px; top: 5px;
   width: 12px; height: 12px;
   border-radius: 50%;
-  background: var(--c-primary);
-  border: 2.5px solid var(--c-primary-light);
+  background: #7B61FF;
+  border: 2.5px solid #D8CFFF;
 }
 .tl-title { font-weight: 800; font-size: 0.88rem; color: var(--c-text); }
 .tl-date { font-size: 0.68rem; color: var(--c-text-faint); }

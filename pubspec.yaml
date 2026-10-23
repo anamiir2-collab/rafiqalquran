@@ -1,0 +1,59 @@
+name: rafiq_al_quran
+description: "تطبيق رفيق القرآن للأطفال للتعلم والحفظ والمراجعة — Rafiq Al-Quran for Kids"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
+  # إدارة الحالة (متطلب أساسي للمرحلة الأولى)
+  provider: ^6.1.2
+
+  # التخزين المحلي — بديل localStorage في النسخة الأصلية
+  shared_preferences: ^2.3.2
+
+  # مشغل الصوت — سيُستخدم في المرحلة الثالثة (رحلة الحفظ / everyayah.com)
+  just_audio: ^0.9.40
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/data/
+    - assets/data/stories/
+    - assets/images/
+
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Tajawal-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Tajawal-ExtraBold.ttf
+          weight: 800
+
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+
+    - family: AmiriQuran
+      fonts:
+        - asset: assets/fonts/AmiriQuran-Regular.ttf

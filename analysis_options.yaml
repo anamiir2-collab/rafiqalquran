@@ -1,0 +1,14 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_final_locals: true
+    avoid_print: true
+    unnecessary_string_interpolations: true
+    use_super_parameters: true
+
+analyzer:
+  errors:
+    # لا نخفي الأخطاء — نُظهرها كلها كما هي
+    unused_import: warning

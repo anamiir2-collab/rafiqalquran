@@ -1,5 +1,5 @@
 /* ============================================================
-   رفيق القرآن — Responsive (Mobile First → Desktop)
+   رفيق القرآن — Responsive (Mobile First → Desktop) — ألوان مبهجة
    Base: 360px. Enhanced: 480 / 768 / 1024
    ============================================================ */
 
@@ -23,11 +23,12 @@
 /* --- ≥ 768px: tablets — phone-like shell, decorative bg --- */
 @media (min-width: 768px) {
   body {
-    background-color: #E8E3F5;
+    /* خلفية ديسكتوب مبهجة دافئة بدل البنفسجي البارد */
+    background-color: #FFF3E6;
     background-image:
-      radial-gradient(circle at 12% 18%, rgba(91, 69, 217, 0.10) 0, transparent 34%),
-      radial-gradient(circle at 88% 82%, rgba(139, 109, 232, 0.12) 0, transparent 34%),
-      radial-gradient(circle, rgba(139, 109, 232, 0.06) 1px, transparent 1px);
+      radial-gradient(circle at 12% 18%, rgba(255, 143, 171, 0.14) 0, transparent 34%),
+      radial-gradient(circle at 88% 82%, rgba(255, 184, 108, 0.16) 0, transparent 34%),
+      radial-gradient(circle, rgba(255, 201, 60, 0.10) 1px, transparent 1px);
     background-size: auto, auto, 90px 90px;
   }
   .app-shell {
@@ -36,8 +37,8 @@
     border-radius: 36px;
     overflow: hidden;
     min-height: calc(100dvh - 40px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 20px 60px rgba(50, 40, 100, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 20px 60px rgba(255, 143, 171, 0.22);
   }
   .bottom-nav {
     position: sticky;
